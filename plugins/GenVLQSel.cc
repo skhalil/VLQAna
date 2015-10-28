@@ -29,10 +29,18 @@ GenVLQSel::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    hfloat h_genPartEta    ; iEvent.getByLabel(l_genPartEta    , h_genPartEta   ) ;
    hfloat h_genPartID     ; iEvent.getByLabel(l_genPartID     , h_genPartID    ) ;
    hfloat h_genPartMass   ; iEvent.getByLabel(l_genPartMass   , h_genPartMass  ) ;
-   hfloat h_genPartMomID  ; iEvent.getByLabel(l_genPartMomID  , h_genPartMomID ) ;
+   //hfloat h_genPartMomID  ; iEvent.getByLabel(l_genPartMomID  , h_genPartMomID ) ;
    hfloat h_genPartPhi    ; iEvent.getByLabel(l_genPartPhi    , h_genPartPhi   ) ;
    hfloat h_genPartPt     ; iEvent.getByLabel(l_genPartPt     , h_genPartPt    ) ;
-   hfloat h_genPartStatus ; iEvent.getByLabel(l_genPartStatus , h_genPartStatus) ;
+   hfloat h_genPartStatus ; iEvent.getByLabel(l_genPartStatus , h_genPartStatus) ; 
+   hfloat h_genPartMom0ID        ; iEvent.getByLabel(l_genPartMom0ID        , h_genPartMom0ID       ) ;
+   hfloat h_genPartMom1ID        ; iEvent.getByLabel(l_genPartMom1ID        , h_genPartMom1ID       ) ;
+   hfloat h_genPartMom0Status    ; iEvent.getByLabel(l_genPartMom0Status    , h_genPartMom0Status   ) ;
+   hfloat h_genPartMom1Status    ; iEvent.getByLabel(l_genPartMom1Status    , h_genPartMom1Status   ) ;
+   hfloat h_genPartDau0ID        ; iEvent.getByLabel(l_genPartDau0ID        , h_genPartDau0ID       ) ;
+   hfloat h_genPartDau1ID        ; iEvent.getByLabel(l_genPartDau1ID        , h_genPartDau1ID       ) ;
+   hfloat h_genPartDau0Status    ; iEvent.getByLabel(l_genPartDau0Status    , h_genPartDau0Status   ) ;
+   hfloat h_genPartDau1Status    ; iEvent.getByLabel(l_genPartDau1Status    , h_genPartDau1Status   ) ;
    
    if(!iEvent.isRealData()){
       //cout << "mom size" << momids_.size() << endl;
@@ -64,16 +72,25 @@ GenVLQSel::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       
       for ( unsigned igen = 0; igen < (h_genPartID.product())->size(); ++igen ) {
          
-         if ( std::find(ids_.begin(), ids_.end(), (h_genPartID.product())->at(igen)) == ids_.end()
-              || ( checkmomid_ && std::find(momids_.begin(), momids_.end(), (h_genPartMomID.product())->at(igen)) == momids_.end() )
-              || ( checkstatus_ && std::find(statuses_.begin(), statuses_.end(), (h_genPartStatus.product())->at(igen)) == statuses_.end() )
-            )continue;
+         if ( std::find(ids_.begin(), ids_.end(), (h_genPartID.product())->at(igen)) == ids_.end() ) continue ;
+         if ( checkstatus_ && std::find(statuses_.begin(), statuses_.end(), (h_genPartStatus.product())->at(igen)) == statuses_.end() ) continue ;
+         if ( checkmomid_ && std::find(momids_.begin(), momids_.end(), (h_genPartMom0ID.product())->at(igen)) == momids_.end() ) continue ;
+         if ( checkmomid_ && std::find(momids_.begin(), momids_.end(), (h_genPartMom1ID.product())->at(igen)) == momids_.end() ) continue ;
+         //if ( checkdauid_ && std::find(dau0ids_.begin(), dau0ids_.end(), (h_genPartDau0ID.product())->at(igen)) == dau0ids_.end() ) continue ;
+         //if ( checkdauid_ && std::find(dau1ids_.begin(), dau1ids_.end(), (h_genPartDau1ID.product())->at(igen)) == dau1ids_.end() ) continue ;
+
+         //if ( std::find(ids_.begin(), ids_.end(), (h_genPartID.product())->at(igen)) == ids_.end()
+         //     || ( checkmomid_ && std::find(momids_.begin(), momids_.end(), (h_genPartMomID.product())->at(igen)) == momids_.end() )
+         //     || ( checkstatus_ && std::find(statuses_.begin(), statuses_.end(), (h_genPartStatus.product())->at(igen)) == statuses_.end() )
+                
+         //    )continue;
          
          int pdgId = (h_genPartID.product())->at(igen);
          if (verbose_){
             int status = (h_genPartStatus.product())->at(igen);
-            int mother = (h_genPartMomID.product())->at(igen);
-            cout << " pdgid = " << pdgId << ", status = " << status << ", mother = " << mother << endl ;
+            int mother1 = (h_genPartMom0ID.product())->at(igen);
+            int mother2 = (h_genPartMom1ID.product())->at(igen);
+            cout << " pdgid = " << pdgId << ", status = " << status << ", mother1 = " << mother1 << ", mother2 = " << mother2 << endl ;
          } 
          
          if (abs(pdgId) == 25) H = true;
@@ -89,6 +106,7 @@ GenVLQSel::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
          if ( W==1 && t==1) {++numWt; W=0; t=0;}
          if ( H==1 && b==1) {++numHb; H=0; b=0;}
          if ( Z==1 && b==1) {++numZb; Z=0; b=0;} 
+        
       }
       
       //if(numWb+numHt+numZt != 2){cout << "Suspecious event, how can't you not find a decay of TT" << endl;}
@@ -111,8 +129,8 @@ GenVLQSel::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       else if (numZb == 2)                                  {*BBtoZbZb = 1;}
       
       if (verbose_){
-         cout << "WbHt = " << *TTtoWbHt <<", WbZt = " << *TTtoWbZt <<", HtZt = " << *TTtoHtZt << ", WbWb = " << *TTtoWbWb <<", HtHt = "<< *TTtoHtHt <<", ZtZt = " << *TTtoZtZt << endl;
-         cout << "WtHb = " << *BBtoWtHb <<", WtZb = " << *BBtoWtZb <<", HbZb = " << *BBtoHbZb << ", WtWt = " << *BBtoWtWt <<", HbHb = "<< *BBtoHbHb <<", ZbZb = " << *BBtoZbZb << endl;
+         //cout << "WbHt = " << *TTtoWbHt <<", WbZt = " << *TTtoWbZt <<", HtZt = " << *TTtoHtZt << ", WbWb = " << *TTtoWbWb <<", HtHt = "<< *TTtoHtHt <<", ZtZt = " << *TTtoZtZt << endl;
+         //cout << "WtHb = " << *BBtoWtHb <<", WtZb = " << *BBtoWtZb <<", HbZb = " << *BBtoHbZb << ", WtWt = " << *BBtoWtWt <<", HbHb = "<< *BBtoHbHb <<", ZbZb = " << *BBtoZbZb << endl;
       }
      
       
@@ -132,6 +150,7 @@ GenVLQSel::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
          iEvent.put ( BBtoHbHb,       "BBtoHbHb"      );
          iEvent.put ( BBtoZbZb,       "BBtoZbZb"      );
       }
+    
    }
 }
 
