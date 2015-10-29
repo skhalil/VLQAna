@@ -44,10 +44,18 @@ private:
    edm::InputTag l_genPartEta    ; 
    edm::InputTag l_genPartID     ; 
    edm::InputTag l_genPartMass   ; 
-   edm::InputTag l_genPartMomID  ; 
+   //edm::InputTag l_genPartMomID  ; 
    edm::InputTag l_genPartPhi    ; 
    edm::InputTag l_genPartPt     ; 
    edm::InputTag l_genPartStatus ; 
+   edm::InputTag l_genPartMom0ID ; 
+   edm::InputTag l_genPartMom1ID ;
+   edm::InputTag l_genPartMom0Status ;
+   edm::InputTag l_genPartMom1Status ;
+   edm::InputTag l_genPartDau0ID ;
+   edm::InputTag l_genPartDau1ID ;
+   edm::InputTag l_genPartDau0Status ;
+   edm::InputTag l_genPartDau1Status ; 
 };
 #endif
 //
@@ -82,10 +90,18 @@ GenVLQSel::GenVLQSel(const edm::ParameterSet& iConfig)
    l_genPartEta    = iConfig.getParameter<edm::InputTag>("genPartEta"); 
    l_genPartID     = iConfig.getParameter<edm::InputTag>("genPartID");
    l_genPartMass   = iConfig.getParameter<edm::InputTag>("genPartMass"); 
-   l_genPartMomID  = iConfig.getParameter<edm::InputTag>("genPartMomID");
+   //l_genPartMomID  = iConfig.getParameter<edm::InputTag>("genPartMomID");
    l_genPartPhi    = iConfig.getParameter<edm::InputTag>("genPartPhi");
    l_genPartPt     = iConfig.getParameter<edm::InputTag>("genPartPt"); 
    l_genPartStatus = iConfig.getParameter<edm::InputTag>("genPartStatus");
+   l_genPartMom0ID = iConfig.getParameter<edm::InputTag>("genPartMom0ID");
+   l_genPartMom1ID = iConfig.getParameter<edm::InputTag>("genPartMom1ID");
+   l_genPartMom0Status = iConfig.getParameter<edm::InputTag>("genPartMom0Status");
+   l_genPartMom1Status = iConfig.getParameter<edm::InputTag>("genPartMom1Status");
+   l_genPartDau0ID     = iConfig.getParameter<edm::InputTag>("genPartDau0ID");
+   l_genPartDau1ID     = iConfig.getParameter<edm::InputTag>("genPartDau1ID");
+   l_genPartDau0Status = iConfig.getParameter<edm::InputTag>("genPartDau0Status");
+   l_genPartDau1Status = iConfig.getParameter<edm::InputTag>("genPartDau1Status");
 
    //register your products
    produces<unsigned> ("TTtoWbZt");
