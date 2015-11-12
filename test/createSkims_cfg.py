@@ -51,6 +51,8 @@ options.setDefault('maxEvents', 5000)
 options.parseArguments()
 print options
 
+Tp = options.TPrime
+Bp = options.BPrime
 #postName = ""
 #if options.runMuon: postName = "_mu"
 #else: postName = "_ele"
@@ -92,14 +94,14 @@ from Analysis.VLQAna.genVLQSel_cfi import *
 from infiles_cfi import *
 
 if not options.isData:
-    if options.TPrime:
+    if Tp:
         process.GenInfo = cms.EDProducer("GenVLQSel", genParams.clone(momids = cms.vint32(8000001, -8000001))#TPrime 
                                          )
         process.source = cms.Source("PoolSource",
                                     fileNames = cms.untracked.vstring(
-                '/store/group/phys_b2g/B2GAnaFW/TprimeTprime_M-1000_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_v74x_v6p1_25ns/150930_172851/0000/B2GEDMNtuple_1.root',)
+                'root://cms-xrd-global.cern.ch//store/group/phys_b2g/vorobiev/TprimeTprime_M-1000_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_Run2Spring15_25ns_v74x_V61/151004_184150/0000/B2GEDMNtuple_1.root',)
                                     )                                    
-    elif options.BPrime:
+    elif Bp:
         process.GenInfo = cms.EDProducer("GenVLQSel", genParams.clone(momids = cms.vint32(8000002, -8000002))#BPrime 
                                          )
         process.source = cms.Source("PoolSource", 
@@ -110,7 +112,8 @@ if not options.isData:
         process.source = cms.Source("PoolSource",
                                     fileNames = cms.untracked.vstring(
                 #'root://cms-xrd-global.cern.ch//store/group/phys_b2g/vorobiev/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/B2GAnaFW_Run2Spring15_25ns_v74x_V3_1/150819_140856/0000/B2GEDMNtuple_3.root',
-                'root://cms-xrd-global.cern.ch//store/user/devdatta/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/B2GAnaFW_Run2Spring15_25ns_v74x_V3/150703_105335/0000/B2GEDMNtuple_1.root', 
+                'root://cms-xrd-global.cern.ch//store/group/phys_b2g/vorobiev/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/B2GAnaFW_Run2Spring15_25ns_v74x_V61/151027_133519/0000/B2GEDMNtuple_1.root',
+                #'root://cms-xrd-global.cern.ch//store/user/devdatta/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/B2GAnaFW_Run2Spring15_25ns_v74x_V3/150703_105335/0000/B2GEDMNtuple_1.root', 
                 )
             )
 else:#running over data
@@ -120,9 +123,6 @@ else:#running over data
                                 )     
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxEvents) )
-
-#from Analysis.VLQAna.
-#from Analysis.VLQAna.OS2LAna_cfi import ana
 
 process.TFileService = cms.Service("TFileService",
        fileName = cms.string(
@@ -134,14 +134,6 @@ process.load("Analysis.VLQAna.EventCleaner_cff")
 process.evtcleaner.isData = options.isData 
 process.evtcleaner.hltPaths = cms.vstring (hltpaths)  
 process.evtcleaner.DoPUReweightingNPV = cms.bool(options.doPUReweightingNPV)  
-
-#from Analysis.VLQAna.OS2LAna_cfi import * 
-#process.anaBoosted = ana.clone(
-#    DoPUReweightingNPV = cms.bool(options.doPUReweightingNPV),
-#    )
-
-#process.ana = process.anaBoosted.clone()
-#process.ana.BoostedZCandParams.ptMin = cms.double(0.)
 
 ## Event counter
 from Analysis.EventCounter.eventcounter_cfi import eventCounter
@@ -174,6 +166,12 @@ process.out = cms.OutputModule("PoolOutputModule",
       "keep *_*_triggerNameTree_*",
       )
     )
+
+if (Tp==0 and Bp==0):
+   process.out.outputCommands += [
+      "drop *_GenInfo_*_*",
+      ]
+
 #if options.runMuon:
 #    process.out.outputCommands += [
 #        "drop *_electrons_*_*",# sometimes gives LogicError
@@ -219,8 +217,6 @@ process.p = cms.Path(
     *process.cleanedEvents
     *process.GenInfo
     *process.skim
-    #*cms.ignore(process.ana)
-    #*cms.ignore(process.anaBoosted)
     * process.finalEvents
     )
 

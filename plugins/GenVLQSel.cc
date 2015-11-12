@@ -13,6 +13,7 @@
 //
 // Original Author:  Sadia Khalil
 //         Created:  Mon, 31 Aug 2015 17:57:17 GMT
+//         Revised:  Thu, 12 Nov 2015 (changed the inputs as genparticle defintions changed in B2G EDM ntuples)
 //
 //
 ///////////////////////////////////////////////////////////////////////
@@ -29,7 +30,6 @@ GenVLQSel::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    hfloat h_genPartEta    ; iEvent.getByLabel(l_genPartEta    , h_genPartEta   ) ;
    hfloat h_genPartID     ; iEvent.getByLabel(l_genPartID     , h_genPartID    ) ;
    hfloat h_genPartMass   ; iEvent.getByLabel(l_genPartMass   , h_genPartMass  ) ;
-   //hfloat h_genPartMomID  ; iEvent.getByLabel(l_genPartMomID  , h_genPartMomID ) ;
    hfloat h_genPartPhi    ; iEvent.getByLabel(l_genPartPhi    , h_genPartPhi   ) ;
    hfloat h_genPartPt     ; iEvent.getByLabel(l_genPartPt     , h_genPartPt    ) ;
    hfloat h_genPartStatus ; iEvent.getByLabel(l_genPartStatus , h_genPartStatus) ; 
@@ -71,33 +71,27 @@ GenVLQSel::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       int numWb(0), numHt(0), numZt(0), numWt(0), numHb(0), numZb(0);
       
       for ( unsigned igen = 0; igen < (h_genPartID.product())->size(); ++igen ) {
-         
+         //check if T' or B' paricle exits?
          if ( std::find(ids_.begin(), ids_.end(), (h_genPartID.product())->at(igen)) == ids_.end() ) continue ;
-         if ( checkstatus_ && std::find(statuses_.begin(), statuses_.end(), (h_genPartStatus.product())->at(igen)) == statuses_.end() ) continue ;
+
+         //check if they are not the final state particles, i.e. not status != 22
+         if ( !(checkstatus_ && std::find(statuses_.begin(), statuses_.end(), (h_genPartStatus.product())->at(igen)) == statuses_.end()) ) continue ;
+         //By default switched off, if we require search id in gen particle loop to be T' or B'
          if ( checkmomid_ && std::find(momids_.begin(), momids_.end(), (h_genPartMom0ID.product())->at(igen)) == momids_.end() ) continue ;
          if ( checkmomid_ && std::find(momids_.begin(), momids_.end(), (h_genPartMom1ID.product())->at(igen)) == momids_.end() ) continue ;
-         //if ( checkdauid_ && std::find(dau0ids_.begin(), dau0ids_.end(), (h_genPartDau0ID.product())->at(igen)) == dau0ids_.end() ) continue ;
-         //if ( checkdauid_ && std::find(dau1ids_.begin(), dau1ids_.end(), (h_genPartDau1ID.product())->at(igen)) == dau1ids_.end() ) continue ;
+         
+         //check by daughters if decaying particle in subject is T' or B'
+         if ( checkdauid_ && std::find(dauids_.begin(), dauids_.end(), (h_genPartDau0ID.product())->at(igen)) == dauids_.end() ) continue ;
+         if ( checkdauid_ && std::find(dauids_.begin(), dauids_.end(), (h_genPartDau1ID.product())->at(igen)) == dauids_.end() ) continue ;
 
-         //if ( std::find(ids_.begin(), ids_.end(), (h_genPartID.product())->at(igen)) == ids_.end()
-         //     || ( checkmomid_ && std::find(momids_.begin(), momids_.end(), (h_genPartMomID.product())->at(igen)) == momids_.end() )
-         //     || ( checkstatus_ && std::find(statuses_.begin(), statuses_.end(), (h_genPartStatus.product())->at(igen)) == statuses_.end() )
-                
-         //    )continue;
+         int dau1 = (h_genPartDau0ID.product())->at(igen);
+         int dau2 = (h_genPartDau1ID.product())->at(igen);
          
-         int pdgId = (h_genPartID.product())->at(igen);
-         if (verbose_){
-            int status = (h_genPartStatus.product())->at(igen);
-            int mother1 = (h_genPartMom0ID.product())->at(igen);
-            int mother2 = (h_genPartMom1ID.product())->at(igen);
-            cout << " pdgid = " << pdgId << ", status = " << status << ", mother1 = " << mother1 << ", mother2 = " << mother2 << endl ;
-         } 
-         
-         if (abs(pdgId) == 25) H = true;
-         if (abs(pdgId) == 24) W = true;
-         if (abs(pdgId) == 23) Z = true;
-         if (abs(pdgId) ==  6) t = true;
-         if (abs(pdgId) ==  5) b = true; 
+         if (abs(dau1) == 25 || abs(dau2) == 25) H = true;
+         if (abs(dau1) == 24 || abs(dau2) == 25) W = true;
+         if (abs(dau1) == 23 || abs(dau2) == 23) Z = true;
+         if (abs(dau1) ==  6 || abs(dau2) ==  6) t = true;
+         if (abs(dau1) ==  5 || abs(dau2) ==  5) b = true; 
          //TT
          if ( W==1 && b==1) {++numWb; W=0; b=0;}
          if ( H==1 && t==1) {++numHt; H=0; t=0;}
@@ -129,8 +123,12 @@ GenVLQSel::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       else if (numZb == 2)                                  {*BBtoZbZb = 1;}
       
       if (verbose_){
-         //cout << "WbHt = " << *TTtoWbHt <<", WbZt = " << *TTtoWbZt <<", HtZt = " << *TTtoHtZt << ", WbWb = " << *TTtoWbWb <<", HtHt = "<< *TTtoHtHt <<", ZtZt = " << *TTtoZtZt << endl;
-         //cout << "WtHb = " << *BBtoWtHb <<", WtZb = " << *BBtoWtZb <<", HbZb = " << *BBtoHbZb << ", WtWt = " << *BBtoWtWt <<", HbHb = "<< *BBtoHbHb <<", ZbZb = " << *BBtoZbZb << endl;
+         if (TPrime == 1){
+            cout << "WbHt = " << *TTtoWbHt <<", WbZt = " << *TTtoWbZt <<", HtZt = " << *TTtoHtZt << ", WbWb = " << *TTtoWbWb <<", HtHt = "<< *TTtoHtHt <<", ZtZt = " << *TTtoZtZt << endl;
+         }
+         else if (BPrime == 1 ) {
+            cout << "WtHb = " << *BBtoWtHb <<", WtZb = " << *BBtoWtZb <<", HbZb = " << *BBtoHbZb << ", WtWt = " << *BBtoWtWt <<", HbHb = "<< *BBtoHbHb <<", ZbZb = " << *BBtoZbZb << endl;
+         }
       }
      
       

@@ -6,7 +6,6 @@ genParams = cms.PSet(
     genPartEta     = cms.InputTag("genPart", "genPartEta"),
     genPartID      = cms.InputTag("genPart", "genPartID"),
     genPartMass    = cms.InputTag("genPart", "genPartMass"),
-    #genPartMomID   = cms.InputTag("genPart", "genPartMomID"),
     genPartPhi     = cms.InputTag("genPart", "genPartPhi"),
     genPartPt      = cms.InputTag("genPart", "genPartPt"),
     genPartStatus  = cms.InputTag("genPart", "genPartStatus"),
@@ -19,13 +18,13 @@ genParams = cms.PSet(
     genPartDau0Status   = cms.InputTag("genPart", "genPartDau0Status"),
     genPartDau1Status   = cms.InputTag("genPart", "genPartDau1Status"),   
 
-    ids            = cms.vint32(25,24,23,6,5,-25,-24,-23,-6,-5), #H, W, Z, t, b
+    ids            = cms.vint32(8000001, -8000001),#TPrime
     momids         = cms.vint32(8000001, -8000001),#TPrime
-    #mom0ids             = cms.vint32(-8000001, 8000001),
-    #mom1ids             = cms.vint32(-8000001, 8000001),
-
-    checkmomid     = cms.bool(True),
-    statuses       = cms.vint32(23,22),#on shell decaying particles
+    dauids        = cms.vint32(25,24,23,6,5,-25,-24,-23,-6,-5), #H, W, Z, t, b
+   
+    checkmomid     = cms.bool(False),
+    statuses       = cms.vint32(22),#if its a T' or B', it shouldn't be the final state particle.
     checkstatus    = cms.bool(True),
-    verbose        = cms.bool(True),
+    checkdauid     = cms.bool(True),
+    verbose        = cms.bool(False),
 )

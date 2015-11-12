@@ -36,7 +36,9 @@ private:
    std::vector<int> statuses_ ;
    bool checkstatus_ ;
    std::vector<int> momids_ ;
+   std::vector<int> dauids_;
    bool checkmomid_ ;
+   bool checkdauid_ ;
    bool verbose_;
 
    edm::InputTag l_genPartCharge ; 
@@ -44,7 +46,6 @@ private:
    edm::InputTag l_genPartEta    ; 
    edm::InputTag l_genPartID     ; 
    edm::InputTag l_genPartMass   ; 
-   //edm::InputTag l_genPartMomID  ; 
    edm::InputTag l_genPartPhi    ; 
    edm::InputTag l_genPartPt     ; 
    edm::InputTag l_genPartStatus ; 
@@ -83,14 +84,15 @@ GenVLQSel::GenVLQSel(const edm::ParameterSet& iConfig)
    statuses_       = iConfig.getParameter<std::vector<int>>("statuses");
    checkstatus_    = iConfig.getParameter<bool>("checkstatus");
    momids_         = iConfig.getParameter<std::vector<int>>("momids");
+   dauids_         = iConfig.getParameter<std::vector<int>>("dauids");
    checkmomid_     = iConfig.getParameter<bool>("checkmomid");
+   checkdauid_     = iConfig.getParameter<bool>("checkdauid"); 
    verbose_        = iConfig.getParameter<bool>("verbose");
    l_genPartCharge = iConfig.getParameter<edm::InputTag>("genPartCharge");
    l_genPartE      = iConfig.getParameter<edm::InputTag>("genPartE");
    l_genPartEta    = iConfig.getParameter<edm::InputTag>("genPartEta"); 
    l_genPartID     = iConfig.getParameter<edm::InputTag>("genPartID");
    l_genPartMass   = iConfig.getParameter<edm::InputTag>("genPartMass"); 
-   //l_genPartMomID  = iConfig.getParameter<edm::InputTag>("genPartMomID");
    l_genPartPhi    = iConfig.getParameter<edm::InputTag>("genPartPhi");
    l_genPartPt     = iConfig.getParameter<edm::InputTag>("genPartPt"); 
    l_genPartStatus = iConfig.getParameter<edm::InputTag>("genPartStatus");

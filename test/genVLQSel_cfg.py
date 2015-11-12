@@ -30,7 +30,7 @@ from Analysis.VLQAna.genVLQSel_cfi import *
 
 if options.TPrime:
     process.source = cms.Source("PoolSource",
-                                fileNames = cms.untracked.vstring('root://cms-xrd-global.cern.ch//store/user/devdatta/TprimeTprime_M-1000_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_Run2Spring15_25ns_v74x_V3/150703_110007/0000/B2GEDMNtuple_1.root',)
+                                fileNames = cms.untracked.vstring('root://cms-xrd-global.cern.ch//store/group/phys_b2g/vorobiev/TprimeTprime_M-1000_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_Run2Spring15_25ns_v74x_V61/151004_184150/0000/B2GEDMNtuple_1.root',)
                                 )
     process.GenInfo = cms.EDProducer("GenVLQSel",
                                      genParams.clone(momids = cms.vint32(8000001, -8000001))#TPrime 
