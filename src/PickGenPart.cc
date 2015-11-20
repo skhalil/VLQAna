@@ -63,7 +63,15 @@ const GenParticleCollection PickGenPart::operator() ( edm::Event& evt) {
     if ( checkmomid_ && std::find(mom1ids_.begin(), mom1ids_.end(), (h_genPartMom1ID.product())->at(igen)) == mom1ids_.end() ) continue ; 
     if ( checkdauid_ && std::find(dau0ids_.begin(), dau0ids_.end(), (h_genPartDau0ID.product())->at(igen)) == dau0ids_.end() ) continue ; 
     if ( checkdauid_ && std::find(dau1ids_.begin(), dau1ids_.end(), (h_genPartDau1ID.product())->at(igen)) == dau1ids_.end() ) continue ; 
-
+/*
+    int pdgId = (h_genPartID.product())->at(igen);
+    int status = (h_genPartStatus.product())->at(igen);
+    int mother1 = (h_genPartMom0ID.product())->at(igen);
+    int mother2 = (h_genPartMom1ID.product())->at(igen);
+    int daughter1 = (h_genPartDau0ID.product())->at(igen);
+    int daughter2 = (h_genPartDau1ID.product())->at(igen);
+    cout << " pdgid = " << pdgId << ", status = " << status << ", mother1 = " << mother1 << ", mother2 = " << mother2 << ", daughter1 = " << daughter1 << ", daughter2 = "<< daughter2<< endl ;
+*/
     TLorentzVector p4genpart ; 
     p4genpart.SetPtEtaPhiM( (h_genPartPt.product())->at(igen), (h_genPartEta.product())->at(igen), 
         (h_genPartPhi.product())->at(igen), (h_genPartMass.product())->at(igen) ) ; 

@@ -33,8 +33,10 @@ options.register('filterSignal', False,
     VarParsing.varType.bool,
     "Select only tZtt or bZbZ modes"
     )
-options.setDefault('maxEvents', 1000)
+options.setDefault('maxEvents', 10)
 options.parseArguments()
+
+print options
 
 hltpaths = []
 if options.isData:
@@ -54,17 +56,18 @@ if options.isData:
 
 process = cms.Process("OS2LAna")
 
-from inputFiles_cfi import * 
+#from inputFiles_cfi import * 
 
 process.source = cms.Source(
     "PoolSource",
     fileNames = cms.untracked.vstring(
+    'root://cms-xrd-global.cern.ch//store/group/phys_b2g/vorobiev/TprimeTprime_M-1000_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_Run2Spring15_25ns_v74x_V61/151004_184150/0000/B2GEDMNtuple_1.root'
     #'root://eoscms.cern.ch//eos/cms/store/group/phys_b2g/B2GAnaFW/TprimeTprime_M-800_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_v74x_v6p1_25ns/150930_172851/0000/B2GEDMNtuple_8.root'
     #fileNamess_TT_M800_Spring15_25ns
     #files_DY_M50
     #files_doubleMuon_Run2015D
     #fileNames_BB_M1000_Spring15_25ns
-    FileNames
+    #FileNames
     ) 
     )
 
