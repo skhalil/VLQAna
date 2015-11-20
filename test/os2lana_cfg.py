@@ -3,6 +3,16 @@ import FWCore.ParameterSet.Config as cms
 from FWCore.ParameterSet.VarParsing import VarParsing
 
 options = VarParsing('analysis')
+options.register('isData', False,
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.bool,
+    "Is data?"
+    )
+options.register('zdecaymode', '',
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.string,
+    "Z->mumu or Z->elel? Choose: 'zmumu' or 'zelel'"
+    )
 options.register('outFileName', 'os2lana.root',
     VarParsing.multiplicity.singleton,
     VarParsing.varType.string,
@@ -17,16 +27,6 @@ options.register('doPUReweightingNPV', False,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Do pileup reweighting based on NPV"
-    )
-options.register('isData', False,
-    VarParsing.multiplicity.singleton,
-    VarParsing.varType.bool,
-    "Is data?"
-    )
-options.register('zdecaymode', '',
-    VarParsing.multiplicity.singleton,
-    VarParsing.varType.string,
-    "Z->mumu or Z->elel? Choose: 'zmumu' or 'zelel'"
     )
 options.register('filterSignal', False,
     VarParsing.multiplicity.singleton,
@@ -43,12 +43,10 @@ if options.isData:
   options.filterSignal = False 
   if options.zdecaymode == "zmumu":
     hltpaths = [
-        #"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",
         "HLT_DoubleIsoMu17_eta2p1_v"
         ]
   elif options.zdecaymode == "zelel":
     hltpaths = [
-        #"HLT_DoubleEle24_22_eta2p1_WPLoose_Gsf_v",
         "HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v"
         ]
   else:
@@ -68,6 +66,7 @@ process.source = cms.Source(
     #files_doubleMuon_Run2015D
     #fileNames_BB_M1000_Spring15_25ns
     #FileNames
+
     ) 
     )
 
@@ -77,26 +76,29 @@ process.load("Analysis.VLQAna.EventCleaner_cff")
 process.evtcleaner.isData = options.isData 
 process.evtcleaner.hltPaths = cms.vstring (hltpaths)  
 process.evtcleaner.DoPUReweightingNPV = cms.bool(options.doPUReweightingNPV)  
+process.evtcleaner.DoPUReweightingOfficial = cms.bool(options.doPUReweightingOfficial)  
 
 from Analysis.VLQAna.OS2LAna_cfi import * 
 
 ### Low pt Z candidate with low pt jets 
 process.ana = ana.clone(
     filterSignal = cms.bool(options.filterSignal),
-    DoPUReweightingNPV = cms.bool(options.doPUReweightingNPV),
     )
 process.ana.elselParams.useVID = cms.bool(options.isData)
 process.ana.BoostedZCandParams.ptMin = cms.double(0.)
 process.ana.jetAK8selParams.jetPtMin = cms.double(100)
 process.ana.jetAK4BTaggedselParams.jetPtMin = cms.double(40)
-
+if not options.isData:
+  process.ana.jetAK8selParams.groomedPayloadNames.extend(['Summer15_25nsV6_MC_L2L3Residual_AK8PFchs.txt', 'Summer15_25nsV6_MC_L3Absolute_AK8PFchs.txt']) ,
 
 ### Boosted Z candidate
 process.anaBoosted = ana.clone(
     filterSignal = cms.bool(options.filterSignal),
-    DoPUReweightingNPV = cms.bool(options.doPUReweightingNPV),
     )
 process.anaBoosted.elselParams.useVID = cms.bool(options.isData)
+if not options.isData:
+  process.anaBoosted.jetAK8selParams.groomedPayloadNames.extend(['Summer15_25nsV6_MC_L2L3Residual_AK8PFchs.txt', 'Summer15_25nsV6_MC_L3Absolute_AK8PFchs.txt']) ,
+
 
 
 process.TFileService = cms.Service("TFileService",
@@ -111,13 +113,19 @@ process.allEvents = eventCounter.clone(isData=options.isData)
 process.cleanedEvents = eventCounter.clone(isData=options.isData)
 process.finalEvents = eventCounter.clone(isData=options.isData)
 
+process.load("Analysis.VLQAna.VLQCandProducer_cff")
+
 process.p = cms.Path(
     process.allEvents
     *process.evtcleaner
     *process.cleanedEvents
     *cms.ignore(process.ana)
-    *cms.ignore(process.anaBoosted)
+    #*cms.ignore(process.anaBoosted+process.vlqcands)
+    *process.anaBoosted
+    *process.vlqcands
     * process.finalEvents
     )
+
+#process.schedule = cms.Schedule(process.p)
 
 #open('dump.py','w').write(process.dumpPython())
