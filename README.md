@@ -14,27 +14,25 @@ git clone git@github.com:dmajumder/EventCounter.git Analysis/EventCounter
 
 git clone -b Data2015D  git@github.com:skhalil/VLQAna.git  Analysis/VLQAna
 
+#Copy one new MET file from local directory
+
+cp /uscms_data/d2/skhalil/MyVLQAna/CMSSW_7_4_16_patch2/src/AnalysisDataFormats/BoostedObjects/interface/Met.h /AnalysisDataFormats/BoostedObjects/interface
  
 #To just build this stuff
-scram b -j20
+scram b -j4
 
 # To run on OS2L analysis
 cd Analysis/VLQAna/test
 
-cmsRun vlqAna_cfg.py 
+cmsRun os2lana_cfg.py
 
-# To run crab jobs for skims, e.g for CR in dielectron channel
+# To run crab jobs on B2GEDMNtuples
 
-Analysis/VLQAna/test/Skim/CRAB/Skims_CR_Zelel 
+Analysis/VLQAna/test/CRAB_On_B2GEDM
 
-Modify the exisiting crab file, by changing the relvant parameters, like config.General.requestName, config.Data.inputDataset, config.Data.outLFNDirBase, config.Site.storageSite etc.
+Modify the input parameters in allJobList.py, by changing the relvant parameters, like config.General.requestName, config.Data.inputDataset, config.Data.outLFNDirBase, config.Site.storageSite etc. Enable new options of optimizeReco when needed for MC. Finally, generate and submit a crab jobs.
 
-crab submit -c crab_XX.py
+Python run.py
 
-This will create an output condor directory, through which you can check the status of the jobs.
-
-crab status -d MY_CONDOR_DIR
-
-Please see more details https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookCRAB3Tutorial.
-
+Please see more details https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookCRAB3Tutorial for CRAB3 related issues.
 
