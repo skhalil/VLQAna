@@ -48,7 +48,11 @@ options.register('applyLeptonSFs', True,
     VarParsing.varType.bool,
     "Apply lepton SFs to the MC"
     )
-
+options.register('optimizeReco', False,
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.bool,
+    "Do mass reconstruction on MC"
+    )
 options.setDefault('maxEvents', -1)
 options.parseArguments()
 print options
@@ -57,6 +61,7 @@ hltpaths = []
 if options.isData:
   options.filterSignal = False 
   options.signalType = "" 
+  options.optimizeReco = False
   options.applyLeptonSFs = False 
   if options.zdecaymode == "zmumu":
     hltpaths = [
@@ -113,16 +118,19 @@ process.ana = ana.clone(
     signalType = cms.string(options.signalType),
     zdecayMode = cms.string(options.zdecaymode),
     applyLeptonSFs = cms.bool(options.applyLeptonSFs),
+    optimizeReco = cms.bool(options.optimizeReco),
     )
 process.ana.elselParams.elidtype = cms.string(options.lepID)
 process.ana.muselParams.muidtype = cms.string(options.lepID)
 process.ana.muselParams.muIsoMax = cms.double(0.15)
 process.ana.lepsfsParams.lepidtype = cms.string(options.lepID)
 process.ana.lepsfsParams.zdecayMode = cms.string(options.zdecaymode)
-process.ana.BoostedZCandParams.ptMin = cms.double(80.)
+process.ana.BoostedZCandParams.ptMin = cms.double(150.)#not used in analysis
 process.ana.jetAK8selParams.jetPtMin = cms.double(200) 
 process.ana.jetAK4BTaggedselParams.jetPtMin = cms.double(50) 
-process.ana.STMin = cms.double(500.)
+process.ana.STMin = cms.double(700.)
+process.ana.vlqMass = cms.double(1000.)
+process.ana.bosMass = cms.double(91.2)
 
 process.TFileService = cms.Service("TFileService",
        fileName = cms.string(
