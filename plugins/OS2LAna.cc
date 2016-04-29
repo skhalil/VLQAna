@@ -584,7 +584,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   
   if (optimizeReco_ && *h_evttype.product() != "EvtType_Data"){
     //FindGenPart genpart(genPartInfoPars_) ;
-     PickGenPart genpart(genParams_);
+    PickGenPart genpart(genParams_, consumesCollector());
      GenParticleCollection genPartsInfo;
      genPartsInfo = genpart(evt) ;
 
