@@ -584,7 +584,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   //TLorentzVector Leptons = zll.at(0).getP4();
   
   if (optimizeReco_ && *h_evttype.product() != "EvtType_Data"){
-    FindGenPart genpart(genParams_, consumesCollector()) ;
+     PickGenPart genpart(genParams_, consumesCollector()) ;
      GenParticleCollection genPartsInfo;
      genPartsInfo = genpart(evt) ;
 
