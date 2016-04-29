@@ -236,24 +236,11 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
         evtwt *= lepsfs(goodElectrons.at(0).getPt(),goodElectrons.at(0).getEta()) * lepsfs(goodElectrons.at(1).getPt(), goodElectrons.at(1).getEta() ) ;}
   }
   
-  h1_["cutflow"] -> Fill(1, evtwt) ; 
-
+  h1_["cutflow"] -> Fill(1, evtwt) ;
   
-  
-  //Z mass candidate filter 
+  //Z mass candidate filter: 75 < M < 105, lead pt > 45, 2nd pt > 25, Z pt > 0
   CandidateFilter zllfilter(ZCandParams_) ; 
   zllfilter(dileptons, zll); 
-  if(zll.size() > 0) {h1_["cutflow"] -> Fill(2, evtwt) ;}
-  else return false ;
-
-  //Keep events with two close by leptons
-  double dR_ll = -100;
-  if (zdecayMode_ == "zmumu"){dR_ll = (goodMuons.at(0).getP4()).DeltaR(goodMuons.at(1).getP4());}
-  else if (zdecayMode_ == "zelel") {dR_ll = (goodElectrons.at(0).getP4()).DeltaR(goodElectrons.at(1).getP4());}
-  
-  h1_["dr_"+lep+lep] -> Fill (dR_ll, evtwt) ; 
-  if (dR_ll <= 1.5) h1_["cutflow"] -> Fill(3, evtwt) ; 
-  else return false; 
 
   //Properties of Z candidates
   for (auto izll : zll) {
@@ -262,24 +249,14 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      h1_["y_z"+lep+lep] -> Fill(izll.getP4().Rapidity(), evtwt) ; 
   }
 
-  //Boosted Z candidates
-  CandidateFilter boostedzllfilter(BoostedZCandParams_) ; 
-  boostedzllfilter(dileptons, zllBoosted) ;   
-  if(zllBoosted.size() > 0) h1_["cutflow"] -> Fill(4, evtwt) ;
-  else return false ; 
-
-  //Properties of boosted Z candidates
-  for (auto izll : zllBoosted) {
-     h1_["mass_z"+lep+lep+"_boosted"] -> Fill(izll.getMass(), evtwt) ; 
-     h1_["y_z"+lep+lep+"_boosted"] -> Fill(izll.getP4().Rapidity(), evtwt) ; 
-  }  
+  // jets
+  vlq::JetCollection goodAK4Jets;
+  jetAK4maker(evt, goodAK4Jets) ;
 
   CandidateCleaner cleanjets(0.4);
 
-  vlq::JetCollection goodAK4Jets;
-  jetAK4maker(evt, goodAK4Jets) ;
-  cleanjets(goodAK4Jets, goodMuons); 
-  cleanjets(goodAK4Jets, goodElectrons); 
+  if (zdecayMode_ == "zmumu") {cleanjets(goodAK4Jets, goodMuons);}
+  else if (zdecayMode_ == "zelel") {cleanjets(goodAK4Jets, goodElectrons);} 
 
   HT htak4(goodAK4Jets) ; 
 

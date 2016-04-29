@@ -48,6 +48,11 @@ options.register('applyLeptonSFs', False,
     VarParsing.varType.bool,
     "Apply lepton SFs to the MC"
     )
+options.register('FileNames', 'FileNames_QCD_HT1000to1500',
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.string,
+    "Name of list of input files"
+    )
 options.register('optimizeReco', False,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
