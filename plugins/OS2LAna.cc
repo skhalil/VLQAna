@@ -47,7 +47,7 @@ Implementation:
 #include "Analysis/VLQAna/interface/ApplyLeptonSFs.h"
 #include "Analysis/VLQAna/interface/CandidateCleaner.h"
 #include "Analysis/VLQAna/interface/METMaker.h"
-#include "Analysis/VLQAna/interface/JetSelector.h"
+#include "Analysis/VLQAna/interface/PickGenPart.h"
 #include "Analysis/VLQAna/interface/JetID.h"
 #include "Analysis/VLQAna/interface/MassReco.h"
 
@@ -142,6 +142,7 @@ OS2LAna::OS2LAna(const edm::ParameterSet& iConfig) :
   ZCandParams_            (iConfig.getParameter<edm::ParameterSet> ("ZCandParams")),
   BoostedZCandParams_     (iConfig.getParameter<edm::ParameterSet> ("BoostedZCandParams")),
   GenHSelParams_          (iConfig.getParameter<edm::ParameterSet> ("GenHSelParams")),
+  genParams_              (iConfig.getParameter<edm::ParameterSet> ("genParams")),
   HTMin_                  (iConfig.getParameter<double>            ("HTMin")),
   STMin_                  (iConfig.getParameter<double>            ("STMin")), 
   filterSignal_           (iConfig.getParameter<bool>              ("filterSignal")), 
@@ -150,7 +151,7 @@ OS2LAna::OS2LAna(const edm::ParameterSet& iConfig) :
   zdecayMode_             (iConfig.getParameter<std::string>       ("zdecayMode")),
   optimizeReco_           (iConfig.getParameter<bool>              ("optimizeReco")),
   vlqMass_                (iConfig.getParameter<double>            ("vlqMass")),
-  bosonMass_                (iConfig.getParameter<double>            ("bosonMass")),
+  bosonMass_              (iConfig.getParameter<double>            ("bosonMass")),
   applyLeptonSFs_         (iConfig.getParameter<bool>              ("applyLeptonSFs")), 
   lepsfs                  (iConfig.getParameter<edm::ParameterSet> ("lepsfsParams")),
   metmaker                (iConfig.getParameter<edm::ParameterSet> ("metselParams")),
@@ -162,8 +163,7 @@ OS2LAna::OS2LAna(const edm::ParameterSet& iConfig) :
   jetHTaggedmaker         (iConfig.getParameter<edm::ParameterSet> ("jetHTaggedselParams"),consumesCollector()),
   jetWTaggedmaker         (iConfig.getParameter<edm::ParameterSet> ("jetWTaggedselParams"),consumesCollector()),
   jetTopTaggedmaker       (iConfig.getParameter<edm::ParameterSet> ("jetTopTaggedselParams"),consumesCollector()),   
-  lep                     (iConfig.getParameter<std::string>       ("lep")),
-  genPartParams_          (iConfig.getParameter<emd::ParameterSet> ("genParams")
+  lep                     (iConfig.getParameter<std::string>       ("lep"))
 {
 
   produces<vlq::JetCollection>("tjets") ; 
@@ -583,7 +583,8 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   //TLorentzVector Leptons = zll.at(0).getP4();
   
   if (optimizeReco_ && *h_evttype.product() != "EvtType_Data"){
-     FindGenPart genpart(genPartInfoPars_) ;
+    //FindGenPart genpart(genPartInfoPars_) ;
+     PickGenPart genpart(genParams_);
      GenParticleCollection genPartsInfo;
      genPartsInfo = genpart(evt) ;
 
@@ -633,9 +634,9 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   
   pair<double, double> chi2_result;
   if (goodAK4Jets.size() > 4)
-     chi2_result = reco.doReco(goodAK4Jets, bosMass_, Leptons);
+     chi2_result = reco.doReco(goodAK4Jets, bosonMass_, Leptons);
   //else if (goodAK8Jets.size() > 0)
-  //chi2_result = reco.doReco(goodAK4Jets, goodAK8Jets.at(0).getP4(), bosMass_, Leptons);
+  //chi2_result = reco.doReco(goodAK4Jets, goodAK8Jets.at(0).getP4(), bosonMass_, Leptons);
   else{
      chi2_result.first = -999;
      chi2_result.second = -999;
