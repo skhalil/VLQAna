@@ -31,7 +31,7 @@ Implementation:
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
-
+#include "CommonTools/Utils/interface/TFileDirectory.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
 #include "AnalysisDataFormats/BoostedObjects/interface/GenParticleWithDaughters.h"
@@ -46,6 +46,10 @@ Implementation:
 #include "Analysis/VLQAna/interface/HT.h"
 #include "Analysis/VLQAna/interface/ApplyLeptonSFs.h"
 #include "Analysis/VLQAna/interface/CandidateCleaner.h"
+#include "Analysis/VLQAna/interface/METMaker.h"
+#include "Analysis/VLQAna/interface/JetSelector.h"
+#include "Analysis/VLQAna/interface/JetID.h"
+#include "Analysis/VLQAna/interface/MassReco.h"
 
 #include <TH1D.h>
 #include <TH2D.h>
@@ -64,6 +68,7 @@ class OS2LAna : public edm::EDFilter {
     virtual void beginJob() override;
     virtual bool filter(edm::Event&, const edm::EventSetup&) override;
     virtual void endJob() override;
+    void fillAdditionalPlots( vlq::ElectronCollection goodElectrons,double evtwt);
     // ----------member data ---------------------------
     edm::EDGetTokenT<string>   t_evttype         ;
     edm::EDGetTokenT<double>   t_evtwtGen        ;
@@ -73,14 +78,20 @@ class OS2LAna : public edm::EDFilter {
     edm::ParameterSet DilepCandParams_           ; 
     edm::ParameterSet ZCandParams_               ; 
     edm::ParameterSet BoostedZCandParams_        ; 
-    edm::ParameterSet GenHSelParams_             ; 
+    edm::ParameterSet GenHSelParams_             ;
+    edm::ParameterSet genParams_                 ;
+    const double HTMin_                          ;
     const double STMin_                          ; 
     const bool filterSignal_                     ;
     const bool additionalPlots_                  ;
     const std::string signalType_                ;
     const std::string zdecayMode_                ;
+    const bool optimizeReco_                     ;
+    const double vlqMass_                        ;
+    const double bosonMass_                      ;
     const bool applyLeptonSFs_                   ;
-    ApplyLeptonSFs lepsfs                        ; 
+    ApplyLeptonSFs lepsfs                        ;
+    METMaker metmaker                            ;
     MuonMaker muonmaker                          ; 
     ElectronMaker electronmaker                  ; 
     JetMaker jetAK4maker                         ; 
@@ -95,7 +106,30 @@ class OS2LAna : public edm::EDFilter {
     std::string lep; 
 };
 
-using namespace std; 
+using namespace std;
+
+// static data member definitions
+void OS2LAna::fillAdditionalPlots( vlq::ElectronCollection goodElectrons,double evtwt){
+   for  (unsigned int iele=0; iele<goodElectrons.size(); ++iele){
+      float scEta = goodElectrons.at(iele).getscEta();
+      if(fabs(scEta) <= 1.479){
+         h1_["Eta_EB_el_pre"]-> Fill(goodElectrons.at(iele).getEta(), evtwt);
+         h1_["Iso03_EB_el_pre"]->Fill(goodElectrons.at(iele).getIso03(), evtwt);
+         h1_["dEtaIn_EB_el_pre"]->Fill(goodElectrons.at(iele).getdEtaIn(), evtwt);
+         h1_["dPhiIn_EB_el_pre"]->Fill(goodElectrons.at(iele).getdPhiIn(), evtwt);
+         h1_["Dz_EB_el_pre"]->Fill(goodElectrons.at(iele).getDz(), evtwt);
+         h1_["D0_EB_el_pre"]->Fill(goodElectrons.at(iele).getD0(), evtwt);
+      }
+      else if  (fabs(scEta > 1.479) && fabs(scEta < 2.5)){
+         h1_["Eta_EE_el_pre"]->Fill(goodElectrons.at(iele).getEta(), evtwt);
+         h1_["Iso03_EE_el_pre"]->Fill(goodElectrons.at(iele).getIso03(), evtwt);
+         h1_["dEtaIn_EE_el_pre"]->Fill(goodElectrons.at(iele).getdEtaIn(), evtwt);
+         h1_["dPhiIn_EE_el_pre"]->Fill(goodElectrons.at(iele).getdPhiIn(), evtwt);
+         h1_["Dz_EE_el_pre"]->Fill(goodElectrons.at(iele).getDz(), evtwt);
+         h1_["D0_EE_el_pre"]->Fill(goodElectrons.at(iele).getD0(), evtwt);
+      }
+   }
+}
 
 // constructors and destructor
 OS2LAna::OS2LAna(const edm::ParameterSet& iConfig) :
@@ -108,13 +142,18 @@ OS2LAna::OS2LAna(const edm::ParameterSet& iConfig) :
   ZCandParams_            (iConfig.getParameter<edm::ParameterSet> ("ZCandParams")),
   BoostedZCandParams_     (iConfig.getParameter<edm::ParameterSet> ("BoostedZCandParams")),
   GenHSelParams_          (iConfig.getParameter<edm::ParameterSet> ("GenHSelParams")),
+  HTMin_                  (iConfig.getParameter<double>            ("HTMin")),
   STMin_                  (iConfig.getParameter<double>            ("STMin")), 
   filterSignal_           (iConfig.getParameter<bool>              ("filterSignal")), 
   additionalPlots_        (iConfig.getParameter<bool>              ("additionalPlots")), 
   signalType_             (iConfig.getParameter<std::string>       ("signalType")), 
-  zdecayMode_             (iConfig.getParameter<std::string>       ("zdecayMode")), 
+  zdecayMode_             (iConfig.getParameter<std::string>       ("zdecayMode")),
+  optimizeReco_           (iConfig.getParameter<bool>              ("optimizeReco")),
+  vlqMass_                (iConfig.getParameter<double>            ("vlqMass")),
+  bosonMass_                (iConfig.getParameter<double>            ("bosonMass")),
   applyLeptonSFs_         (iConfig.getParameter<bool>              ("applyLeptonSFs")), 
   lepsfs                  (iConfig.getParameter<edm::ParameterSet> ("lepsfsParams")),
+  metmaker                (iConfig.getParameter<edm::ParameterSet> ("metselParams")),
   muonmaker               (iConfig.getParameter<edm::ParameterSet> ("muselParams"),consumesCollector()),
   electronmaker           (iConfig.getParameter<edm::ParameterSet> ("elselParams"),consumesCollector()),
   jetAK4maker             (iConfig.getParameter<edm::ParameterSet> ("jetAK4selParams"),consumesCollector()),
@@ -123,7 +162,8 @@ OS2LAna::OS2LAna(const edm::ParameterSet& iConfig) :
   jetHTaggedmaker         (iConfig.getParameter<edm::ParameterSet> ("jetHTaggedselParams"),consumesCollector()),
   jetWTaggedmaker         (iConfig.getParameter<edm::ParameterSet> ("jetWTaggedselParams"),consumesCollector()),
   jetTopTaggedmaker       (iConfig.getParameter<edm::ParameterSet> ("jetTopTaggedselParams"),consumesCollector()),   
-  lep                     (iConfig.getParameter<std::string>       ("lep"))
+  lep                     (iConfig.getParameter<std::string>       ("lep")),
+  genPartParams_          (iConfig.getParameter<emd::ParameterSet> ("genParams")
 {
 
   produces<vlq::JetCollection>("tjets") ; 
@@ -151,9 +191,13 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   else if ( zdecayMode_ == "zelel") {lep = "el";}
   else edm::LogError("OS2LAna::filter") << " >>>> WrongleptonType: " << lep << " Check lep name !!!" ;
  
-  if (filterSignal_ && *h_evttype.product()!=signalType_) return false ;
+  if (filterSignal_) {
+     if (*h_evttype.product()!=signalType_) return false ;
+     else  h1_["signalEvts"] -> Fill(1) ;
+  }
+
   const bool hltdecision(*h_hltdecision.product()) ; 
-  if ( !hltdecision ) return false; 
+  if ( !hltdecision ) return false;
 
   double evtwtgen(*h_evtwtGen.product());
   double evtwt((*h_evtwtGen.product()) * (*h_evtwtPV.product())) ; 
@@ -162,11 +206,15 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   muonmaker(evt, goodMuons) ; 
   
   vlq::ElectronCollection goodElectrons; 
-  electronmaker(evt, goodElectrons) ; 
+  electronmaker(evt, goodElectrons) ;
+
+  vlq::MetCollection goodMet;
+  metmaker(evt, goodMet) ;
    
   vlq::CandidateCollection dimuons, dielectrons, dileptons;   
   vlq::CandidateCollection zll, zllBoosted;//generic collections
 
+  // dilepton properties: M > 50, lead pt > 45, second pt > 25
   DileptonCandsProducer dileptonsprod(DilepCandParams_) ; 
   dileptonsprod.operator()<vlq::MuonCollection>(dimuons, goodMuons); 
   dileptonsprod.operator()<vlq::ElectronCollection>(dielectrons, goodElectrons) ; 
@@ -190,7 +238,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   
   h1_["cutflow"] -> Fill(1, evtwt) ; 
 
-  for (auto idilepton : dileptons) h1_["mass_"+lep+lep] -> Fill(idilepton.getMass(), evtwt) ;
+  
   
   //Z mass candidate filter 
   CandidateFilter zllfilter(ZCandParams_) ; 
