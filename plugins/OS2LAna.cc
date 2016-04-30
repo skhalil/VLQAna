@@ -142,7 +142,7 @@ OS2LAna::OS2LAna(const edm::ParameterSet& iConfig) :
   ZCandParams_            (iConfig.getParameter<edm::ParameterSet> ("ZCandParams")),
   BoostedZCandParams_     (iConfig.getParameter<edm::ParameterSet> ("BoostedZCandParams")),
   GenHSelParams_          (iConfig.getParameter<edm::ParameterSet> ("GenHSelParams")),
-  genParams_              (iConfig.getParameter<edm::ParameterSet> ("genParams")),
+  genParams_              (iConfig.getParameter<edm::ParameterSet> ("genParams"))
   HTMin_                  (iConfig.getParameter<double>            ("HTMin")),
   STMin_                  (iConfig.getParameter<double>            ("STMin")), 
   filterSignal_           (iConfig.getParameter<bool>              ("filterSignal")), 
@@ -164,6 +164,7 @@ OS2LAna::OS2LAna(const edm::ParameterSet& iConfig) :
   jetWTaggedmaker         (iConfig.getParameter<edm::ParameterSet> ("jetWTaggedselParams"),consumesCollector()),
   jetTopTaggedmaker       (iConfig.getParameter<edm::ParameterSet> ("jetTopTaggedselParams"),consumesCollector()),   
   lep                     (iConfig.getParameter<std::string>       ("lep"))
+  ,
 {
 
   produces<vlq::JetCollection>("tjets") ; 
@@ -583,7 +584,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   //TLorentzVector Leptons = zll.at(0).getP4();
   
   if (optimizeReco_ && *h_evttype.product() != "EvtType_Data"){
-     PickGenPart genpart(genParams_, consumesCollector());
+     PickGenPart genpart(genParams_, consumesCollector()) ;
      GenParticleCollection genPartsInfo;
      genPartsInfo = genpart(evt) ;
 
