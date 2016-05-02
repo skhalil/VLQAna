@@ -80,7 +80,7 @@ if options.isData:
     sys.exit("!!!Error: Wrong Z decay mode option chosen. Choose either 'zmumu' or 'zelel'!!!") 
 
 if options.filterSignal == True and len(options.signalType) == 0:
-  sys.exit("!!!Error: Cannot keep signalType empty when filterSignal switched on!!!"  
+  sys.exit("!!!Error: Cannot keep signalType empty when filterSignal switched on!!!")  
 
 process = cms.Process("OS2LAna")
 
@@ -112,7 +112,7 @@ process.ana = ana.clone(
     signalType = cms.string(options.signalType),
     zdecayMode = cms.string(options.zdecaymode),
     applyLeptonSFs = cms.bool(options.applyLeptonSFs),
-    optimizeReco = cms.bool(options.optimzeReco),
+    optimizeReco = cms.bool(options.optimizeReco),
     )
 process.ana.elselParams.elidtype = cms.string(options.lepID)
 process.ana.muselParams.muidtype = cms.string(options.lepID)

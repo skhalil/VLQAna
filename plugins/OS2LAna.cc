@@ -110,6 +110,7 @@ using namespace std;
 
 // static data member definitions
 void OS2LAna::fillAdditionalPlots( vlq::ElectronCollection goodElectrons,double evtwt){
+  cout << __LINE__ << endl;
    for  (unsigned int iele=0; iele<goodElectrons.size(); ++iele){
       float scEta = goodElectrons.at(iele).getscEta();
       if(fabs(scEta) <= 1.479){
@@ -142,7 +143,7 @@ OS2LAna::OS2LAna(const edm::ParameterSet& iConfig) :
   ZCandParams_            (iConfig.getParameter<edm::ParameterSet> ("ZCandParams")),
   BoostedZCandParams_     (iConfig.getParameter<edm::ParameterSet> ("BoostedZCandParams")),
   GenHSelParams_          (iConfig.getParameter<edm::ParameterSet> ("GenHSelParams")),
-  genParams_              (iConfig.getParameter<edm::ParameterSet> ("genParams"))
+  genParams_              (iConfig.getParameter<edm::ParameterSet> ("genParams")),
   HTMin_                  (iConfig.getParameter<double>            ("HTMin")),
   STMin_                  (iConfig.getParameter<double>            ("STMin")), 
   filterSignal_           (iConfig.getParameter<bool>              ("filterSignal")), 
@@ -154,7 +155,7 @@ OS2LAna::OS2LAna(const edm::ParameterSet& iConfig) :
   bosonMass_              (iConfig.getParameter<double>            ("bosonMass")),
   applyLeptonSFs_         (iConfig.getParameter<bool>              ("applyLeptonSFs")), 
   lepsfs                  (iConfig.getParameter<edm::ParameterSet> ("lepsfsParams")),
-  metmaker                (iConfig.getParameter<edm::ParameterSet> ("metselParams")),
+  metmaker                (iConfig.getParameter<edm::ParameterSet> ("metselParams"),consumesCollector()),
   muonmaker               (iConfig.getParameter<edm::ParameterSet> ("muselParams"),consumesCollector()),
   electronmaker           (iConfig.getParameter<edm::ParameterSet> ("elselParams"),consumesCollector()),
   jetAK4maker             (iConfig.getParameter<edm::ParameterSet> ("jetAK4selParams"),consumesCollector()),
@@ -163,10 +164,9 @@ OS2LAna::OS2LAna(const edm::ParameterSet& iConfig) :
   jetHTaggedmaker         (iConfig.getParameter<edm::ParameterSet> ("jetHTaggedselParams"),consumesCollector()),
   jetWTaggedmaker         (iConfig.getParameter<edm::ParameterSet> ("jetWTaggedselParams"),consumesCollector()),
   jetTopTaggedmaker       (iConfig.getParameter<edm::ParameterSet> ("jetTopTaggedselParams"),consumesCollector()),   
-  lep                     (iConfig.getParameter<std::string>       ("lep"))
-  ,
+  lep                     (iConfig.getParameter<std::string>       ("lep"))  
 {
-
+  cout << __LINE__ << endl;
   produces<vlq::JetCollection>("tjets") ; 
   produces<vlq::JetCollection>("wjets") ; 
   produces<vlq::JetCollection>("bjets") ; 
@@ -179,15 +179,15 @@ OS2LAna::~OS2LAna() {}
 
 bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   using namespace edm;
-
+  cout << __LINE__ << endl;
   Handle<string>   h_evttype     ; evt.getByToken(t_evttype    , h_evttype    ) ; 
   Handle<double>   h_evtwtGen    ; evt.getByToken(t_evtwtGen   , h_evtwtGen   ) ; 
   Handle<double>   h_evtwtPV     ; evt.getByToken(t_evtwtPV    , h_evtwtPV    ) ; 
   Handle<unsigned> h_npv         ; evt.getByToken(t_npv        , h_npv        ) ; 
   Handle<bool>     h_hltdecision ; evt.getByToken(t_hltdecision, h_hltdecision) ; 
 
-  unsigned npv(*h_npv.product()) ; 
-
+  //  unsigned npv(*h_npv.product()) ; 
+  cout << __LINE__ << endl;
   if(zdecayMode_ == "zmumu") {lep = "mu";}
   else if ( zdecayMode_ == "zelel") {lep = "el";}
   else edm::LogError("OS2LAna::filter") << " >>>> WrongleptonType: " << lep << " Check lep name !!!" ;
@@ -196,11 +196,11 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      if (*h_evttype.product()!=signalType_) return false ;
      else  h1_["signalEvts"] -> Fill(1) ;
   }
-
+  cout << __LINE__ << endl;
   const bool hltdecision(*h_hltdecision.product()) ; 
   if ( !hltdecision ) return false;
 
-  double evtwtgen(*h_evtwtGen.product());
+  //double evtwtgen(*h_evtwtGen.product());
   double evtwt((*h_evtwtGen.product()) * (*h_evtwtPV.product())) ; 
      
   vlq::MuonCollection goodMuons; 
@@ -211,10 +211,10 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
 
   vlq::MetCollection goodMet;
   metmaker(evt, goodMet) ;
-   
+
   vlq::CandidateCollection dimuons, dielectrons, dileptons;   
   vlq::CandidateCollection zll; //generic collection
-
+  cout << __LINE__ << endl;
   // dilepton properties: M > 50, lead pt > 45, second pt > 25
   DileptonCandsProducer dileptonsprod(DilepCandParams_) ; 
   dileptonsprod.operator()<vlq::MuonCollection>(dimuons, goodMuons); 
@@ -228,7 +228,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   if (zdecayMode_ == "zmumu") {dileptons = dimuons; }
   else if (zdecayMode_ == "zelel") {dileptons = dielectrons;}
   if (dileptons.size() < 1) return false;
-  
+  cout << __LINE__ << endl;
   //get lepton ID and Iso SF
   if (applyLeptonSFs_ && *h_evttype.product() != "EvtType_Data") {
      if ( zdecayMode_ == "zmumu" ){
@@ -238,7 +238,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   }
   
   h1_["cutflow"] -> Fill(1, evtwt) ;
-  
+  cout << __LINE__ << endl;
   //Z mass candidate filter: 75 < M < 105, lead pt > 45, 2nd pt > 25, Z pt > 0
   CandidateFilter zllfilter(ZCandParams_) ; 
   zllfilter(dileptons, zll);
@@ -252,7 +252,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   else if (zdecayMode_ == "zelel") {cleanjets(goodAK4Jets, goodElectrons);} 
 
   HT htak4(goodAK4Jets) ; 
-
+  cout << __LINE__ << endl;
  ////////////////////////////////////////////////////////// 
   //Fill N-1 selected plots for dilepton mass, Ht, ad Njets
   //////////////////////////////////////////////////////////
@@ -264,7 +264,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   //at least one Z cand in event
   if(zll.size() > 0) {h1_["cutflow"] -> Fill(2, evtwt) ;}
   else return false ;
-
+  cout << __LINE__ << endl;
   //Fill Njets: HT > 300 && Z mass
   if (htak4.getHT() > HTMin_){h1_["nak4_pre"] -> Fill(goodAK4Jets.size(), evtwt) ;} 
 
@@ -288,7 +288,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   double ST = htak4.getHT() ;
   ST += zll.at(0).getPt() + goodMet.at(0).getFullPt(); 
   h1_["st_pre"] -> Fill(ST, evtwt) ;   
-
+  cout << __LINE__ << endl;
   //ak4 jet plots
   for(int j=0; j<3; ++j){
      h1_[Form("ptak4jet%d_pre", j+1)]  -> Fill(goodAK4Jets.at(j).getPt(), evtwt) ; 
@@ -296,21 +296,22 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      h1_[Form("cvsak4jet%d_pre", j+1)] -> Fill(goodAK4Jets.at(j).getCSV(), evtwt) ;
   }
   h1_["phi_jet1MET_pre"] -> Fill( (goodAK4Jets.at(0).getP4()).DeltaPhi(goodMet.at(0).getP4()), evtwt);
-  
-  // npv
-  h1_["npv_noreweight"] -> Fill(npv, evtwtgen); 
-  h1_["npv"] -> Fill(npv, evtwt);
 
+  // npv
+  h1_["npv_noweight_pre"] -> Fill(*h_npv.product(), *h_evtwtGen.product()); 
+  h1_["npv_pre"] -> Fill(*h_npv.product(), evtwt);
+  cout << __LINE__ << endl;
   // met
   h1_["met_pre"] -> Fill(goodMet.at(0).getFullPt(), evtwt);
   h1_["metPhi_pre"] -> Fill(goodMet.at(0).getFullPhi(), evtwt);
-  
+
   //lepton specfic properties
   if ( zdecayMode_ == "zmumu" ){       
      for(int l=0; l<2; ++l){
         h1_["pt_"+lep+Form("%d_pre", l+1)]  -> Fill(goodMuons.at(l).getPt(), evtwt) ; 
         h1_["eta_"+lep+Form("%d_pre", l+1)]  -> Fill(goodMuons.at(l).getEta(), evtwt) ; 
      } 
+
      h1_["dr_mumu_pre"]-> Fill( (goodMuons.at(0).getP4()).DeltaR(goodMuons.at(1).getP4()), evtwt );
   }
   else if (zdecayMode_ == "zelel" ) {
@@ -318,12 +319,14 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
         h1_["pt_"+lep+Form("%d_pre", l+1)]   -> Fill(goodElectrons.at(l).getPt(), evtwt) ; 
         h1_["eta_"+lep+Form("%d_pre", l+1)]  -> Fill(goodElectrons.at(l).getEta(), evtwt) ; 
      } 
+     cout << __LINE__ << endl;
      h1_["dr_elel_pre"]-> Fill( (goodElectrons.at(0).getP4()).DeltaR(goodElectrons.at(1).getP4()), evtwt );
      if(additionalPlots_) fillAdditionalPlots(goodElectrons,evtwt);
   }
+
   // Z pt
   for (auto izll : zll) h1_["pt_z"+lep+lep+"_pre"] -> Fill(izll.getPt(), evtwt) ;
-
+  cout << __LINE__ << endl;
   //========================================================
   // Preselection done, proceeding with control selections
   //========================================================
@@ -333,7 +336,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   jetAK4BTaggedmaker(evt, goodBTaggedAK4Jets) ; 
   if (zdecayMode_ == "zmumu") {cleanjets(goodBTaggedAK4Jets, goodMuons); }
   else if (zdecayMode_ == "zelel") {cleanjets(goodBTaggedAK4Jets, goodElectrons); }  
- 
+  cout << __LINE__ << endl; 
   //fill control plots
   if ( goodBTaggedAK4Jets.size() > 0 && ST < 700) {
      for (auto izll : zll) {
@@ -347,7 +350,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      h1_["npv_cnt"] -> Fill(*h_npv.product(), evtwt);
      h1_["met_cnt"] -> Fill(goodMet.at(0).getFullPt(), evtwt);
      h1_["metPhi_cnt"] -> Fill(goodMet.at(0).getFullPhi(), evtwt);
-     
+     cout << __LINE__ << endl;
      //lepton specfic properties
      if ( zdecayMode_ == "zmumu" ){       
         for(int l=0; l<2; ++l){
@@ -363,6 +366,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
         } 
         h1_["dr_elel_cnt"]-> Fill( (goodElectrons.at(0).getP4()).DeltaR(goodElectrons.at(1).getP4()), evtwt );
      }
+     cout << __LINE__ << endl;
      //ak4 jet plots
      for(int j=0; j<3; ++j){
         h1_[Form("ptak4jet%d_cnt", j+1)]  -> Fill(goodAK4Jets.at(j).getPt(), evtwt) ; 
@@ -371,7 +375,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      }
      h1_["phi_jet1MET_cnt"] -> Fill( (goodAK4Jets.at(0).getP4()).DeltaPhi(goodMet.at(0).getP4()), evtwt);
   }
-
+  cout << __LINE__ << endl;
   //===========================================================
   // Control selection done, proceeding with signal selections
   //===========================================================
@@ -397,7 +401,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   // ST > 1000 GeV
   if ( ST > STMin_ ) h1_["cutflow"] -> Fill(8, evtwt) ;  
   else return false ; 
-
+  cout << __LINE__ << endl;
   // get AK8, top, b, Z, and W jets
   vlq::JetCollection goodAK8Jets, goodHTaggedJets, goodWTaggedJets, goodTopTaggedJets;
   jetAK8maker(evt, goodAK8Jets); 
@@ -415,7 +419,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   jetTopTaggedmaker(evt, goodTopTaggedJets);
   cleanjets(goodTopTaggedJets, goodMuons); 
   cleanjets(goodTopTaggedJets, goodElectrons); 
-
+  cout << __LINE__ << endl;
   //if (matchedAK8Jets.size() > 0) h1_["cutflow"] -> Fill(9, evtwt) ;
   //else return false 
 
@@ -435,65 +439,22 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   h1_["met"] -> Fill(goodMet.at(0).getFullPt(), evtwt);
   h1_["metPhi"] -> Fill(goodMet.at(0).getFullPhi(), evtwt);
 
-  
-  
-  h1_["nbjets"] -> Fill(goodBTaggedAK4Jets.size(), evtwt) ;
-
-  if ( goodBTaggedAK4Jets.size() > 0 ) {
-    h1_["ptbjetleading"] -> Fill(goodBTaggedAK4Jets.at(0).getPt(), evtwt) ;
-    h1_["etabjetleading"] -> Fill(goodBTaggedAK4Jets.at(0).getEta(), evtwt) ;
-    h1_["htSigR"] ->Fill(htak4.getHT(), evtwt) ; 
-    h1_["stSigR"] ->Fill(ST, evtwt) ;   
-    h1_["cutflow"] -> Fill(7, evtwt) ;
-  }
-  else return false;
-  
-  //fill the b-tag efficiency plots after full event selection  
-  for (vlq::Jet jet : goodAK4Jets) {
-     if ( abs(jet.getHadronFlavour()) == 5) h2_["pt_eta_b_all"] -> Fill(jet.getPt(), jet.getEta()) ; 
-     else if ( abs(jet.getHadronFlavour()) == 4) h2_["pt_eta_c_all"] -> Fill(jet.getPt(), jet.getEta()) ; 
-     else if ( abs(jet.getHadronFlavour()) == 0) h2_["pt_eta_l_all"] -> Fill(jet.getPt(), jet.getEta()) ; 
-  }
-
-  for (vlq::Jet jet : goodBTaggedAK4Jets) {
-    if ( abs(jet.getHadronFlavour()) == 5) h2_["pt_eta_b_btagged"] -> Fill(jet.getPt(), jet.getEta()) ; 
-    else if ( abs(jet.getHadronFlavour()) == 4) h2_["pt_eta_c_btagged"] -> Fill(jet.getPt(), jet.getEta()) ; 
-    else if ( abs(jet.getHadronFlavour()) == 0) h2_["pt_eta_l_btagged"] -> Fill(jet.getPt(), jet.getEta()) ; 
-  }
-   
-  if ( ST > STMin_ ) h1_["cutflow"] -> Fill(8, evtwt) ;  
-  else return false ; 
-  
-  ////Match AK8 to AK4
-  vlq::JetCollection matchedAK8Jets;
-
-  ////require at lease one ak8 jet that is matched to ak4 jet  
-  if ( goodAK8Jets.size() > 0 ) {
-     for (vlq::Jet& fjet : goodAK8Jets) { 
-        bool matched = false;
-        for (vlq::Jet& ijet : goodAK4Jets) {
-           if (ijet.getP4().DeltaR(fjet.getP4()) < 0.4){matched = true;}
-        }
-        if (matched) {matchedAK8Jets.push_back(fjet);}
-     }
-  } 
-
-//lepton specfic properties
+  cout << __LINE__ << endl;
+  //lepton specfic properties
   if ( zdecayMode_ == "zmumu" ){       
-     for(int l=0; l<2; ++l){
-        h1_["pt_"+lep+Form("%d", l+1)]  -> Fill(goodMuons.at(l).getPt(), evtwt) ; 
-        h1_["eta_"+lep+Form("%d", l+1)]  -> Fill(goodMuons.at(l).getEta(), evtwt) ; 
-     } 
-     h1_["dr_mumu"]-> Fill( (goodMuons.at(0).getP4()).DeltaR(goodMuons.at(1).getP4()), evtwt );
+    for(int l=0; l<2; ++l){
+      h1_["pt_"+lep+Form("%d", l+1)]  -> Fill(goodMuons.at(l).getPt(), evtwt) ; 
+      h1_["eta_"+lep+Form("%d", l+1)]  -> Fill(goodMuons.at(l).getEta(), evtwt) ; 
+    } 
+    h1_["dr_mumu"]-> Fill( (goodMuons.at(0).getP4()).DeltaR(goodMuons.at(1).getP4()), evtwt );
   }
   else if (zdecayMode_ == "zelel" ) {
-     for(int l=0; l<2; ++l){
-        h1_["pt_"+lep+Form("%d", l+1)]   -> Fill(goodElectrons.at(l).getPt(), evtwt) ; 
-        h1_["eta_"+lep+Form("%d", l+1)]  -> Fill(goodElectrons.at(l).getEta(), evtwt) ; 
-     } 
-     h1_["dr_elel"]-> Fill( (goodElectrons.at(0).getP4()).DeltaR(goodElectrons.at(1).getP4()), evtwt );
+    for(int l=0; l<2; ++l){
+      h1_["pt_"+lep+Form("%d", l+1)]   -> Fill(goodElectrons.at(l).getPt(), evtwt) ; 
+      h1_["eta_"+lep+Form("%d", l+1)]  -> Fill(goodElectrons.at(l).getEta(), evtwt) ; 
+    } 
+    h1_["dr_elel"]-> Fill( (goodElectrons.at(0).getP4()).DeltaR(goodElectrons.at(1).getP4()), evtwt );
   }
-
   //ak4 jet plots
   for(int j=0; j<3; ++j){
      h1_[Form("ptak4jet%d", j+1)]  -> Fill(goodAK4Jets.at(j).getPt(), evtwt) ; 
@@ -501,12 +462,12 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      h1_[Form("cvsak4jet%d", j+1)] -> Fill(goodAK4Jets.at(j).getCSV(), evtwt) ;
   }
   h1_["phi_jet1MET"] -> Fill( (goodAK4Jets.at(0).getP4()).DeltaPhi(goodMet.at(0).getP4()), evtwt);
- 
+
   // fill the b-tagging plots and efficiency maps
   h1_["nbjets"] -> Fill(goodBTaggedAK4Jets.size(), evtwt) ;
   h1_["ptbjetleading"] -> Fill(goodBTaggedAK4Jets.at(0).getPt(), evtwt) ;
   h1_["etabjetleading"] -> Fill(goodBTaggedAK4Jets.at(0).getEta(), evtwt) ;
-
+  cout << __LINE__ << endl;
   for (vlq::Jet jet : goodAK4Jets) {
      if ( abs(jet.getHadronFlavour()) == 5) h2_["pt_eta_b_all"] -> Fill(jet.getPt(), jet.getEta()) ; 
      else if ( abs(jet.getHadronFlavour()) == 4) h2_["pt_eta_c_all"] -> Fill(jet.getPt(), jet.getEta()) ; 
@@ -524,7 +485,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   h1_["nwjet"] -> Fill(goodWTaggedJets.size(), evtwt) ; 
   h1_["nhjet"] -> Fill(goodHTaggedJets.size(), evtwt) ; 
   h1_["ntjet"] -> Fill(goodTopTaggedJets.size(), evtwt) ; 
-   
+  cout << __LINE__ << endl;
   if (goodAK8Jets.size() > 0) {
      h1_["ptak8leading"] -> Fill((goodAK8Jets.at(0)).getPt(), evtwt) ; 
      h1_["etaak8leading"] -> Fill((goodAK8Jets.at(0)).getEta(), evtwt) ;
@@ -541,7 +502,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      h1_["prunedmak82nd"] -> Fill((goodAK8Jets.at(1)).getPrunedMass(), evtwt) ;
      h1_["softdropmak82nd"] -> Fill((goodAK8Jets.at(1)).getSoftDropMass(), evtwt) ;
   }
-
+  cout << __LINE__ << endl;
   //// Make B->bZ and T->tZ->bWZ candidates
   TLorentzVector tp_p4, bp_p4;
   tp_p4.SetPtEtaPhiM(0,0,0,0);
@@ -559,7 +520,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   else if ( goodBTaggedAK4Jets.size() > 0 && zll.size()>0 ){
      bp_p4 = zll.at(0).getP4() + goodBTaggedAK4Jets.at(0).getP4() ; 
   }
-
+  cout << __LINE__ << endl;
   h1_["ptTprime"]->Fill(tp_p4.Pt(), evtwt) ; 
   h1_["yTprime"] ->Fill(tp_p4.Rapidity(), evtwt) ; 
   h1_["mTprime"] ->Fill(tp_p4.Mag(), evtwt) ; 
@@ -570,7 +531,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
 
   //Do mass reconstruction
   MassReco reco;
-
+  cout << __LINE__ << endl;
   TLorentzVector lep1, lep2, Leptons;
   if (zdecayMode_ == "zelel"){
      lep1 = goodElectrons.at(0).getP4();
@@ -582,17 +543,20 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   }
   Leptons = lep1 + lep2;
   //TLorentzVector Leptons = zll.at(0).getP4();
-  
+  cout << __LINE__ << endl;
   if (optimizeReco_ && *h_evttype.product() != "EvtType_Data"){
+    cout << __LINE__ << endl;
      PickGenPart genpart(genParams_, consumesCollector()) ;
+     cout << __LINE__ << endl;
      GenParticleCollection genPartsInfo;
+     cout << __LINE__ << endl;
      genPartsInfo = genpart(evt) ;
-
+     cout << __LINE__ << endl;
      // Declare TLorentzVectors to fill with genParticles
      TLorentzVector bGen, bbarGen, q1, q2;// Z1, Z2;
      TLorentzVector qJet, qbarJet, bJet, bbarJet;
      TLorentzVector had_bjet, lep_bjet, had_bGen, lep_bGen;
-   
+     cout << __LINE__ << endl;
      bGen = reco.getGen(genPartsInfo, 5, 8000002);
      bbarGen = reco.getGen(genPartsInfo, -5, 8000002);
      q1 = reco.getGen(genPartsInfo, 1, 5, 8000002);
@@ -602,7 +566,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      qbarJet = reco.getMatchedJet(q2, goodAK4Jets, 0.3);
      bJet = reco.getMatchedJet(bGen, goodAK4Jets, 0.3);
      bbarJet = reco.getMatchedJet(bbarGen, goodAK4Jets, 0.3);
-
+  
      //Choose charge of b (Change based on B' mass)
      double bcheck = abs((bGen + q1 + q2).M() - vlqMass_);
      double bbarcheck = abs((bbarGen + q1 + q2).M() - vlqMass_);
@@ -618,7 +582,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
         had_bjet = bbarJet;
         lep_bjet = bJet;
      }
-
+     cout << __LINE__ << endl;
      double genZ = reco.findInvMass(q1, q2);
      double genB = reco.findInvMass(q1, q2, had_bGen);
      double ZJet = reco.findInvMass(qJet, qbarJet);
@@ -631,7 +595,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      h1_["hadBJetMass"] ->Fill(hadBJet, evtwt);
      h1_["lepBJetMass"] ->Fill(lepBJet, evtwt);
   }
-  
+  cout << __LINE__ << endl;
   pair<double, double> chi2_result;
   if (goodAK4Jets.size() > 4)
      chi2_result = reco.doReco(goodAK4Jets, bosonMass_, Leptons);
@@ -641,25 +605,25 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      chi2_result.first = -999;
      chi2_result.second = -999;
   }
-    
+  cout << __LINE__ << endl;
   //Fill Histograms
   h1_["ZJetMasslep"] ->Fill(Leptons.M(), evtwt);
   h1_["chi2_chi"] ->Fill(chi2_result.first, evtwt);
   h1_["sqrtChi2"] ->Fill(sqrt(chi2_result.first), evtwt);
   h1_["chi2_mass"] ->Fill(chi2_result.second, evtwt);
-
+  cout << __LINE__ << endl;
   std::auto_ptr<vlq::JetCollection> ptr_tjets( new vlq::JetCollection(goodTopTaggedJets) ) ; 
   std::auto_ptr<vlq::JetCollection> ptr_wjets( new vlq::JetCollection(goodWTaggedJets) ) ; 
   std::auto_ptr<vlq::JetCollection> ptr_bjets( new vlq::JetCollection(goodBTaggedAK4Jets ) ) ; 
   std::auto_ptr<vlq::JetCollection> ptr_jets ( new vlq::JetCollection(goodAK4Jets ) ) ; 
   std::auto_ptr<vlq::CandidateCollection> ptr_zllcands ( new vlq::CandidateCollection(zll) ) ; 
-
+  cout << __LINE__ << endl;
   evt.put(ptr_tjets, "tjets") ; 
   evt.put(ptr_wjets, "wjets") ; 
   evt.put(ptr_bjets, "bjets") ; 
   evt.put(ptr_jets , "jets")  ; 
   evt.put(ptr_zllcands , "zllcands")  ; 
-
+  cout << __LINE__ << endl;
   return true ; 
   }
 
@@ -668,7 +632,7 @@ void OS2LAna::beginJob() {
   if(zdecayMode_ == "zmumu") {lep = "mu";}
   else if ( zdecayMode_ == "zelel") {lep = "el";}
   else edm::LogError("OS2LAna::beginJob") << " >>>> WrongleptonType: " << lep << " Check lep name !!!" ;
-
+  cout << __LINE__ << endl;
  if (filterSignal_){h1_["signalEvts"] = fs->make<TH1D>("signalEvts", "signalEvts", 2, 0.5, 2.5) ;}
   h1_["cutflow"] = fs->make<TH1D>("cutflow", "cut flow", 8, 0.5, 8.5) ;  
   h1_["cutflow"] -> GetXaxis() -> SetBinLabel(1, "Trig.+l^{+}l^{-}") ;
@@ -680,7 +644,7 @@ void OS2LAna::beginJob() {
   h1_["cutflow"] -> GetXaxis() -> SetBinLabel(7, "N(b jet) #geq 1") ; 
   h1_["cutflow"] -> GetXaxis() -> SetBinLabel(8, "S_{T} #geq 1000") ; 
   //h1_["cutflow"] -> GetXaxis() -> SetBinLabel(9, "N(AK8) #geq 1") ; //this is not the event cut
-
+  cout << __LINE__ << endl;
   TFileDirectory pre = fs->mkdir ("pre");
   TFileDirectory sig = fs->mkdir ("sig");
   TFileDirectory cnt = fs->mkdir ("cnt");
@@ -695,7 +659,7 @@ for (int i=0; i<3; i++){
      h1_[("st"+suffix[i]).c_str()]   =  bookDir[i]->make<TH1D>( ("st"+suffix[i]).c_str() ,";S_{T} [GeV]", 100, 0., 4000.) ;
      h1_[("met"+suffix[i]).c_str()]  =  bookDir[i]->make<TH1D>( ("met"+suffix[i]).c_str(), "MET [GeV]", 100, 0., 1000.);
      h1_[("metPhi"+suffix[i]).c_str()]  =  bookDir[i]->make<TH1D>( ("metPhi"+suffix[i]).c_str(), "#Phi(MET)", 20, -5., 5.);
-
+     cout << __LINE__ << endl;
      //jets
      for(int j=1; j<4; ++j){
         string jetPtName = Form("ptak4jet%d", j)+suffix[i]; string jetPtTitle  = Form(";p_{T}(%d leading AK4 jet) [GeV];;",j);
@@ -707,7 +671,7 @@ for (int i=0; i<3; i++){
      }
      string jet1METPhiName = "phi_jet1MET"+suffix[i];
      h1_[jet1METPhiName.c_str()] = bookDir[i]->make<TH1D>(jet1METPhiName.c_str(), ";#Phi(leading jet, MET)", 20, -5., 5.) ;
-   
+     cout << __LINE__ << endl;
      //leptons
      string mass_Z = "mass_z"+lep+lep+suffix[i];
      h1_[mass_Z.c_str()] = bookDir[i]->make<TH1D>(mass_Z.c_str(), ";M(Z#rightarrow l^{+}l^{-}) [GeV]", 100, 20., 220.) ;
@@ -722,7 +686,7 @@ for (int i=0; i<3; i++){
         h1_[lepEtaName.c_str()] = bookDir[i]->make<TH1D>(lepEtaName.c_str(), lepEtaTitle.c_str(), 80, -4., 4.) ;
      }
   }
-
+ cout << __LINE__ << endl;
  //additional plots
   h1_["nbjets"] = sig.make<TH1D>("nbjets", ";N(b jets);;" , 11, -0.5,10.5) ; 
   h1_["ptbjetleading"]  = sig.make<TH1D>("ptbjetleading", ";p_{T}(leading b jet) [GeV];;" , 50, 0., 1000.) ; 
@@ -732,7 +696,7 @@ for (int i=0; i<3; i++){
   h1_["nwjet"] = sig.make<TH1D>("nwjet", ";N(W jets );;" , 6, -0.5,5.5) ; 
   h1_["nhjet"] = sig.make<TH1D>("nhjet", ";N(H jets );;" , 6, -0.5,5.5) ; 
   h1_["ntjet"] = sig.make<TH1D>("ntjet", ";N(top jets);;" , 6, -0.5,5.5) ; 
-
+  cout << __LINE__ << endl;
   h1_["ptak8leading"]  = sig.make<TH1D>("ptak8leading", ";p_{T}(leading AK8 jet) [GeV];;" , 50, 0., 1000.) ; 
   h1_["etaak8leading"] = sig.make<TH1D>("etaak8leading", ";#eta(leading AK8 jet);;" , 80 ,-4. ,4.) ; 
   h1_["mak8leading"] = sig.make<TH1D>("mak8leading", ";M(leading AK8 jet) [GeV];;" ,100 ,0., 200.) ; 
@@ -745,7 +709,7 @@ for (int i=0; i<3; i++){
   h1_["prunedmak82nd"] = sig.make<TH1D>("prunedmak82nd", ";M(pruned 2nd AK8 jet) [GeV];;" ,100 ,0., 200.) ; 
   h1_["trimmedmak82nd"] = sig.make<TH1D>("trimmedmak82nd", ";M(trimmed 2nd AK8 jet) [GeV];;" ,100 ,0., 200.) ; 
   h1_["softdropmak82nd"] = sig.make<TH1D>("softdropmak82nd", ";M(2nd AK8 jet) [GeV];;" ,100 ,0., 200.) ;
-
+  cout << __LINE__ << endl;
   h1_["ptTprime"]  = sig.make<TH1D>("ptTprime", ";p_{T}(T quark) [GeV];;" , 100, 0., 2000.) ; 
   h1_["yTprime"] = sig.make<TH1D>("yTprime", ";y(T quark);;" , 40 ,-4. ,4.) ; 
   h1_["mTprime"] = sig.make<TH1D>("mTprime", ";M(T quark) [GeV];;" ,100 ,0., 2000.) ; 
@@ -753,7 +717,7 @@ for (int i=0; i<3; i++){
   h1_["ptBprime"]  = sig.make<TH1D>("ptBprime", ";p_{T}(B quark) [GeV];;" , 100, 0., 2000.) ; 
   h1_["yBprime"] = sig.make<TH1D>("yBprime", ";y(B quark);;" , 40 ,-4. ,4.) ; 
   h1_["mBprime"] = sig.make<TH1D>("mBprime", ";M(B quark) [GeV];;" ,100 ,0., 2000.) ; 
-
+  cout << __LINE__ << endl;
   // b-tagging efficiency maps:
   h2_["pt_eta_b_all"] = fs->make<TH2D>("pt_eta_b_all", "b flavoured jets;p_{T} [GeV];#eta;", 50, 0., 1000., 80, -4, 4) ; 
   h2_["pt_eta_c_all"] = fs->make<TH2D>("pt_eta_c_all", "b flavoured jets;p_{T} [GeV];#eta;", 50, 0., 1000., 80, -4, 4) ; 
@@ -762,7 +726,7 @@ for (int i=0; i<3; i++){
   h2_["pt_eta_b_btagged"] = fs->make<TH2D>("pt_eta_b_btagged", "b flavoured jets (b-tagged);p_{T} [GeV];#eta;", 50, 0., 1000., 80, -4, 4) ; 
   h2_["pt_eta_c_btagged"] = fs->make<TH2D>("pt_eta_c_btagged", "b flavoured jets (b-tagged);p_{T} [GeV];#eta;", 50, 0., 1000., 80, -4, 4) ; 
   h2_["pt_eta_l_btagged"] = fs->make<TH2D>("pt_eta_l_btagged", "b flavoured jets (b-tagged);p_{T} [GeV];#eta;", 50, 0., 1000., 80, -4, 4) ; 
-
+  cout << __LINE__ << endl;
   // plots to study B mass recontruction
   if (optimizeReco_){
      h1_["genZ"] = sig.make<TH1D>("genZ", ";M (Gen Z Boson) [GeV];;", 20, 0., 200.);
@@ -776,7 +740,7 @@ for (int i=0; i<3; i++){
   h1_["chi2_chi"] = sig.make<TH1D>("chi2_chi", ";#chi^{2};;", 100, 0., 500.);
   h1_["sqrtChi2"] = sig.make<TH1D>("sqrtChi2", ";#chi;;", 100, 0., 500.);
   h1_["chi2_mass"] = sig.make<TH1D>("chi_mass", ";M_{#chi^{2}}(B);;", 180, 200., 2000.);
-
+  cout << __LINE__ << endl;
   //electrons specific varaibles in EE and EB at preselection level
   if (zdecayMode_ == "zelel" && additionalPlots_){
      h1_["Eta_EB_el_pre"] = pre.make<TH1D>("Eta_EB_el_pre", ";Eta (EB);;", 100,-4,4) ;
@@ -792,11 +756,11 @@ for (int i=0; i<3; i++){
      h1_["D0_EB_el_pre"] = pre.make<TH1D>("D0_EB_el_pre", ";d0 (EB);;", 100,-0.1,0.1) ;
      h1_["D0_EE_el_pre"] = pre.make<TH1D>("D0_EE_el_pre", ";d0 (EE);;", 100,-0.1,0.1) ;
   }
-  
+  cout << __LINE__ << endl;
 }
 
 void OS2LAna::endJob() {
-
+  cout << __LINE__ << endl;
   return ; 
 }
 

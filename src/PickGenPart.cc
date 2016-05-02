@@ -21,34 +21,33 @@ PickGenPart::PickGenPart (const edm::ParameterSet& iConfig, edm::ConsumesCollect
   l_genPartMass        (iConfig.getParameter<edm::InputTag>("genPartMass")), 
   l_genPartE           (iConfig.getParameter<edm::InputTag>("genPartE")), 
   l_genPartCharge      (iConfig.getParameter<edm::InputTag>("genPartCharge")), 
-  ids_                 (iConfig.getParameter<std::vector<int>>("ids")), 
-  statuses_            (iConfig.getParameter<std::vector<int>>("statuses")), 
+  ids_                 (iConfig.getParameter<std::vector<int> >("ids")), 
+  statuses_            (iConfig.getParameter<std::vector<int> >("statuses")), 
   checkstatus_         (iConfig.getParameter<bool>("checkstatus")), 
-  mom0ids_             (iConfig.getParameter<std::vector<int>>("mom0ids")), 
-  mom1ids_             (iConfig.getParameter<std::vector<int>>("mom1ids")), 
+  mom0ids_             (iConfig.getParameter<std::vector<int> >("mom0ids")), 
+  mom1ids_             (iConfig.getParameter<std::vector<int> >("mom1ids")), 
   checkmomid_          (iConfig.getParameter<bool>("checkmomid")),
-  dau0ids_             (iConfig.getParameter<std::vector<int>>("dau0ids")), 
-  dau1ids_             (iConfig.getParameter<std::vector<int>>("dau1ids")), 
+  dau0ids_             (iConfig.getParameter<std::vector<int> >("dau0ids")), 
+  dau1ids_             (iConfig.getParameter<std::vector<int> >("dau1ids")), 
   checkdauid_          (iConfig.getParameter<bool>("checkdauid")),
   debug_               (iConfig.getParameter<bool>("debug"))
 { 
-
-  iC.consumes<std::vector<float>>(l_genPartID        ); 
-  iC.consumes<std::vector<float>>(l_genPartStatus    ); 
-  iC.consumes<std::vector<float>>(l_genPartMom0ID    ); 
-  iC.consumes<std::vector<float>>(l_genPartMom1ID    ); 
-  iC.consumes<std::vector<float>>(l_genPartMom0Status); 
-  iC.consumes<std::vector<float>>(l_genPartMom1Status); 
-  iC.consumes<std::vector<float>>(l_genPartDau0ID    ); 
-  iC.consumes<std::vector<float>>(l_genPartDau1ID    ); 
-  iC.consumes<std::vector<float>>(l_genPartDau0Status); 
-  iC.consumes<std::vector<float>>(l_genPartDau1Status); 
-  iC.consumes<std::vector<float>>(l_genPartPt        ); 
-  iC.consumes<std::vector<float>>(l_genPartEta       ); 
-  iC.consumes<std::vector<float>>(l_genPartPhi       ); 
-  iC.consumes<std::vector<float>>(l_genPartMass      ); 
-  iC.consumes<std::vector<float>>(l_genPartE         ); 
-  iC.consumes<std::vector<float>>(l_genPartCharge    ); 
+  iC.consumes<std::vector<float>>(l_genPartID        );
+  iC.consumes<std::vector<float>>(l_genPartStatus    );
+  iC.consumes<std::vector<float>>(l_genPartMom0ID    );
+  iC.consumes<std::vector<float>>(l_genPartMom1ID    );
+  iC.consumes<std::vector<float>>(l_genPartMom0Status);
+  iC.consumes<std::vector<float>>(l_genPartMom1Status);
+  iC.consumes<std::vector<float>>(l_genPartDau0ID    );
+  iC.consumes<std::vector<float>>(l_genPartDau1ID    );
+  iC.consumes<std::vector<float>>(l_genPartDau0Status);
+  iC.consumes<std::vector<float>>(l_genPartDau1Status);
+  iC.consumes<std::vector<float>>(l_genPartPt        );
+  iC.consumes<std::vector<float>>(l_genPartEta       );
+  iC.consumes<std::vector<float>>(l_genPartPhi       );
+  iC.consumes<std::vector<float>>(l_genPartMass      );
+  iC.consumes<std::vector<float>>(l_genPartE         );
+  iC.consumes<std::vector<float>>(l_genPartCharge    );
 
 }
 
