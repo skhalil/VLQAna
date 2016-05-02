@@ -123,7 +123,7 @@ process.ana.jetAK8selParams.jetPtMin = cms.double(200)
 process.ana.jetAK4BTaggedselParams.jetPtMin = cms.double(50) 
 process.ana.STMin = cms.double(1000.)
 process.ana.vlqMass = cms.double(1000.)
-process.ana.bosMass = cms.double(91.2)
+process.ana.bosonMass = cms.double(91.2)
 
 process.TFileService = cms.Service("TFileService",
        fileName = cms.string(

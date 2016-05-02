@@ -1,6 +1,7 @@
 #ifndef ANALYSIS_VLQANA_MASSRECO
 #define ANALYSIS_VLQANA_MASSRECO
 
+
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "AnalysisDataFormats/BoostedObjects/interface/Jet.h"

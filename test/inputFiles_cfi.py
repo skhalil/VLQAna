@@ -1,4 +1,16 @@
 FileNames = {
+  'FileNames_TprimeTprime_M-1000':[
+     '/store/group/phys_b2g/B2GAnaFW_76X_V1p2/TprimeTprime_M-1000_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160410_204521/0000/B2GEDMNtuple_1.root', 
+     '/store/group/phys_b2g/B2GAnaFW_76X_V1p2/TprimeTprime_M-1000_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160410_204521/0000/B2GEDMNtuple_10.root', 
+     '/store/group/phys_b2g/B2GAnaFW_76X_V1p2/TprimeTprime_M-1000_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160410_204521/0000/B2GEDMNtuple_11.root', 
+     '/store/group/phys_b2g/B2GAnaFW_76X_V1p2/TprimeTprime_M-1000_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160410_204521/0000/B2GEDMNtuple_12.root', 
+     '/store/group/phys_b2g/B2GAnaFW_76X_V1p2/TprimeTprime_M-1000_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160410_204521/0000/B2GEDMNtuple_13.root', 
+     '/store/group/phys_b2g/B2GAnaFW_76X_V1p2/TprimeTprime_M-1000_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160410_204521/0000/B2GEDMNtuple_14.root', 
+     '/store/group/phys_b2g/B2GAnaFW_76X_V1p2/TprimeTprime_M-1000_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160410_204521/0000/B2GEDMNtuple_15.root', 
+     '/store/group/phys_b2g/B2GAnaFW_76X_V1p2/TprimeTprime_M-1000_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160410_204521/0000/B2GEDMNtuple_16.root', 
+     '/store/group/phys_b2g/B2GAnaFW_76X_V1p2/TprimeTprime_M-1000_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160410_204521/0000/B2GEDMNtuple_17.root', 
+     '/store/group/phys_b2g/B2GAnaFW_76X_V1p2/TprimeTprime_M-1000_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160410_204521/0000/B2GEDMNtuple_18.root', 
+     ], 
   'FileNames_QCD_HT1000to1500': [ 
      '/store/user/jkarancs/SusyAnalysis/B2GEdmNtuple/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/160401_100723/0000/B2GEDMNtuple_1.root', 
      '/store/user/jkarancs/SusyAnalysis/B2GEdmNtuple/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/160401_100723/0000/B2GEDMNtuple_10.root', 
@@ -349,8 +361,8 @@ FileNames = {
     '/store/group/phys_b2g/B2GAnaFW_76X_V1p2/DoubleEG/B2GAnaFW_76X_V1p2/160406_180659/0000/B2GEDMNtuple_99.root', 
     ], 
  'FileNames_BG1200':[
-    '/store/group/phys_b2g/B2GAnaFW_76X_V1p2/BulkGravTohhTohbbhbb_narrow_M-1200_13TeV-madgraph/B2GAnaFW_76X_V1p2/160418_100216/0000/B2GEDMNtuple_1.root',
-    '/store/group/phys_b2g/B2GAnaFW_76X_V1p2/BulkGravTohhTohbbhbb_narrow_M-1200_13TeV-madgraph/B2GAnaFW_76X_V1p2/160418_100216/0000/B2GEDMNtuple_2.root',
+    '/store/group/phys_b2g/B2GAnaFW_76X_V1p3/BulkGravTohhTohbbhbb_narrow_M-1200_13TeV-madgraph/B2GAnaFW_76X_V1p2/160428_214501/0000/B2GEDMNtuple_1.root',
+    '/store/group/phys_b2g/B2GAnaFW_76X_V1p3/BulkGravTohhTohbbhbb_narrow_M-1200_13TeV-madgraph/B2GAnaFW_76X_V1p2/160428_214501/0000/B2GEDMNtuple_2.root',
     ],
  'FileNames_BG1600':[
    '/store/group/phys_b2g/B2GAnaFW_76X_V1p2/BulkGravTohhTohbbhbb_narrow_M-1600_13TeV-madgraph/B2GAnaFW_76X_V1p2/160418_100256/0000/B2GEDMNtuple_1.root'
