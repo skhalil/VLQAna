@@ -55,5 +55,5 @@ ana = cms.EDFilter("OS2LAna",
     jetHTaggedselParams        = defaultHJetSelectionParameters,
     jetWTaggedselParams        = defaultWJetSelectionParameters,
     jetTopTaggedselParams      = defaultTJetSelectionParameters,
-    genParams                  = genPartParams,
+    genParams                  = getSelectParams,
     )
