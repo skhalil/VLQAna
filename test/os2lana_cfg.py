@@ -59,28 +59,29 @@ options.parseArguments()
 print options
 
 hltpaths = []
+if options.zdecaymode == "zmumu":
+  hltpaths = [
+      "HLT_DoubleIsoMu17_eta2p1_v", 
+      "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",
+      #"HLT_DoubleMu8_Mass8_PFHT300_v",
+      ]
+elif options.zdecaymode == "zelel":
+  hltpaths = [
+      "HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v",
+      "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
+      #"HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v"
+      ]
+else:
+  sys.exit("!!!Error: Wrong Z decay mode option chosen. Choose either 'zmumu' or 'zelel'!!!") 
+
 if options.isData:
   options.filterSignal = False 
   options.signalType = "" 
   options.optimizeReco = False
-  options.applyLeptonSFs = False 
-  if options.zdecaymode == "zmumu":
-    hltpaths = [
-        "HLT_DoubleIsoMu17_eta2p1_v", 
-        "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",
-        #"HLT_DoubleMu8_Mass8_PFHT300_v",
-        ]
-  elif options.zdecaymode == "zelel":
-    hltpaths = [
-        "HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v",
-        "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
-        #"HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v"
-        ]
-  else:
-    sys.exit("!!!Error: Wrong Z decay mode option chosen. Choose either 'zmumu' or 'zelel'!!!") 
+  options.applyLeptonSFs = False
 
 if options.filterSignal == True and len(options.signalType) == 0:
-  sys.exit("!!!Error: Cannot keep signalType empty when filterSignal switched on!!!"  
+  sys.exit("!!!Error: Cannot keep signalType empty when filterSignal switched on!!!")  
 
 process = cms.Process("OS2LAna")
 
@@ -89,8 +90,9 @@ from inputFiles_cfi import *
 process.source = cms.Source(
     "PoolSource",
     fileNames = cms.untracked.vstring(
-      FileNames[options.FileNames]
+      #FileNames[options.FileNames]
       #'file:/afs/cern.ch/work/d/devdatta/CMSREL/B2GAnaFW_76X/CMSSW_7_6_3_patch2/src/Analysis/B2GAnaFW/test/B2GEDMNtuple_DYJets_M50Madgraph.root',
+'root://cms-xrd-global.cern.ch//store/user/jkarancs/SusyAnalysis/B2GEdmNtuple/TT_TuneCUETP8M1noCR_13TeV-powheg-pythia8/B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/160401_092930/0000/B2GEDMNtuple_13.root',
     ) 
     )
 
@@ -112,7 +114,7 @@ process.ana = ana.clone(
     signalType = cms.string(options.signalType),
     zdecayMode = cms.string(options.zdecaymode),
     applyLeptonSFs = cms.bool(options.applyLeptonSFs),
-    optimizeReco = cms.bool(options.optimzeReco),
+    optimizeReco = cms.bool(options.optimizeReco),
     )
 process.ana.elselParams.elidtype = cms.string(options.lepID)
 process.ana.muselParams.muidtype = cms.string(options.lepID)
@@ -150,4 +152,4 @@ process.p = cms.Path(
 
 #process.schedule = cms.Schedule(process.p)
 
-open('dump.py','w').write(process.dumpPython())
+#open('dump.py','w').write(process.dumpPython())

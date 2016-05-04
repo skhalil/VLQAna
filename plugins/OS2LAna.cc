@@ -110,6 +110,7 @@ using namespace std;
 
 // static data member definitions
 void OS2LAna::fillAdditionalPlots( vlq::ElectronCollection goodElectrons,double evtwt){
+
    for  (unsigned int iele=0; iele<goodElectrons.size(); ++iele){
       float scEta = goodElectrons.at(iele).getscEta();
       if(fabs(scEta) <= 1.479){
@@ -142,7 +143,7 @@ OS2LAna::OS2LAna(const edm::ParameterSet& iConfig) :
   ZCandParams_            (iConfig.getParameter<edm::ParameterSet> ("ZCandParams")),
   BoostedZCandParams_     (iConfig.getParameter<edm::ParameterSet> ("BoostedZCandParams")),
   GenHSelParams_          (iConfig.getParameter<edm::ParameterSet> ("GenHSelParams")),
-  genParams_              (iConfig.getParameter<edm::ParameterSet> ("genParams"))
+  genParams_              (iConfig.getParameter<edm::ParameterSet> ("genParams")),
   HTMin_                  (iConfig.getParameter<double>            ("HTMin")),
   STMin_                  (iConfig.getParameter<double>            ("STMin")), 
   filterSignal_           (iConfig.getParameter<bool>              ("filterSignal")), 
@@ -154,7 +155,7 @@ OS2LAna::OS2LAna(const edm::ParameterSet& iConfig) :
   bosonMass_              (iConfig.getParameter<double>            ("bosonMass")),
   applyLeptonSFs_         (iConfig.getParameter<bool>              ("applyLeptonSFs")), 
   lepsfs                  (iConfig.getParameter<edm::ParameterSet> ("lepsfsParams")),
-  metmaker                (iConfig.getParameter<edm::ParameterSet> ("metselParams")),
+  metmaker                (iConfig.getParameter<edm::ParameterSet> ("metselParams"),consumesCollector()),
   muonmaker               (iConfig.getParameter<edm::ParameterSet> ("muselParams"),consumesCollector()),
   electronmaker           (iConfig.getParameter<edm::ParameterSet> ("elselParams"),consumesCollector()),
   jetAK4maker             (iConfig.getParameter<edm::ParameterSet> ("jetAK4selParams"),consumesCollector()),
@@ -163,8 +164,7 @@ OS2LAna::OS2LAna(const edm::ParameterSet& iConfig) :
   jetHTaggedmaker         (iConfig.getParameter<edm::ParameterSet> ("jetHTaggedselParams"),consumesCollector()),
   jetWTaggedmaker         (iConfig.getParameter<edm::ParameterSet> ("jetWTaggedselParams"),consumesCollector()),
   jetTopTaggedmaker       (iConfig.getParameter<edm::ParameterSet> ("jetTopTaggedselParams"),consumesCollector()),   
-  lep                     (iConfig.getParameter<std::string>       ("lep"))
-  ,
+  lep                     (iConfig.getParameter<std::string>       ("lep"))  
 {
 
   produces<vlq::JetCollection>("tjets") ; 
@@ -186,7 +186,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   Handle<unsigned> h_npv         ; evt.getByToken(t_npv        , h_npv        ) ; 
   Handle<bool>     h_hltdecision ; evt.getByToken(t_hltdecision, h_hltdecision) ; 
 
-  unsigned npv(*h_npv.product()) ; 
+  //  unsigned npv(*h_npv.product()) ; 
 
   if(zdecayMode_ == "zmumu") {lep = "mu";}
   else if ( zdecayMode_ == "zelel") {lep = "el";}
@@ -200,7 +200,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   const bool hltdecision(*h_hltdecision.product()) ; 
   if ( !hltdecision ) return false;
 
-  double evtwtgen(*h_evtwtGen.product());
+  //double evtwtgen(*h_evtwtGen.product());
   double evtwt((*h_evtwtGen.product()) * (*h_evtwtPV.product())) ; 
      
   vlq::MuonCollection goodMuons; 
@@ -211,7 +211,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
 
   vlq::MetCollection goodMet;
   metmaker(evt, goodMet) ;
-   
+
   vlq::CandidateCollection dimuons, dielectrons, dileptons;   
   vlq::CandidateCollection zll; //generic collection
 
@@ -228,7 +228,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   if (zdecayMode_ == "zmumu") {dileptons = dimuons; }
   else if (zdecayMode_ == "zelel") {dileptons = dielectrons;}
   if (dileptons.size() < 1) return false;
-  
+
   //get lepton ID and Iso SF
   if (applyLeptonSFs_ && *h_evttype.product() != "EvtType_Data") {
      if ( zdecayMode_ == "zmumu" ){
@@ -238,7 +238,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   }
   
   h1_["cutflow"] -> Fill(1, evtwt) ;
-  
+
   //Z mass candidate filter: 75 < M < 105, lead pt > 45, 2nd pt > 25, Z pt > 0
   CandidateFilter zllfilter(ZCandParams_) ; 
   zllfilter(dileptons, zll);
@@ -296,21 +296,22 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      h1_[Form("cvsak4jet%d_pre", j+1)] -> Fill(goodAK4Jets.at(j).getCSV(), evtwt) ;
   }
   h1_["phi_jet1MET_pre"] -> Fill( (goodAK4Jets.at(0).getP4()).DeltaPhi(goodMet.at(0).getP4()), evtwt);
-  
+
   // npv
-  h1_["npv_noreweight"] -> Fill(npv, evtwtgen); 
-  h1_["npv"] -> Fill(npv, evtwt);
+  h1_["npv_noweight_pre"] -> Fill(*h_npv.product(), *h_evtwtGen.product()); 
+  h1_["npv_pre"] -> Fill(*h_npv.product(), evtwt);
 
   // met
   h1_["met_pre"] -> Fill(goodMet.at(0).getFullPt(), evtwt);
   h1_["metPhi_pre"] -> Fill(goodMet.at(0).getFullPhi(), evtwt);
-  
+
   //lepton specfic properties
   if ( zdecayMode_ == "zmumu" ){       
      for(int l=0; l<2; ++l){
         h1_["pt_"+lep+Form("%d_pre", l+1)]  -> Fill(goodMuons.at(l).getPt(), evtwt) ; 
         h1_["eta_"+lep+Form("%d_pre", l+1)]  -> Fill(goodMuons.at(l).getEta(), evtwt) ; 
      } 
+
      h1_["dr_mumu_pre"]-> Fill( (goodMuons.at(0).getP4()).DeltaR(goodMuons.at(1).getP4()), evtwt );
   }
   else if (zdecayMode_ == "zelel" ) {
@@ -318,9 +319,11 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
         h1_["pt_"+lep+Form("%d_pre", l+1)]   -> Fill(goodElectrons.at(l).getPt(), evtwt) ; 
         h1_["eta_"+lep+Form("%d_pre", l+1)]  -> Fill(goodElectrons.at(l).getEta(), evtwt) ; 
      } 
+
      h1_["dr_elel_pre"]-> Fill( (goodElectrons.at(0).getP4()).DeltaR(goodElectrons.at(1).getP4()), evtwt );
      if(additionalPlots_) fillAdditionalPlots(goodElectrons,evtwt);
   }
+
   // Z pt
   for (auto izll : zll) h1_["pt_z"+lep+lep+"_pre"] -> Fill(izll.getPt(), evtwt) ;
 
@@ -333,7 +336,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   jetAK4BTaggedmaker(evt, goodBTaggedAK4Jets) ; 
   if (zdecayMode_ == "zmumu") {cleanjets(goodBTaggedAK4Jets, goodMuons); }
   else if (zdecayMode_ == "zelel") {cleanjets(goodBTaggedAK4Jets, goodElectrons); }  
- 
+
   //fill control plots
   if ( goodBTaggedAK4Jets.size() > 0 && ST < 700) {
      for (auto izll : zll) {
@@ -347,7 +350,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      h1_["npv_cnt"] -> Fill(*h_npv.product(), evtwt);
      h1_["met_cnt"] -> Fill(goodMet.at(0).getFullPt(), evtwt);
      h1_["metPhi_cnt"] -> Fill(goodMet.at(0).getFullPhi(), evtwt);
-     
+
      //lepton specfic properties
      if ( zdecayMode_ == "zmumu" ){       
         for(int l=0; l<2; ++l){
@@ -363,6 +366,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
         } 
         h1_["dr_elel_cnt"]-> Fill( (goodElectrons.at(0).getP4()).DeltaR(goodElectrons.at(1).getP4()), evtwt );
      }
+
      //ak4 jet plots
      for(int j=0; j<3; ++j){
         h1_[Form("ptak4jet%d_cnt", j+1)]  -> Fill(goodAK4Jets.at(j).getPt(), evtwt) ; 
@@ -435,65 +439,21 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   h1_["met"] -> Fill(goodMet.at(0).getFullPt(), evtwt);
   h1_["metPhi"] -> Fill(goodMet.at(0).getFullPhi(), evtwt);
 
-  
-  
-  h1_["nbjets"] -> Fill(goodBTaggedAK4Jets.size(), evtwt) ;
-
-  if ( goodBTaggedAK4Jets.size() > 0 ) {
-    h1_["ptbjetleading"] -> Fill(goodBTaggedAK4Jets.at(0).getPt(), evtwt) ;
-    h1_["etabjetleading"] -> Fill(goodBTaggedAK4Jets.at(0).getEta(), evtwt) ;
-    h1_["htSigR"] ->Fill(htak4.getHT(), evtwt) ; 
-    h1_["stSigR"] ->Fill(ST, evtwt) ;   
-    h1_["cutflow"] -> Fill(7, evtwt) ;
-  }
-  else return false;
-  
-  //fill the b-tag efficiency plots after full event selection  
-  for (vlq::Jet jet : goodAK4Jets) {
-     if ( abs(jet.getHadronFlavour()) == 5) h2_["pt_eta_b_all"] -> Fill(jet.getPt(), jet.getEta()) ; 
-     else if ( abs(jet.getHadronFlavour()) == 4) h2_["pt_eta_c_all"] -> Fill(jet.getPt(), jet.getEta()) ; 
-     else if ( abs(jet.getHadronFlavour()) == 0) h2_["pt_eta_l_all"] -> Fill(jet.getPt(), jet.getEta()) ; 
-  }
-
-  for (vlq::Jet jet : goodBTaggedAK4Jets) {
-    if ( abs(jet.getHadronFlavour()) == 5) h2_["pt_eta_b_btagged"] -> Fill(jet.getPt(), jet.getEta()) ; 
-    else if ( abs(jet.getHadronFlavour()) == 4) h2_["pt_eta_c_btagged"] -> Fill(jet.getPt(), jet.getEta()) ; 
-    else if ( abs(jet.getHadronFlavour()) == 0) h2_["pt_eta_l_btagged"] -> Fill(jet.getPt(), jet.getEta()) ; 
-  }
-   
-  if ( ST > STMin_ ) h1_["cutflow"] -> Fill(8, evtwt) ;  
-  else return false ; 
-  
-  ////Match AK8 to AK4
-  vlq::JetCollection matchedAK8Jets;
-
-  ////require at lease one ak8 jet that is matched to ak4 jet  
-  if ( goodAK8Jets.size() > 0 ) {
-     for (vlq::Jet& fjet : goodAK8Jets) { 
-        bool matched = false;
-        for (vlq::Jet& ijet : goodAK4Jets) {
-           if (ijet.getP4().DeltaR(fjet.getP4()) < 0.4){matched = true;}
-        }
-        if (matched) {matchedAK8Jets.push_back(fjet);}
-     }
-  } 
-
-//lepton specfic properties
+  //lepton specfic properties
   if ( zdecayMode_ == "zmumu" ){       
-     for(int l=0; l<2; ++l){
-        h1_["pt_"+lep+Form("%d", l+1)]  -> Fill(goodMuons.at(l).getPt(), evtwt) ; 
-        h1_["eta_"+lep+Form("%d", l+1)]  -> Fill(goodMuons.at(l).getEta(), evtwt) ; 
-     } 
-     h1_["dr_mumu"]-> Fill( (goodMuons.at(0).getP4()).DeltaR(goodMuons.at(1).getP4()), evtwt );
+    for(int l=0; l<2; ++l){
+      h1_["pt_"+lep+Form("%d", l+1)]  -> Fill(goodMuons.at(l).getPt(), evtwt) ; 
+      h1_["eta_"+lep+Form("%d", l+1)]  -> Fill(goodMuons.at(l).getEta(), evtwt) ; 
+    } 
+    h1_["dr_mumu"]-> Fill( (goodMuons.at(0).getP4()).DeltaR(goodMuons.at(1).getP4()), evtwt );
   }
   else if (zdecayMode_ == "zelel" ) {
-     for(int l=0; l<2; ++l){
-        h1_["pt_"+lep+Form("%d", l+1)]   -> Fill(goodElectrons.at(l).getPt(), evtwt) ; 
-        h1_["eta_"+lep+Form("%d", l+1)]  -> Fill(goodElectrons.at(l).getEta(), evtwt) ; 
-     } 
-     h1_["dr_elel"]-> Fill( (goodElectrons.at(0).getP4()).DeltaR(goodElectrons.at(1).getP4()), evtwt );
+    for(int l=0; l<2; ++l){
+      h1_["pt_"+lep+Form("%d", l+1)]   -> Fill(goodElectrons.at(l).getPt(), evtwt) ; 
+      h1_["eta_"+lep+Form("%d", l+1)]  -> Fill(goodElectrons.at(l).getEta(), evtwt) ; 
+    } 
+    h1_["dr_elel"]-> Fill( (goodElectrons.at(0).getP4()).DeltaR(goodElectrons.at(1).getP4()), evtwt );
   }
-
   //ak4 jet plots
   for(int j=0; j<3; ++j){
      h1_[Form("ptak4jet%d", j+1)]  -> Fill(goodAK4Jets.at(j).getPt(), evtwt) ; 
@@ -501,7 +461,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      h1_[Form("cvsak4jet%d", j+1)] -> Fill(goodAK4Jets.at(j).getCSV(), evtwt) ;
   }
   h1_["phi_jet1MET"] -> Fill( (goodAK4Jets.at(0).getP4()).DeltaPhi(goodMet.at(0).getP4()), evtwt);
- 
+
   // fill the b-tagging plots and efficiency maps
   h1_["nbjets"] -> Fill(goodBTaggedAK4Jets.size(), evtwt) ;
   h1_["ptbjetleading"] -> Fill(goodBTaggedAK4Jets.at(0).getPt(), evtwt) ;
@@ -524,7 +484,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   h1_["nwjet"] -> Fill(goodWTaggedJets.size(), evtwt) ; 
   h1_["nhjet"] -> Fill(goodHTaggedJets.size(), evtwt) ; 
   h1_["ntjet"] -> Fill(goodTopTaggedJets.size(), evtwt) ; 
-   
+
   if (goodAK8Jets.size() > 0) {
      h1_["ptak8leading"] -> Fill((goodAK8Jets.at(0)).getPt(), evtwt) ; 
      h1_["etaak8leading"] -> Fill((goodAK8Jets.at(0)).getEta(), evtwt) ;
@@ -582,56 +542,53 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   }
   Leptons = lep1 + lep2;
   //TLorentzVector Leptons = zll.at(0).getP4();
-  
-  if (optimizeReco_ && *h_evttype.product() != "EvtType_Data"){
-     PickGenPart genpart(genParams_, consumesCollector()) ;
-     GenParticleCollection genPartsInfo;
-     genPartsInfo = genpart(evt) ;
 
-     // Declare TLorentzVectors to fill with genParticles
-     TLorentzVector bGen, bbarGen, q1, q2;// Z1, Z2;
-     TLorentzVector qJet, qbarJet, bJet, bbarJet;
-     TLorentzVector had_bjet, lep_bjet, had_bGen, lep_bGen;
-   
-     bGen = reco.getGen(genPartsInfo, 5, 8000002);
-     bbarGen = reco.getGen(genPartsInfo, -5, 8000002);
-     q1 = reco.getGen(genPartsInfo, 1, 5, 8000002);
-     q2 = reco.getGen(genPartsInfo, -5, -1, 8000002);
+  // if (optimizeReco_ && *h_evttype.product() != "EvtType_Data"){
+
+  //    PickGenPart genpart(genParams_, consumesCollector()) ;
+  //    GenParticleCollection genPartsInfo;
+  //    genPartsInfo = genpart(evt) ;
+  //    // Declare TLorentzVectors to fill with genParticles
+  //    TLorentzVector bGen, bbarGen, q1, q2;// Z1, Z2;
+  //    TLorentzVector qJet, qbarJet, bJet, bbarJet;
+  //    TLorentzVector had_bjet, lep_bjet, had_bGen, lep_bGen;
+  //    bGen = reco.getGen(genPartsInfo, 5, 8000002);
+  //    bbarGen = reco.getGen(genPartsInfo, -5, 8000002);
+  //    q1 = reco.getGen(genPartsInfo, 1, 5, 8000002);
+  //    q2 = reco.getGen(genPartsInfo, -5, -1, 8000002);
      
-     qJet = reco.getMatchedJet(q1, goodAK4Jets, 0.3);
-     qbarJet = reco.getMatchedJet(q2, goodAK4Jets, 0.3);
-     bJet = reco.getMatchedJet(bGen, goodAK4Jets, 0.3);
-     bbarJet = reco.getMatchedJet(bbarGen, goodAK4Jets, 0.3);
-
-     //Choose charge of b (Change based on B' mass)
-     double bcheck = abs((bGen + q1 + q2).M() - vlqMass_);
-     double bbarcheck = abs((bbarGen + q1 + q2).M() - vlqMass_);
-     if (bcheck < bbarcheck){
-        had_bGen = bGen;
-        lep_bGen = bbarGen;
-        had_bjet = bJet;
-        lep_bjet = bbarJet;
-     }
-     else {
-        had_bGen = bbarGen;
-        lep_bGen = bGen;
-        had_bjet = bbarJet;
-        lep_bjet = bJet;
-     }
-
-     double genZ = reco.findInvMass(q1, q2);
-     double genB = reco.findInvMass(q1, q2, had_bGen);
-     double ZJet = reco.findInvMass(qJet, qbarJet);
-     double hadBJet = reco.findInvMass(qJet, qbarJet, had_bjet);
-     double lepBJet = reco.findInvMass(lep1, lep2, lep_bjet);
-
-     h1_["genZ"]->Fill(genZ, evtwt);
-     h1_["genBMass"] -> Fill(genB, evtwt);
-     h1_["ZJetMass"]->Fill(ZJet,evtwt);
-     h1_["hadBJetMass"] ->Fill(hadBJet, evtwt);
-     h1_["lepBJetMass"] ->Fill(lepBJet, evtwt);
-  }
+  //    qJet = reco.getMatchedJet(q1, goodAK4Jets, 0.3);
+  //    qbarJet = reco.getMatchedJet(q2, goodAK4Jets, 0.3);
+  //    bJet = reco.getMatchedJet(bGen, goodAK4Jets, 0.3);
+  //    bbarJet = reco.getMatchedJet(bbarGen, goodAK4Jets, 0.3);
   
+  //    //Choose charge of b (Change based on B' mass)
+  //    double bcheck = abs((bGen + q1 + q2).M() - vlqMass_);
+  //    double bbarcheck = abs((bbarGen + q1 + q2).M() - vlqMass_);
+  //    if (bcheck < bbarcheck){
+  //       had_bGen = bGen;
+  //       lep_bGen = bbarGen;
+  //       had_bjet = bJet;
+  //       lep_bjet = bbarJet;
+  //    }
+  //    else {
+  //       had_bGen = bbarGen;
+  //       lep_bGen = bGen;
+  //       had_bjet = bbarJet;
+  //       lep_bjet = bJet;
+  //    }
+  //    double genZ = reco.findInvMass(q1, q2);
+  //    double genB = reco.findInvMass(q1, q2, had_bGen);
+  //    double ZJet = reco.findInvMass(qJet, qbarJet);
+  //    double hadBJet = reco.findInvMass(qJet, qbarJet, had_bjet);
+  //    double lepBJet = reco.findInvMass(lep1, lep2, lep_bjet);
+
+  //    h1_["genZ"]->Fill(genZ, evtwt);
+  //    h1_["genBMass"] -> Fill(genB, evtwt);
+  //    h1_["ZJetMass"]->Fill(ZJet,evtwt);
+  //    h1_["hadBJetMass"] ->Fill(hadBJet, evtwt);
+  //    h1_["lepBJetMass"] ->Fill(lepBJet, evtwt);
+  // }
   pair<double, double> chi2_result;
   if (goodAK4Jets.size() > 4)
      chi2_result = reco.doReco(goodAK4Jets, bosonMass_, Leptons);
@@ -641,7 +598,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      chi2_result.first = -999;
      chi2_result.second = -999;
   }
-    
+
   //Fill Histograms
   h1_["ZJetMasslep"] ->Fill(Leptons.M(), evtwt);
   h1_["chi2_chi"] ->Fill(chi2_result.first, evtwt);
@@ -707,7 +664,7 @@ for (int i=0; i<3; i++){
      }
      string jet1METPhiName = "phi_jet1MET"+suffix[i];
      h1_[jet1METPhiName.c_str()] = bookDir[i]->make<TH1D>(jet1METPhiName.c_str(), ";#Phi(leading jet, MET)", 20, -5., 5.) ;
-   
+
      //leptons
      string mass_Z = "mass_z"+lep+lep+suffix[i];
      h1_[mass_Z.c_str()] = bookDir[i]->make<TH1D>(mass_Z.c_str(), ";M(Z#rightarrow l^{+}l^{-}) [GeV]", 100, 20., 220.) ;
@@ -792,7 +749,7 @@ for (int i=0; i<3; i++){
      h1_["D0_EB_el_pre"] = pre.make<TH1D>("D0_EB_el_pre", ";d0 (EB);;", 100,-0.1,0.1) ;
      h1_["D0_EE_el_pre"] = pre.make<TH1D>("D0_EE_el_pre", ";d0 (EE);;", 100,-0.1,0.1) ;
   }
-  
+
 }
 
 void OS2LAna::endJob() {

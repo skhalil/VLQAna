@@ -5,7 +5,7 @@
 using namespace std ;
 using namespace edm ;
 
-METMaker::METMaker(edm::ParameterSet const& pars) :
+METMaker::METMaker(edm::ParameterSet const& pars, edm::ConsumesCollector && iC) :
 l_metFullPhi 				(pars.getParameter<edm::InputTag>("metFullPhiLabel")),
 l_metFullPt 				(pars.getParameter<edm::InputTag>("metFullPtLabel")),
 l_metFullPx 				(pars.getParameter<edm::InputTag>("metFullPxLabel")),
@@ -13,16 +13,17 @@ l_metFullPy 				(pars.getParameter<edm::InputTag>("metFulluncorPhiLabel")),
 l_metFulluncorPhi 			(pars.getParameter<edm::InputTag>("metFulluncorPhiLabel")),
 l_metFulluncorPt 			(pars.getParameter<edm::InputTag>("metFulluncorPtLabel")),
 l_metFulluncorSumEt 		(pars.getParameter<edm::InputTag>("metFulluncorSumEtLabel")),
-l_metNoHFPhi 				(pars.getParameter<edm::InputTag>("metNoHFPhiLabel")),
-l_metNoHFPt 				(pars.getParameter<edm::InputTag>("metNoHFPtLabel")),
-l_metNoHFPx 				(pars.getParameter<edm::InputTag>("metNoHFPxLabel")),
-l_metNoHFPy 				(pars.getParameter<edm::InputTag>("metNoHFPyLabel")),
-l_metNoHFuncorPhi 			(pars.getParameter<edm::InputTag>("metNoHFuncorPhiLabel")),
-l_metNoHFuncorPt 			(pars.getParameter<edm::InputTag>("metNoHFuncorPtLabel")),
-l_metNoHFuncorSumEt 		(pars.getParameter<edm::InputTag>("metNoHFuncorSumEtLabel")),
 METPtMin_ (pars.getParameter<double>("METPtMin")),
 METPtMax_ (pars.getParameter<double>("METPtMax"))
-{}
+{
+  iC.consumes<std::vector<float>>(l_metFullPhi);
+  iC.consumes<std::vector<float>>(l_metFullPt);
+  iC.consumes<std::vector<float>>(l_metFullPx);
+  iC.consumes<std::vector<float>>(l_metFullPy);
+  iC.consumes<std::vector<float>>(l_metFulluncorPhi);
+  iC.consumes<std::vector<float>>(l_metFulluncorPt);
+  iC.consumes<std::vector<float>>(l_metFulluncorSumEt);
+}
 
 METMaker::~METMaker () {}
 
@@ -34,13 +35,6 @@ void METMaker::operator () (edm::Event& evt, vlq::MetCollection& MET){
 	Handle<vector<float>> h_metFulluncorPhi 	; evt.getByLabel(l_metFulluncorPhi		, h_metFulluncorPhi)	;
 	Handle<vector<float>> h_metFulluncorPt 		; evt.getByLabel(l_metFulluncorPt 		, h_metFulluncorPt)		;
 	Handle<vector<float>> h_metFulluncorSumEt 	; evt.getByLabel(l_metFulluncorSumEt 	, h_metFulluncorSumEt)	;
-	Handle<vector<float>> h_metNoHFPhi 			; evt.getByLabel(l_metNoHFPhi 			, h_metNoHFPhi)			;
-	Handle<vector<float>> h_metNoHFPt 			; evt.getByLabel(l_metNoHFPt 			, h_metNoHFPt)			;
-	Handle<vector<float>> h_metNoHFPx 			; evt.getByLabel(l_metNoHFPx			, h_metNoHFPx)			;
-	Handle<vector<float>> h_metNoHFPy 			; evt.getByLabel(l_metNoHFPy			, h_metNoHFPy)			;
-	Handle<vector<float>> h_metNoHFuncorPhi 	; evt.getByLabel(l_metNoHFuncorPhi		, h_metNoHFuncorPhi)	;
-	Handle<vector<float>> h_metNoHFuncorPt 		; evt.getByLabel(l_metNoHFuncorPt		, h_metNoHFuncorPt)		;
-	Handle<vector<float>> h_metNoHFuncorSumEt 	; evt.getByLabel(l_metNoHFuncorSumEt	, h_metNoHFuncorSumEt)	;
 
     double metFullPt = (h_metFullPt.product())->at(0);
     TLorentzVector  metP4;
@@ -54,13 +48,6 @@ void METMaker::operator () (edm::Event& evt, vlq::MetCollection& MET){
        met.setFulluncorPhi 	    (h_metFulluncorPhi 		.product()->at(0));
        met.setFulluncorPt 		(h_metFulluncorPt 		.product()->at(0));
        met.setFulluncorSumEt 	(h_metFulluncorSumEt 	.product()->at(0));
-       met.setNoHFPhi 			(h_metNoHFPhi 			.product()->at(0));
-       met.setNoHFPt 			(h_metNoHFPt 			.product()->at(0));
-       met.setNoHFPx 			(h_metNoHFPx 			.product()->at(0));
-       met.setNoHFPy 			(h_metNoHFPy 			.product()->at(0));
-       met.setNoHFuncorPhi 	    (h_metNoHFuncorPhi 		.product()->at(0));
-       met.setNoHFuncorPt 		(h_metNoHFuncorPt 		.product()->at(0));
-       met.setNoHFuncorSumEt 	(h_metNoHFuncorSumEt 	.product()->at(0));
        met.setP4                (metP4);
        
        MET.push_back(met);       
