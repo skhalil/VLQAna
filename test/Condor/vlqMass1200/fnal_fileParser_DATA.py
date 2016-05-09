@@ -57,6 +57,7 @@ for n_file in range (1, int(NFILE)+1):
         if n_file >= 6422:
             line = line.replace('path_to_sample','root://cms-xrd-global.cern.ch//store/group/phys_b2g/B2GAnaFW_76X_V1p2/DoubleMuon/B2GAnaFW_76X_V1p2/160406_180713/0000/B2GEDMNtuple_'+str(n_file-6421)+'.root')
 
+
 #	line = line.replace('path_to_sample','root://eoscms.cern.ch/'+str(PATH)+'/B2GEDMNtuple_'+str(n_file)+'.root')
         line = line.replace('output',str(SAMPLE)+'_'+str(n_file)+'.root')
         outputfile.writelines(line)
