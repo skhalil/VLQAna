@@ -556,8 +556,8 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      TLorentzVector had_bjet, lep_bjet, had_bGen, lep_bGen;
      bGen = reco.getGen(genPartsInfo, 5, 8000002);
      bbarGen = reco.getGen(genPartsInfo, -5, 8000002);
-     q1 = reco.getGen(genPartsInfo, 1, 5, 8000002);
-     q2 = reco.getGen(genPartsInfo, -5, -1, 8000002);
+     q1 = reco.getGen(genPartsInfo, 1, 5, 23);
+     q2 = reco.getGen(genPartsInfo, -5, -1, 23);
 
      qJet = reco.getMatchedJet(q1, goodAK4Jets, 0.3);
      qbarJet = reco.getMatchedJet(q2, goodAK4Jets, 0.3);
