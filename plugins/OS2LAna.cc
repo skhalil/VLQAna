@@ -21,6 +21,7 @@ Implementation:
 #include <memory>
 #include <vector>
 
+
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDFilter.h"
 #include "FWCore/Framework/interface/Event.h"
@@ -51,9 +52,11 @@ Implementation:
 #include "Analysis/VLQAna/interface/JetID.h"
 #include "Analysis/VLQAna/interface/MassReco.h"
 
+#include <TF1.h>
 #include <TH1D.h>
 #include <TH2D.h>
 #include <TLorentzVector.h>
+#include <TFitResult.h>
 
 //
 // class declaration
@@ -187,6 +190,8 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   Handle<double>   h_evtwtPV     ; evt.getByToken(t_evtwtPV    , h_evtwtPV    ) ; 
   Handle<unsigned> h_npv         ; evt.getByToken(t_npv        , h_npv        ) ; 
   Handle<bool>     h_hltdecision ; evt.getByToken(t_hltdecision, h_hltdecision) ; 
+
+  h1_["checkPU"]->Fill(*h_npv.product(), *h_evtwtGen.product());
 
   //  unsigned npv(*h_npv.product()) ; 
 
@@ -556,8 +561,8 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      TLorentzVector had_bjet, lep_bjet, had_bGen, lep_bGen;
      bGen = reco.getGen(genPartsInfo, 5, 8000002);
      bbarGen = reco.getGen(genPartsInfo, -5, 8000002);
-     q1 = reco.getGen(genPartsInfo, 1, 5, 23);
-     q2 = reco.getGen(genPartsInfo, -5, -1, 23);
+     q1 = reco.getGen(genPartsInfo, 1, 5, 25);
+     q2 = reco.getGen(genPartsInfo, -5, -1, 25);
 
      qJet = reco.getMatchedJet(q1, goodAK4Jets, 0.3);
      qbarJet = reco.getMatchedJet(q2, goodAK4Jets, 0.3);
@@ -590,7 +595,38 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      h1_["ZJetMass"]->Fill(ZJet,evtwt);
      h1_["hadBJetMass"] ->Fill(hadBJet, evtwt);
      h1_["lepBJetMass"] ->Fill(lepBJet, evtwt);
-  }
+
+     //TFitResultPtr r1 = h1_["hadBJetMass"]->Fit("gaus","NS","",800,1200);  // first fit
+     //TFitResultPtr r2 = h1_["hadBJetMass"]->Fit("gaus","NS","",900,1100); // second fit
+     //     TF1 * f1 = new TF1("fitFunc","gaus(0)+gaus(3)");
+     //cout << "after TF1" << endl;
+     //         cout << "r1: " << r1->Print() << " r2: "  << r2 << " f1: "  << f1 << endl;
+     //r1->Print();
+     //r2->Print();
+     //cout << f1<< endl;
+     // f1->SetParameter(0,r1->Parameter(0));
+     // cout << "after first fit" << endl;
+     // f1->SetParameter(1,r1->Parameter(1));
+     // f1->SetParameter(2,r1->Parameter(2));
+     // f1->SetParameter(3,r2->Parameter(0));
+     // f1->SetParameter(4,r2->Parameter(1));
+     // f1->SetParameter(5,r2->Parameter(2));
+     // cout << "all params" << endl;
+     // h1_["hadBJetMass"]->Fit(f1);
+     // cout << "full fit" << endl;
+     // cout << f1->GetParameter(1) << endl;
+     
+     // h1_["lepBJetMass"]->Fit(g1,"R");
+     // h1_["lepBJetMass"]->Fit(g2, "R+");
+     // h1_["lepBJetMass"]->Fit(g3, "R+");
+     // g1->GetParameters(&par[0]);
+     // g2->GetParameters(&par[3]);
+     // g3->GetParameters(&par[6]);
+     // total->SetParameters(par);
+     // h1_["lepBJetMass"]->Fit(total, "R+");
+     //     cout << total->GetParameter(8) << endl;
+
+     }
   pair<double, double> chi2_result;
   if (goodAK4Jets.size() > 4)
      chi2_result = reco.doReco(goodAK4Jets, bosonMass_, Leptons);
@@ -628,6 +664,8 @@ void OS2LAna::beginJob() {
   else if ( zdecayMode_ == "zelel") {lep = "el";}
   else edm::LogError("OS2LAna::beginJob") << " >>>> WrongleptonType: " << lep << " Check lep name !!!" ;
 
+  h1_["checkPU"] = fs->make<TH1D>("checkPU", "Initial NPV", 51, -0.5, 50.5);
+
  if (filterSignal_){h1_["signalEvts"] = fs->make<TH1D>("signalEvts", "signalEvts", 2, 0.5, 2.5) ;}
   h1_["cutflow"] = fs->make<TH1D>("cutflow", "cut flow", 8, 0.5, 8.5) ;  
   h1_["cutflow"] -> GetXaxis() -> SetBinLabel(1, "Trig.+l^{+}l^{-}") ;
@@ -650,7 +688,7 @@ for (int i=0; i<3; i++){
      h1_[("npv_noweight"+suffix[i]).c_str()] = bookDir[i]->make<TH1D>( ("npv_noweight"+suffix[i]).c_str(), ";N(PV);;", 51, -0.5, 50.5) ; 
      h1_[("npv"+suffix[i]).c_str()]  =  bookDir[i]->make<TH1D>( ("npv"+suffix[i]).c_str(), ";N(PV);;", 51, -0.5, 50.5) ; 
      h1_[("nak4"+suffix[i]).c_str()] =  bookDir[i]->make<TH1D>( ("nak4"+suffix[i]).c_str(), ";N(AK4 jets);;" , 21, -0.5, 20.5) ;
-     h1_[("ht"+suffix[i]).c_str()]   =  bookDir[i]->make<TH1D>( ("ht"+suffix[i]).c_str(), ";H_{T} (AK4 jets) [GeV]", 100, 0., 4000.) ;
+     h1_[("ht"+suffix[i]).c_str()]   =  bookDir[i]->make<TH1D>( ("ht"+suffix[i]).c_str(), ";H_{T} (AK4 jets) [GeV]", 100, 0., 3000.) ;
      h1_[("st"+suffix[i]).c_str()]   =  bookDir[i]->make<TH1D>( ("st"+suffix[i]).c_str() ,";S_{T} [GeV]", 100, 0., 4000.) ;
      h1_[("met"+suffix[i]).c_str()]  =  bookDir[i]->make<TH1D>( ("met"+suffix[i]).c_str(), "MET [GeV]", 100, 0., 1000.);
      h1_[("metPhi"+suffix[i]).c_str()]  =  bookDir[i]->make<TH1D>( ("metPhi"+suffix[i]).c_str(), "#Phi(MET)", 20, -5., 5.);
@@ -660,7 +698,7 @@ for (int i=0; i<3; i++){
         string jetPtName = Form("ptak4jet%d", j)+suffix[i]; string jetPtTitle  = Form(";p_{T}(%d leading AK4 jet) [GeV];;",j);
         h1_[jetPtName.c_str()] = bookDir[i]->make<TH1D>(jetPtName.c_str(), jetPtTitle.c_str(), 50, 0., 1000.) ;
         string jetEtaName = Form("etaak4jet%d", j)+suffix[i]; string jetEtaTitle  = Form(";#eta(%d leading AK4 jet) ;;",j);
-        h1_[jetEtaName.c_str()] = bookDir[i]->make<TH1D>(jetEtaName.c_str(), jetEtaTitle.c_str(), 80 ,-4. ,4.) ;
+        h1_[jetEtaName.c_str()] = bookDir[i]->make<TH1D>(jetEtaName.c_str(), jetEtaTitle.c_str(), 80 ,-2.4 ,2.4) ;
         string jetCVSName = Form("cvsak4jet%d", j)+suffix[i]; string jetCVSTitle  = Form(";CVS(%d leading AK4 jet) ;;",j); 
         h1_[jetCVSName.c_str()] = bookDir[i]->make<TH1D>(jetCVSName.c_str(), jetCVSTitle.c_str(), 50 ,0. ,1.) ;
      }
@@ -729,7 +767,7 @@ for (int i=0; i<3; i++){
      h1_["genZ"] = sig.make<TH1D>("genZ", ";M (Gen Z Boson) [GeV];;", 20, 0., 200.);
      h1_["genBMass"] = sig.make<TH1D>("genBMass", ";M(Gen B quark) [GeV];;", 100, 800., 1200);
      h1_["ZJetMass"] = sig.make<TH1D>("ZJetMass", ";JetM (Hadronic Z Boson) [GeV];;", 20, 0., 200.);
-     h1_["hadBJetMass"] = sig.make<TH1D>("BJetMass", ";JetM (Hadronic B quark) [GeV];;", 100, 500., 1500.);
+     h1_["hadBJetMass"] = fs->make<TH1D>("BJetMass", ";JetM (Hadronic B quark) [GeV];;", 100, 500., 1500.);
      h1_["lepBJetMass"] = sig.make<TH1D>("BJetMasslep", ";M (B Jet Leptonic);;", 100, 500., 1500.);
   }
 
