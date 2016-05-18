@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 from FWCore.ParameterSet.VarParsing import VarParsing
 
 options = VarParsing('analysis')
-options.register('isData', False,
+options.register('isData', True,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Is data?"
@@ -23,7 +23,7 @@ options.register('outFileName', 'os2lana.root',
     VarParsing.varType.string,
     "Output file name"
     )
-options.register('doPUReweightingOfficial', True,
+options.register('doPUReweightingOfficial', False,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Do pileup reweighting using official recipe"
@@ -43,12 +43,17 @@ options.register('signalType', '',
     VarParsing.varType.string,
     "Select one of EvtType_MC_tZtZ, EvtType_MC_tZtH, EvtType_MC_tZbW, EvtType_MC_tHtH, EvtType_MC_tHbW, EvtType_MC_bWbW, EvtType_MC_bZbZ, EvtType_MC_bZbH, EvtType_MC_bZtW, EvtType_MC_bHbH, EvtType_MC_bHtW, EvtType_MC_tWtW" 
     )
-options.register('applyLeptonSFs', True,
+options.register('applyLeptonSFs', False,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Apply lepton SFs to the MC"
     )
-options.register('optimizeReco', True,
+options.register('FileNames', 'FileNames_QCD_HT1000to1500',
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.string,
+    "Name of list of input files"
+    )
+options.register('optimizeReco', False,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Do mass reconstruction on MC"
@@ -122,8 +127,8 @@ process.ana.BoostedZCandParams.ptMin = cms.double(150.)#not used in analysis
 process.ana.jetAK8selParams.jetPtMin = cms.double(200) 
 process.ana.jetAK4BTaggedselParams.jetPtMin = cms.double(50) 
 process.ana.STMin = cms.double(1000.)
-process.ana.vlqMass = cms.double(800.)
-process.ana.bosonMass = cms.double(91.2)
+process.ana.vlqMass = cms.double(1200.)
+process.ana.bosonMass = cms.double(125)
 
 process.TFileService = cms.Service("TFileService",
        fileName = cms.string(

@@ -79,7 +79,7 @@ if options.isData:
     sys.exit("!!!Error: Wrong Z decay mode option chosen. Choose either 'zmumu' or 'zelel'!!!") 
 
 if options.filterSignal == True and len(options.signalType) == 0:
-  sys.exit("!!!Error: Cannot keep signalType empty when filterSignal switched on!!!") 
+  sys.exit("!!!Error: Cannot keep signalType empty when filterSignal switched on!!!")  
 
 process = cms.Process("OS2LAna")
 
@@ -88,8 +88,18 @@ from inputFiles_cfi import *
 process.source = cms.Source(
     "PoolSource",
     fileNames = cms.untracked.vstring( 
-        'path_to_sample'
-        )
+'path_to_files'
+#'root://eoscms.cern.ch//eos/cms/store/user/jkarancs/SusyAnalysis/B2GEdmNtuple/TT_TuneCUETP8M1_13TeV-powheg-pythia8/B2GAnaFW_v74x_V8p4_RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2_ext3-v1/151111_093135/0000/B2GEDMNtuple_1.root',
+#     'root://eoscms.cern.ch//eos/cms/store/group/phys_b2g/vorobiev/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/B2GAnaFW_Run2Spring15MiniAODv2_25ns_     
+#'root://eoscms.cern.ch//eos/cms/store/group/phys_b2g/vorobiev/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/B2GAnaFW_Run2Spring15MiniAODv2_25ns_v74x_v84/160404_120114/0000/B2GEDMNtuple_1.root',
+     #'root://grid143.kfki.hu//store/group/phys_b2g/vorobiev/TprimeTprime_M-800_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_Run2Spring15MiniAODv2_25ns_v74x_v84/151118_204222/0000/B2GEDMNtuple_1.root',
+    #'/store/group/phys_b2g/vorobiev/TprimeTprime_M-800_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_Run2Spring15MiniAODv2_25ns_v74x_v84/151118_204222/0000/B2GEDMNtuple_1.root'
+   #'/store/group/lpcbprime/noreplica/skhalil/B2GEDMNtuplesSkim_CR_Zmumu_20Nov/TT_TuneCUETP8M1_13TeV-powheg-pythia8/crab_TT_powheg-pythia8_ext3_25ns_CR_Zmumu/151126_084215/0000/SkimmedB2GEdmNtuples_1.root',
+    #'/store/group/phys_b2g/B2GAnaFW/DoubleEG/Run2015D-05Oct2015-v1_B2GAnaFW_v74x_v8p4/151122_201800/0000/B2GEDMNtuple_1.root',
+    #'/store/group/phys_b2g/B2GAnaFW/DoubleEG/Run2015D-PromptReco-v4_B2GAnaFW_v74x_v8p4/151122_201819/0000/B2GEDMNtuple_10.root',
+    #FileNames_DYJetsToLL
+    #'root://grid143.kfki.hu//store/group/phys_b2g/B2GAnaFW/Skims/CR_Zelel/DoubleEG/Run2015D-05Oct2015-v1_B2GAnaFW_v74x_v8p4_Skim_CR_Zelel_24Nov2015/151124_141440/0000/SkimmedB2GEdmNtuples_1.root'
+    ) 
     )
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
@@ -123,11 +133,11 @@ process.ana.jetAK8selParams.jetPtMin = cms.double(200)
 process.ana.jetAK4BTaggedselParams.jetPtMin = cms.double(50) 
 process.ana.STMin = cms.double(1000.)
 process.ana.vlqMass = cms.double(800.)
-process.ana.bosonMass = cms.double(91.2)
+process.ana.bosMass = cms.double(91.2)
 
 process.TFileService = cms.Service("TFileService",
        fileName = cms.string(
-         'output'
+         options.outFileName
          )
        )
 
@@ -146,3 +156,7 @@ process.p = cms.Path(
     *cms.ignore(process.ana)
     * process.finalEvents
     )
+
+#process.schedule = cms.Schedule(process.p)
+
+#open('dump.py','w').write(process.dumpPython())

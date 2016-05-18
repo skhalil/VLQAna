@@ -1,7 +1,11 @@
 #!/bin/bash
 #SAMPLE=BKG/Data/Signal ENTRY=number of samples  NFILE=number of files PATH=path to skimmed files
+#python fnal_fileParser_MC.py SAMPLE=tprime1000 ENTRY=18 NFILE=18 PATH=/store/group/phys_b2g/B2GAnaFW_76X_V1p2/TprimeTprime_M-1000_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160410_204521/000
 python fnal_fileParser_MC.py SAMPLE=tprime800 ENTRY=17 NFILE=17 PATH=/store/group/phys_b2g/B2GAnaFW_76X_V1p2/TprimeTprime_M-800_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160410_203417/0000/
+#python fnal_fileParser_MC.py SAMPLE=tprime1200 ENTRY=19 NFILE=19 PATH=/store/group/phys_b2g/B2GAnaFW_76X_V1p2/TprimeTprime_M-1200_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160410_204818/0000/
 python fnal_fileParser_MC.py SAMPLE=bprime800 ENTRY=18 NFILE=18 PATH=/store/group/phys_b2g/B2GAnaFW_76X_V1p2/BprimeBprime_M-800_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160411_160543/000
+#python fnal_fileParser_MC.py SAMPLE=bprime1000 ENTRY=18 NFILE=18 PATH=/store/group/phys_b2g/B2GAnaFW_76X_V1p2/BprimeBprime_M-1000_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160411_160854/000
+#python fnal_fileParser_MC.py SAMPLE=bprime1200 ENTRY=19 NFILE=19 PATH=/store/group/phys_b2g/B2GAnaFW_76X_V1p2/BprimeBprime_M-1200_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160411_161153/000
 python fnal_fileParser_MC.py SAMPLE=ttbar ENTRY=4653 NFILE=4653 PATH=/store/group/phys_b2g/B2GAnaFW_76X_V1p2/TT_TuneCUETP8M1_13TeV-powheg-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160408_145006/000
 #python fnal_fileParser_MC.py SAMPLE=dy_incl ENTRY=5849 NFILE=5849 PATH=/store/group/phys_b2g/B2GAnaFW_76X_V1p2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160410_211811/000
   python fnal_fileParser_MC.py SAMPLE=dy_HT100-200 ENTRY=66 NFILE=66 PATH=/store/user/jkarancs/SusyAnalysis/B2GEdmNtuple/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/160401_102503/000

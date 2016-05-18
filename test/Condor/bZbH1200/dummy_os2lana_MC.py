@@ -122,8 +122,8 @@ process.ana.BoostedZCandParams.ptMin = cms.double(150.)#not used in analysis
 process.ana.jetAK8selParams.jetPtMin = cms.double(200) 
 process.ana.jetAK4BTaggedselParams.jetPtMin = cms.double(50) 
 process.ana.STMin = cms.double(1000.)
-process.ana.vlqMass = cms.double(800.)
-process.ana.bosonMass = cms.double(91.2)
+process.ana.vlqMass = cms.double(1200.)
+process.ana.bosonMass = cms.double(125)
 
 process.TFileService = cms.Service("TFileService",
        fileName = cms.string(
