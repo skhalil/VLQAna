@@ -57,12 +57,14 @@ options.setDefault('maxEvents', -1)
 options.parseArguments()
 print options
 
+EWK = True
 hltpaths = []
 if options.isData:
   options.filterSignal = False 
   options.signalType = "" 
   options.optimizeReco = False
   options.applyLeptonSFs = False 
+  EWK = False
   if options.zdecaymode == "zmumu":
     hltpaths = [
         "HLT_DoubleIsoMu17_eta2p1_v", 
@@ -123,7 +125,8 @@ process.ana.jetAK8selParams.jetPtMin = cms.double(200)
 process.ana.jetAK4BTaggedselParams.jetPtMin = cms.double(50) 
 process.ana.STMin = cms.double(1000.)
 process.ana.vlqMass = cms.double(1200.)
-process.ana.bosMass = cms.double(91.2)
+process.ana.bosonMass = cms.double(91.2)
+process.ana.doEWKcorr = cms.bool(EWK)
 
 process.TFileService = cms.Service("TFileService",
        fileName = cms.string(

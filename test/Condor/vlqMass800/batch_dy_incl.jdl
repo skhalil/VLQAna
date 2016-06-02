@@ -3,7 +3,7 @@ Executable = runDY_inclusive.sh
 should_transfer_files = YES
 WhenTOTransferOutput  = ON_EXIT
 notification = never
-myPath = /uscms_data/d3/tmitchel/Analysis2016/CMSSW_7_4_16_patch2/src/Analysis/VLQAna/test/condorOut
+myPath = /uscms_data/d3/tmitchel/76X_test/CMSSW_7_6_5/src/Analysis/VLQAna/test/Condor/vlqMass800/BackgroundCondorOut/dy_inc
 Output = $(myPath)/batch_$(cluster)_$(process).stdout
 Error  = $(myPath)/batch_$(cluster)_$(process).stderr
 Log    = $(myPath)/batch_$(cluster)_$(process).condor
@@ -12,4 +12,4 @@ request_disk = 10000000
 request_memory = 2100
 x509userproxy = /tmp/x509up_u50431
 Arguments = $(process)
-Queue 213
+Queue 5849

@@ -8,7 +8,7 @@ options.register('isData', True,
     VarParsing.varType.bool,
     "Is data?"
     )
-options.register('zdecaymode', 'zmumu',
+options.register('zdecaymode', 'zelel',
     VarParsing.multiplicity.singleton,
     VarParsing.varType.string,
     "Z->mumu or Z->elel? Choose: 'zmumu' or 'zelel'"
@@ -23,7 +23,7 @@ options.register('outFileName', 'os2lana.root',
     VarParsing.varType.string,
     "Output file name"
     )
-options.register('doPUReweightingOfficial', True,
+options.register('doPUReweightingOfficial', False,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Do pileup reweighting using official recipe"
@@ -62,12 +62,14 @@ options.setDefault('maxEvents', -1)
 options.parseArguments()
 print options
 
+EWK = True
 hltpaths = []
 if options.isData:
   options.filterSignal = False 
   options.signalType = "" 
   options.optimizeReco = False
   options.applyLeptonSFs = False 
+  EWK = False
   if options.zdecaymode == "zmumu":
     hltpaths = [
         "HLT_DoubleIsoMu17_eta2p1_v", 
@@ -129,6 +131,7 @@ process.ana.jetAK4BTaggedselParams.jetPtMin = cms.double(50)
 process.ana.STMin = cms.double(1000.)
 process.ana.vlqMass = cms.double(800.)
 process.ana.bosonMass = cms.double(91.2)
+process.ana.doEWKcorr = cms.bool(EWK)
 
 process.TFileService = cms.Service("TFileService",
        fileName = cms.string(
