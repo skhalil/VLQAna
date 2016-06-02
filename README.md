@@ -1,5 +1,6 @@
 setenv SCRAM_ARCH slc6_amd64_gcc493
 
+
 cmsrel CMSSW_7_6_5
 
 cd CMSSW_7_6_5/src/
