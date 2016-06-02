@@ -17,6 +17,7 @@ rm btag-eff-subjet.root
 rm PU*
 rm Run*
 rm dataset*
+rm scale*
 rm os2lana*
 xrdcp *.root root://cmseos.fnal.gov//store/user/tmitchel/condor/vlqMass1000/tprime1000
 rm tprime1000_${sample}.py

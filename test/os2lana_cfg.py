@@ -59,26 +59,28 @@ options.parseArguments()
 print options
 
 hltpaths = []
+if options.zdecaymode == "zmumu":
+  hltpaths = [
+      "HLT_DoubleIsoMu17_eta2p1_v", 
+      "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",
+      #"HLT_DoubleMu8_Mass8_PFHT300_v",
+      ]
+elif options.zdecaymode == "zelel":
+  hltpaths = [
+      "HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v",
+      "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
+      #"HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v"
+      ]
+else:
+  sys.exit("!!!Error: Wrong Z decay mode option chosen. Choose either 'zmumu' or 'zelel'!!!") 
+
+EWK = True
 if options.isData:
   options.filterSignal = False 
   options.signalType = "" 
   options.optimizeReco = False
-  options.applyLeptonSFs = False 
-  if options.zdecaymode == "zmumu":
-    hltpaths = [
-        "HLT_DoubleIsoMu17_eta2p1_v", 
-        "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",
-        #"HLT_DoubleMu8_Mass8_PFHT300_v",
-        ]
-  elif options.zdecaymode == "zelel":
-    hltpaths = [
-        "HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v",
-        "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
-        #"HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v"
-        ]
-  else:
-    sys.exit("!!!Error: Wrong Z decay mode option chosen. Choose either 'zmumu' or 'zelel'!!!") 
-
+  options.applyLeptonSFs = False
+  EWK = False
 if options.filterSignal == True and len(options.signalType) == 0:
   sys.exit("!!!Error: Cannot keep signalType empty when filterSignal switched on!!!")  
 
@@ -93,6 +95,8 @@ process.source = cms.Source(
       #'file:/afs/cern.ch/work/d/devdatta/CMSREL/B2GAnaFW_76X/CMSSW_7_6_3_patch2/src/Analysis/B2GAnaFW/test/B2GEDMNtuple_DYJets_M50Madgraph.root',
       #'root://cms-xrd-global.cern.ch//store/user/jkarancs/SusyAnalysis/B2GEdmNtuple/TT_TuneCUETP8M1noCR_13TeV-powheg-pythia8/B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/160401_092930/0000/B2GEDMNtuple_13.root'
       'root://eoscms.cern.ch//eos/cms//store/group/phys_b2g/B2GAnaFW_76X_V1p2/TprimeTprime_M-1000_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160410_204521/0000/B2GEDMNtuple_1.root',
+      #'root://eoscms.cern.ch//store/group/phys_b2g/B2GAnaFW_76X_V1p2/BprimeBprime_M-800_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160411_160543/0000/B2GEDMNtuple_1.root',
+
     ) 
     )
 
@@ -127,6 +131,7 @@ process.ana.jetAK4BTaggedselParams.jetPtMin = cms.double(50)
 process.ana.STMin = cms.double(1000.)
 process.ana.vlqMass = cms.double(1000.) #M=1000
 process.ana.bosonMass = cms.double(91.2) #Z
+process.ana.doEWKcorr = cms.bool(EWK)
 
 process.TFileService = cms.Service("TFileService",
        fileName = cms.string(
@@ -152,4 +157,4 @@ process.p = cms.Path(
 
 #process.schedule = cms.Schedule(process.p)
 
-open('dump.py','w').write(process.dumpPython())
+#open('dump.py','w').write(process.dumpPython())

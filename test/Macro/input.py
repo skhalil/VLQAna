@@ -3,51 +3,60 @@
 # =====================================================
 #  INPUTS		
 # =====================================================
-path = '/uscms_data/d2/skhalil/MyVLQAna2/CMSSW_7_4_15_patch1/src/Analysis/VLQAna/test/CRAB_On_Skim/Histo/'
+path = '/uscms_data/d3/tmitchel/76X_test/CMSSW_7_6_5/src/Analysis/VLQAna/test/Macro/Histograms/vlqMass800/'
+pathS = '/uscms_data/d2/skhalil/MyVLQAna2/CMSSW_7_4_15_patch1/src/Analysis/VLQAna/test/CRAB_On_Skim/Histo/'
 pathR = '/uscms_data/d3/dmendis/Rachitha2/CMSSW_7_4_16_patch2/src/Analysis/VLQAna/test/CRAB_0n_Skim/Histo/'
-#path = '/Users/skhalil/Desktop/Analysis/OSDL/Macro/Analysis/Histo/'
-ch = 'CR_Zelel'
 
-f_Data_Oct2015 = TFile(path+'DoubleEG-Run2015D-05Oct2015-v1_os2lana_v0_'+ch+'.root')
-f_Data_PromptReco = TFile(path+'DoubleEG-Run2015D-PromptReco-v4_os2lana_v1_'+ch+'.root')
+ch = 'CR_Zmumu'
 
-f_DY100to200 = TFile(path+'DY_HT100to200_os2lana_v1_'+ch+'.root')
-f_DY200to400 = TFile(path+'DY_HT200to400_os2lana_v1_'+ch+'.root')
-f_DY400to600 = TFile(path+'DY_HT400to600_os2lana_v1_'+ch+'.root')
-f_DY600toInf = TFile(path+'DY_HT600toInf_os2lana_v1_'+ch+'.root')
-f_DYmcnlo    = TFile(path+'DY_amcatnlo_os2lana_v1_'+ch+'.root')
+#f_Data_Oct2015 = TFile(path+'')
+f_Data_PromptReco = TFile(path+'DoubleMuon_prompt.root')
 
-f_WJ100to200 = TFile(path+'WJetsToLNu_HT-100To200_os2lana_v1_'+ch+'.root')
-f_WJ200to400 = TFile(path+'WJetsToLNu_HT-200To400_os2lana_v1_'+ch+'.root')
-f_WJ400to600 = TFile(path+'WJetsToLNu_HT-400To600_os2lana_v1_'+ch+'.root')
-f_WJ600to800 = TFile(path+'WJetsToLNu_HT-600To800_os2lana_v1_'+ch+'.root')
-f_WJ800to1200 = TFile(path+'WJetsToLNu_HT-800To1200_os2lana_v1_'+ch+'.root')
-f_WJ1200to2500 = TFile(path+'WJetsToLNu_HT-1200To2500_os2lana_v1_'+ch+'.root')
-f_WJ2500toInf = TFile(path+'WJetsToLNu_HT-2500ToInf_os2lana_v1_'+ch+'.root')
+f_DY100to200 = TFile(path+'dy_HT100-200.root')
+f_DY200to400 = TFile(path+'dy_HT200-400.root')
+f_DY400to600 = TFile(path+'dy_HT400-600.root')
+f_DY600toInf = TFile(path+'dy_HT600-Inf.root')
+f_DYmcnlo    = TFile(path+'dy_inclusive.root')
 
-f_ST_tW_top     = TFile(path+'ST_tW_5f_top_powheg-pythia8_os2lana_v1_'+ch+'.root')
-f_ST_tW_antitop = TFile(path+'ST_tW_5f_antitop_powheg-pythia8_os2lana_v1_'+ch+'.root')
-f_ST_t          = TFile(path+'ST_t_4f_amcatnlo-pythia8_os2lana_v1_'+ch+'.root')
-f_ST_t_ex1      = TFile(path+'ST_t_4f_amcatnlo-pythia8_ext1_os2lana_v1_'+ch+'.root')
-f_ST_s          = TFile(path+'ST_s_4f_amcatnlo-pythia8_os2lana_v1_'+ch+'.root')
+# # f_WJ100to200 = TFile(path+'WJetsToLNu_HT-100To200_os2lana_v1_'+ch+'.root')
+# # f_WJ200to400 = TFile(path+'WJetsToLNu_HT-200To400_os2lana_v1_'+ch+'.root')
+# # f_WJ400to600 = TFile(path+'WJetsToLNu_HT-400To600_os2lana_v1_'+ch+'.root')
+# # f_WJ600to800 = TFile(path+'WJetsToLNu_HT-600To800_os2lana_v1_'+ch+'.root')
+# # f_WJ800to1200 = TFile(path+'WJetsToLNu_HT-800To1200_os2lana_v1_'+ch+'.root')
+# # f_WJ1200to2500 = TFile(path+'WJetsToLNu_HT-1200To2500_os2lana_v1_'+ch+'.root')
+# # f_WJ2500toInf = TFile(path+'WJetsToLNu_HT-2500ToInf_os2lana_v1_'+ch+'.root')
 
-f_ZZTo2L2Nu     = TFile(path+'ZZTo2L2Nu_powheg_pythia8_os2lana_v1_'+ch+'.root')
-f_WZTo2L2Q      = TFile(path+'WZTo2L2Q_amcatnlo_os2lana_v1_'+ch+'.root')
-f_WWTo2L2Nu     = TFile(path+'WWTo2L2Nu_powheg_os2lana_v1_'+ch+'.root')
+# # f_ST_tW_top     = TFile(path+'ST_tW_5f_top_powheg-pythia8_os2lana_v1_'+ch+'.root')
+# # f_ST_tW_antitop = TFile(path+'ST_tW_5f_antitop_powheg-pythia8_os2lana_v1_'+ch+'.root')
+# # f_ST_t          = TFile(path+'ST_t_4f_amcatnlo-pythia8_os2lana_v1_'+ch+'.root')
+# # f_ST_t_ex1      = TFile(path+'ST_t_4f_amcatnlo-pythia8_ext1_os2lana_v1_'+ch+'.root')
+# # f_ST_s          = TFile(path+'ST_s_4f_amcatnlo-pythia8_os2lana_v1_'+ch+'.root')
 
-f_ttbar         = TFile(path+'TT-powheg-pythia8-ext3_os2lana_v1_'+ch+'.root')
+# # f_ZZTo2L2Nu     = TFile(path+'ZZTo2L2Nu_powheg_pythia8_os2lana_v1_'+ch+'.root')
+# # f_WZTo2L2Q      = TFile(path+'WZTo2L2Q_amcatnlo_os2lana_v1_'+ch+'.root')
+# # f_WWTo2L2Nu     = TFile(path+'WWTo2L2Nu_powheg_os2lana_v1_'+ch+'.root')
 
-f_TpTp_tZtZ_800 = TFile(path+'TpTp_tZtZ_M-800_os2lana_v1_'+ch+'.root')
-f_TpTp_tZbW_800 = TFile(path+'TpTp_tZbW_M-800_os2lana_v1_'+ch+'.root')
-f_TpTp_tZtH_800 = TFile(path+'TpTp_tZtH_M-800_os2lana_v1_'+ch+'.root')
+f_ttbar         = TFile(path+'ttbar.root')
 
-f_TpTp_tZtZ_900 = TFile(path+'TpTp_tZtZ_M-900_os2lana_v1_'+ch+'.root')
-f_TpTp_tZbW_900 = TFile(path+'TpTp_tZbW_M-900_os2lana_v1_'+ch+'.root')
-f_TpTp_tZtH_900 = TFile(path+'TpTp_tZtH_M-900_os2lana_v1_'+ch+'.root')
+#f_TpTp_tZtZ_800 = TFile(path+'tprime800.root')
+#f_TpTp_tZbW_800 = TFile(path+'TpTp_tZbW_M-800.root')
+#f_TpTp_tZtH_800 = TFile(path+'TpTp_tZtH_M-800.root')
+#f_TpTp_tZtZ_1000 = TFile(path+'TpTp_tZtZ_M-1000.root')
+#f_TpTp_tZbW_1000 = TFile(path+'TpTp_tZbW_M-1000.root')
+#f_TpTp_tZtH_1000 = TFile(path+'TpTp_tZtH_M-1000.root')
+#f_TpTp_tZtZ_1200 = TFile(path+'tprime1200.root')
+#f_TpTp_tZbW_1200 = TFile(path+'TpTp_tZbW_M-1200.root')
+#f_TpTp_tZtH_1200 = TFile(path+'TpTp_tZtH_M-1200.root')
 
-f_TpTp_tZtZ_1000 = TFile(path+'TpTp_tZtZ_M-1000_os2lana_v1_'+ch+'.root')
-f_TpTp_tZbW_1000 = TFile(path+'TpTp_tZbW_M-1000_os2lana_v1_'+ch+'.root')
-f_TpTp_tZtH_1000 = TFile(path+'TpTp_tZtH_M-1000_os2lana_v1_'+ch+'.root')
+f_BpBp_bZbZ_800 = TFile(path+'bprime800.root')
+#f_BpBp_bZtW_800 = TFile(path+'BpBp_bZtW_M-800.root')
+#f_BpBp_bZbH_800 = TFile(path+'BpBp_bZbH_M-800.root')
+
+#f_BpBp_bZbZ_1000 = TFile(path+'bprime1000.root')
+
+#f_BpBp_bZbZ_1200 = TFile(path+'bprime1200.root')
+#f_BpBp_bZtW_1200 = TFile(path+'BpBp_bZtW_M-1200.root')
+#f_BpBp_bZbH_1200 = TFile(path+'BpBp_bZbH_M-1200.root')
 
 
 #===== cross sections (pb)==========
@@ -77,16 +86,19 @@ TpTp900_xs        = 0.0903  *gSF
 TpTp1000_xs       = 0.044   *gSF
 TpTp1200_xs       = 0.0118  *gSF
 TpTp1500_xs       = 0.00200 *gSF
+BpBp800_xs        = 0.196   *gSF
+BpBp1000_xs       = 0.044   *gSF
+BpBp1200_xs       = 0.0118  *gSF
 
 
 #===== Number of generated events ======
 
-Top_num          =  96834559.
-DY100to200_num   =  2725655.
-DY200to400_num   =  973937.
-DY400to600_num   =  1067758.
-DY600toInf_num   =  998912.
-DYmcnlo_num      =  28825132.
+Top_num          =  187626200.
+DY100to200_num   =  2655294.#2725655.
+DY200to400_num   =  962195.
+DY400to600_num   =  1069003.
+DY600toInf_num   =  1031103.
+DYmcnlo_num      =  246316514.
 WJ100to200_num   =  10152718.
 WJ200to400_num   =  5221599.
 WJ400to600_num   =  1745914.
@@ -102,15 +114,21 @@ ST_s_num         =  984400.
 ZZTo2L2Nu_num    =  8719200.
 WZTo2L2Q_num     =  31394787.
 WWTo2L2Nu_num    =  1965200.
-TpTp800_num      =  815600./3.
-TpTp900_num      =  832800./3.
-TpTp1000_num     =  822800./3.
-TpTp1200_num     =  832800./3.
-TpTp1500_num     =  812800./3.
+TpTp800_num      =  788200.
+TpTp900_num      =  832800./9.
+TpTp1000_num     =  0.
+TpTp1200_num     =  817800.
+TpTp1500_num     =  812800./9.
+BpBp700_num      =  832200./9.
+BpBp800_num      =  831200.
+BpBp900_num      =  832800./9.
+BpBp1000_num     =  822800./9.
+BpBp1200_num     =  830400.
+BpBp1500_num     =  812800./9.
 
 
 # Legend
-leg = TLegend(0.76,0.88,0.94,0.50)
+leg = TLegend(0.74,0.90,0.96,0.40)
 leg.SetBorderSize(0)
 leg.SetFillColor(10)
 leg.SetLineColor(10)
@@ -138,15 +156,15 @@ def prepareRatio(h_ratio, h_ratiobkg, scale, xTitle):
     h_ratio.GetYaxis().SetTitle("Data / Bkg")
     h_ratio.GetXaxis().SetTitle(xTitle)   
     h_ratio.SetMarkerStyle(8) 
-    h_ratio.SetMaximum(3)
-    h_ratio.SetMinimum(-1)
-    h_ratio.GetYaxis().SetLabelSize(0.06*scale)
+    h_ratio.SetMaximum(2)#3
+    h_ratio.SetMinimum(0)#-1
+    h_ratio.GetYaxis().SetLabelSize(0.02*scale)#0.06
     h_ratio.GetYaxis().SetTitleOffset(1.00/scale*0.5)
-    h_ratio.GetYaxis().SetTitleSize(0.08*scale)
+    h_ratio.GetYaxis().SetTitleSize(0.02*scale)#0.08
     h_ratio.GetYaxis().SetTitleFont(42)
-    h_ratio.GetXaxis().SetLabelSize(0.06*scale)
+    h_ratio.GetXaxis().SetLabelSize(0.02*scale)#0.06
     h_ratio.GetXaxis().SetTitleOffset(0.45*scale)
-    h_ratio.GetXaxis().SetTitleSize(0.09*scale)
+    h_ratio.GetXaxis().SetTitleSize(0.02*scale)#0.09
     h_ratio.GetYaxis().SetNdivisions(505)
     h_ratio.GetXaxis().SetNdivisions(510)
     h_ratio.SetTickLength(0.06,"X")
@@ -188,7 +206,7 @@ def setCosmetics(hist, legname, hname, color):
     if 'Data' in hname:
         leg.AddEntry(hist, legname, 'pl')
         hist.SetMarkerStyle(8)
-    elif 'tZ' in hname:          
+    elif 'tZ' in hname or 'bZ' in hname:          
         hist.SetLineWidth(2)
         leg.AddEntry(hist, legname, 'l')
     else:

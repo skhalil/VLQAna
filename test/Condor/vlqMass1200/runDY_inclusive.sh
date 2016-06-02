@@ -7,7 +7,11 @@ eval `scram runtime -sh`
 cd ${_CONDOR_SCRATCH_DIR}
 echo ${_CONDOR_SCRATCH_DIR}
 let "sample=${1}+1"
+<<<<<<< HEAD
+cp /uscms_data/d3/tmitchel/76X_test/CMSSW_7_6_5/src/Analysis/VLQAna/test/Condor/vlqMass1200/dy_incl/dy_incl_${sample}.py .
+=======
 cp /uscms_data/d3/tmitchel/76X_test/CMSSW_7_6_5/src/Analysis/VLQAna/test/Condor/vlqMass800/dy_incl/dy_incl_${sample}.py .
+>>>>>>> 8fd4213f95dc5b8ddd9aeb7cda3e34a544431f85
 cp /uscms_data/d3/tmitchel/76X_test/CMSSW_7_6_5/src/Analysis/VLQAna/test/*.txt .
 cp /uscms_data/d3/tmitchel/76X_test/CMSSW_7_6_5/src/Analysis/VLQAna/test/*.root .
 cp /uscms_data/d3/tmitchel/76X_test/CMSSW_7_6_5/src/Analysis/VLQAna/test/inputFiles_cfi.py .
@@ -18,7 +22,7 @@ rm Run*
 rm dataset*
 
 rm os2lana*
-xrdcp *.root root://cmseos.fnal.gov//store/user/tmitchel/condor/dy_inclusive
+xrdcp *.root root://cmseos.fnal.gov//store/user/tmitchel/condor/vlqMass1200/dy_inclusive
 rm dy_incl_${sample}.py
 rm *.root
 ls

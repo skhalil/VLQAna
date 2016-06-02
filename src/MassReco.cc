@@ -167,15 +167,15 @@ double MassReco::chi2(vector<TLorentzVector> jets, TLorentzVector Leptons, doubl
 
 	double Zup = abs((jets[2] + jets[3]).M() - bosMass);
 	double Zup2 = Zup * Zup;
-	double term1 = Zup2 / (12.2676 * 12.2676);
+	double term1 = Zup2 / (16.3*16.3);
 
 	double BHup = abs((jets[1] + jets[2] + jets[3]).M() - mass);
 	double BHup2 = BHup * BHup;
-	double term2 = BHup2 / (78.6888 * 78.6888);
+	double term2 = BHup2 / (86.5*86.5);
 
 	double BLup = abs((jets[0] + Leptons).M() - mass);
 	double BLup2 = BLup * BLup;
-	double term3 = BLup2 / (59.0947 * 59.0947);
+	double term3 = BLup2 / (83.8*83.8);
 
 	double result = term1 + term2 + term3;
 
