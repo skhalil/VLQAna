@@ -17,7 +17,7 @@ rm PU*
 rm Run*
 rm dataset*
 rm os2lana*
-xrdcp *.root root://cmseos.fnal.gov//store/user/tmitchel/condor/vlqMass800/electron/dy_HT200-400
+xrdcp *.root root://cmseos.fnal.gov//store/user/tmitchel/condor/vlqMass800/dy_HT200-400
 rm dy_HT200-400_${sample}.py
 rm *.root
 ls

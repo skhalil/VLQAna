@@ -13,7 +13,6 @@ cp /uscms_data/d3/tmitchel/76X_test/CMSSW_7_6_5/src/Analysis/VLQAna/test/*.root 
 cp /uscms_data/d3/tmitchel/76X_test/CMSSW_7_6_5/src/Analysis/VLQAna/test/inputFiles_cfi.py .
 cmsRun DoubleMuon_prompt_${sample}.py
 rm btag-eff-subjet.root
-rm scale*
 rm PU*
 rm Run*
 rm dataset*

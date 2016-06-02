@@ -18,7 +18,7 @@ rm Run*
 rm dataset*
 rm os2lana*
 rm scale*
-xrdcp *.root root://cmseos.fnal.gov//store/user/tmitchel/condor/vlqMass800/electron/ttbar
+xrdcp *.root root://cmseos.fnal.gov//store/user/tmitchel/condor/vlqMass800/ttbar
 rm ttbar_${sample}.py
 rm *.root
 ls

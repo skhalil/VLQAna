@@ -17,7 +17,7 @@ rm PU*
 rm Run*
 rm dataset*
 rm os2lana*
-xrdcp *.root root://cmseos.fnal.gov//store/user/tmitchel/condor/vlqMass800/electron/bprime800
+xrdcp *.root root://cmseos.fnal.gov//store/user/tmitchel/condor/vlqMass800/bprime800
 rm bprime800_${sample}.py
 rm *.root
 ls

@@ -17,7 +17,11 @@ rm PU*
 rm Run*
 rm dataset*
 rm os2lana*
+<<<<<<< HEAD
 xrdcp *.root root://cmseos.fnal.gov//store/user/tmitchel/condor/vlqMass800/electron/Dmu_Prompt
+=======
+xrdcp *.root root://cmseos.fnal.gov//store/user/tmitchel/condor/vlqMass800/Dmu_Prompt
+>>>>>>> 8fd4213f95dc5b8ddd9aeb7cda3e34a544431f85
 rm DoubleMuon_prompt_${sample}.py
 rm *.root
 ls
