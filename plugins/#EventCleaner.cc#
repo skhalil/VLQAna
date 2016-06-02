@@ -143,7 +143,6 @@ EventCleaner::EventCleaner(const edm::ParameterSet& iConfig) :
   consumes<int>                     (l_puNtrueInt    ) ; 
 
   if ( !isData_ ) {
-  }
 
   if (doPUReweightingOfficial_) {
     LumiWeights_     = edm::LumiReWeighting(file_PUDistMC_, file_PUDistData_    , hist_PUDistMC_, hist_PUDistData_) ;

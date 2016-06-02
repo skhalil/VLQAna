@@ -17,6 +17,7 @@ rm PU*
 rm Run*
 rm dataset*
 rm os2lana*
+rm scale*
 xrdcp *.root root://cmseos.fnal.gov//store/user/tmitchel/condor/vlqMass800/tprime800
 rm tprime800_${sample}.py
 rm *.root

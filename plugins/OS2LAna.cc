@@ -87,6 +87,7 @@ class OS2LAna : public edm::EDFilter {
     const double STMin_                          ; 
     const bool filterSignal_                     ;
     const bool additionalPlots_                  ;
+    const bool doEWKcorr_                        ;
     const std::string signalType_                ;
     const std::string zdecayMode_                ;
     const bool optimizeReco_                     ;
@@ -108,6 +109,7 @@ class OS2LAna : public edm::EDFilter {
     std::map<std::string, TH2D*> h2_             ; 
     std::string lep; 
     PickGenPart genpart                          ;
+    const std::string file_EWK_                            ;
 };
 
 using namespace std;
@@ -152,6 +154,7 @@ OS2LAna::OS2LAna(const edm::ParameterSet& iConfig) :
   STMin_                  (iConfig.getParameter<double>            ("STMin")), 
   filterSignal_           (iConfig.getParameter<bool>              ("filterSignal")), 
   additionalPlots_        (iConfig.getParameter<bool>              ("additionalPlots")), 
+  doEWKcorr_              (iConfig.getParameter<bool>              ("doEWKcorr")),
   signalType_             (iConfig.getParameter<std::string>       ("signalType")), 
   zdecayMode_             (iConfig.getParameter<std::string>       ("zdecayMode")),
   optimizeReco_           (iConfig.getParameter<bool>              ("optimizeReco")),
@@ -170,6 +173,8 @@ OS2LAna::OS2LAna(const edm::ParameterSet& iConfig) :
   jetTopTaggedmaker       (iConfig.getParameter<edm::ParameterSet> ("jetTopTaggedselParams"),consumesCollector()),   
   lep                     (iConfig.getParameter<std::string>       ("lep")), 
   genpart                 (genParams_, consumesCollector()) 
+  //  file_EWK_               (iConfig.getParameter<std::string>              ("File_EWK"))
+
 {
 
   produces<vlq::JetCollection>("tjets") ; 
@@ -207,9 +212,6 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   const bool hltdecision(*h_hltdecision.product()) ; 
   if ( !hltdecision ) return false;
 
-  //double evtwtgen(*h_evtwtGen.product());
-  double evtwt((*h_evtwtGen.product()) * (*h_evtwtPV.product())) ; 
-
   vlq::MuonCollection goodMuons; 
   muonmaker(evt, goodMuons) ; 
 
@@ -235,6 +237,16 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   if (zdecayMode_ == "zmumu") {dileptons = dimuons; }
   else if (zdecayMode_ == "zelel") {dileptons = dielectrons;}
   if (dileptons.size() < 1) return false;
+
+  TFile* EWKcorr = new TFile("scalefactors_v4.root");
+  TF1* func = (TF1*)EWKcorr->Get("z_ewkcorr/z_ewkcorr_func");
+  double ewk = 1;
+  if (doEWKcorr_ == true)
+    ewk = func->Eval(dileptons.at(0).getPt());
+  //  cout << ewk << endl;
+
+  //double evtwtgen(*h_evtwtGen.product());                                                                                                                                                                       
+  double evtwt((*h_evtwtGen.product()) * (*h_evtwtPV.product()) * (ewk)) ;
 
   //get lepton ID and Iso SF
   if (applyLeptonSFs_ && *h_evttype.product() != "EvtType_Data") {
@@ -334,6 +346,8 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   // Z pt
   for (auto izll : zll) h1_["pt_z"+lep+lep+"_pre"] -> Fill(izll.getPt(), evtwt) ;
 
+  
+
   //========================================================
   // Preselection done, proceeding with control selections
   //========================================================
@@ -347,7 +361,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
 
   //fill control plots
   if ( goodBTaggedAK4Jets.size() > 0 && ST < 700) {
-     for (auto izll : zll) {
+    for (auto izll : zll) {
         h1_["mass_z"+lep+lep+"_cnt"] -> Fill(izll.getMass(), evtwt) ;  
         h1_["pt_z"+lep+lep+"_cnt"] -> Fill(izll.getPt(), evtwt) ; 
      }
