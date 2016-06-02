@@ -17,7 +17,7 @@ genPartParams = cms.PSet(
     genPartMom1Status   = cms.InputTag("genPart", "genPartMom1Status"), 
     genPartDau0Status   = cms.InputTag("genPart", "genPartDau0Status"), 
     genPartDau1Status   = cms.InputTag("genPart", "genPartDau1Status"), 
-    debug               = cms.bool(False), 
+    debug               = cms.bool(True), 
     )
 
 getSelectParams = cms.PSet(

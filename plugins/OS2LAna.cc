@@ -81,7 +81,7 @@ class OS2LAna : public edm::EDFilter {
     edm::ParameterSet DilepCandParams_           ; 
     edm::ParameterSet ZCandParams_               ; 
     edm::ParameterSet BoostedZCandParams_        ; 
-    edm::ParameterSet GenHSelParams_             ;
+   //edm::ParameterSet GenHSelParams_             ;
     edm::ParameterSet genParams_                 ;
     const double HTMin_                          ;
     const double STMin_                          ; 
@@ -146,7 +146,7 @@ OS2LAna::OS2LAna(const edm::ParameterSet& iConfig) :
   DilepCandParams_        (iConfig.getParameter<edm::ParameterSet> ("DilepCandParams")),
   ZCandParams_            (iConfig.getParameter<edm::ParameterSet> ("ZCandParams")),
   BoostedZCandParams_     (iConfig.getParameter<edm::ParameterSet> ("BoostedZCandParams")),
-  GenHSelParams_          (iConfig.getParameter<edm::ParameterSet> ("GenHSelParams")),
+  //GenHSelParams_          (iConfig.getParameter<edm::ParameterSet> ("GenHSelParams")),
   genParams_              (iConfig.getParameter<edm::ParameterSet> ("genParams")),
   HTMin_                  (iConfig.getParameter<double>            ("HTMin")),
   STMin_                  (iConfig.getParameter<double>            ("STMin")), 

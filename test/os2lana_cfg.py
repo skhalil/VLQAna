@@ -28,12 +28,12 @@ options.register('doPUReweightingOfficial', True,
     VarParsing.varType.bool,
     "Do pileup reweighting using official recipe"
     )
-options.register('filterSignal', False,
+options.register('filterSignal', True,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Select only tZtt or bZbZ modes"
     )
-options.register('signalType', '',
+options.register('signalType', 'EvtType_MC_tZtZ',
     VarParsing.multiplicity.singleton,
     VarParsing.varType.string,
     "Select one of EvtType_MC_tZtZ, EvtType_MC_tZtH, EvtType_MC_tZbW, EvtType_MC_tHtH, EvtType_MC_tHbW, EvtType_MC_bWbW, EvtType_MC_bZbZ, EvtType_MC_bZbH, EvtType_MC_bZtW, EvtType_MC_bHbH, EvtType_MC_bHtW, EvtType_MC_tWtW" 
@@ -54,7 +54,7 @@ options.register('optimizeReco', True,
     "Optimize mass reconstruction"
     )
 
-options.setDefault('maxEvents', -1)
+options.setDefault('maxEvents', 2)
 options.parseArguments()
 print options
 
@@ -91,7 +91,8 @@ process.source = cms.Source(
     fileNames = cms.untracked.vstring(
       #FileNames[options.FileNames]
       #'file:/afs/cern.ch/work/d/devdatta/CMSREL/B2GAnaFW_76X/CMSSW_7_6_3_patch2/src/Analysis/B2GAnaFW/test/B2GEDMNtuple_DYJets_M50Madgraph.root',
-      'root://cms-xrd-global.cern.ch//store/user/jkarancs/SusyAnalysis/B2GEdmNtuple/TT_TuneCUETP8M1noCR_13TeV-powheg-pythia8/B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/160401_092930/0000/B2GEDMNtuple_13.root'
+      #'root://cms-xrd-global.cern.ch//store/user/jkarancs/SusyAnalysis/B2GEdmNtuple/TT_TuneCUETP8M1noCR_13TeV-powheg-pythia8/B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/160401_092930/0000/B2GEDMNtuple_13.root'
+      'root://eoscms.cern.ch//eos/cms//store/group/phys_b2g/B2GAnaFW_76X_V1p2/TprimeTprime_M-1000_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160410_204521/0000/B2GEDMNtuple_1.root',
     ) 
     )
 
