@@ -43,6 +43,16 @@ options.register('applyLeptonSFs', True,
     VarParsing.varType.bool,
     "Apply lepton SFs to the MC"
     )
+options.register('applyBTagSFs', True,
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.bool,
+    "Apply b-tagging SFs to the MC"
+    )
+options.register('applyDYNLOCorr', False, ### Set to true only for DY process ### Only EWK NLO k-factor is applied
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.bool,
+    "Apply DY EWK k-factor to DY MC"
+    )
 options.register('FileNames', 'FileNames_QCD_HT1000to1500',
     VarParsing.multiplicity.singleton,
     VarParsing.varType.string,
@@ -81,6 +91,7 @@ if options.isData:
   options.optimizeReco = False
   options.applyLeptonSFs = False
   EWK = False
+
 if options.filterSignal == True and len(options.signalType) == 0:
   sys.exit("!!!Error: Cannot keep signalType empty when filterSignal switched on!!!")  
 
@@ -115,6 +126,8 @@ process.ana = ana.clone(
     signalType = cms.string(options.signalType),
     zdecayMode = cms.string(options.zdecaymode),
     applyLeptonSFs = cms.bool(options.applyLeptonSFs),
+    applyBTagSFs = cms.bool(options.applyBTagSFs),
+    applyDYNLOCorr = cms.bool(options.applyDYNLOCorr),
     optimizeReco = cms.bool(options.optimizeReco),
     )
 process.ana.elselParams.elidtype = cms.string(options.lepID)
