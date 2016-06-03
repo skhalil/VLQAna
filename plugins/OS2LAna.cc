@@ -353,11 +353,31 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   //========================================================
 
 
+  //Flavor Check
+  for (vlq::Jet jet : goodAK4Jets) {
+    if ( abs(jet.getHadronFlavour()) == 5){
+      for (auto izll : zll) h1_["pt_zb_pre"] -> Fill(jet.getPt()+izll.getPt(), evtwt) ;
+    }
+    if ( abs(jet.getHadronFlavour()) == 4){
+      for (auto izll : zll) h1_["pt_zc_pre"] -> Fill(jet.getPt()+izll.getPt(), evtwt) ;
+    }
+    if ( abs(jet.getHadronFlavour()) < 4){
+      for (auto izll : zll) h1_["pt_zlight_pre"] -> Fill(jet.getPt()+izll.getPt(), evtwt) ;
+    }
+  }
+
   //b-tagging:
   vlq::JetCollection goodBTaggedAK4Jets;
   jetAK4BTaggedmaker(evt, goodBTaggedAK4Jets) ; 
   if (zdecayMode_ == "zmumu") {cleanjets(goodBTaggedAK4Jets, goodMuons); }
   else if (zdecayMode_ == "zelel") {cleanjets(goodBTaggedAK4Jets, goodElectrons); }  
+
+  //fill control plots                                                                                                                                                                                             
+  if ( goodBTaggedAK4Jets.size() == 0 && ST < 700) {
+    for (auto izll : zll) {
+      h1_["nob_pt_z"+lep+lep+"_cnt"] -> Fill(izll.getPt(), evtwt) ;
+    }
+  }
 
   //fill control plots
   if ( goodBTaggedAK4Jets.size() > 0 && ST < 700) {
@@ -673,6 +693,14 @@ void OS2LAna::beginJob() {
   TFileDirectory cnt = fs->mkdir ("cnt");
   TFileDirectory *bookDir[3]; bookDir[0] = &pre; bookDir[1] = &cnt; bookDir[2] = &sig;
   std::vector<string> suffix = {"_pre", "_cnt", ""};
+
+  //btag == 0 control region
+  h1_["nob_pt_z"+lep+lep+"_cnt"] = fs->make<TH1D>(("nob_pt_z"+lep+lep+"_cnt").c_str(), "p_{T} (Z#rightarrow  l^{+}l^{-}) [GeV]", 50, 0., 1000.) ;
+  h1_["pt_zlight_pre"] = fs->make<TH1D>("pt_zlight_pre", "p_{T} (Z + q_{light}) [GeV]", 100, 0., 2000.) ;
+  h1_["pt_zb_pre"] = fs->make<TH1D>("pt_zb_pre", "p_{T} (Z + b) [GeV]", 100, 0., 2000.) ;
+  h1_["pt_zc_pre"] = fs->make<TH1D>("pt_zc_pre", "p_{T} (Z + c) [GeV]", 100, 0., 2000.) ;
+
+
 
 for (int i=0; i<3; i++){
      h1_[("npv_noweight"+suffix[i]).c_str()] = bookDir[i]->make<TH1D>( ("npv_noweight"+suffix[i]).c_str(), ";N(PV);;", 51, -0.5, 50.5) ; 
