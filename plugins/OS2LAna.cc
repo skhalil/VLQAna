@@ -75,6 +75,7 @@ class OS2LAna : public edm::EDFilter {
     virtual void endJob() override;
     void fillAdditionalPlots( vlq::ElectronCollection goodElectrons,double evtwt);
     double GetDYNLOCorr(const double dileppt); 
+    vlq::CandidateCollection ZptCorr(vlq::CandidateCollection, double, double);
     // ----------member data ---------------------------
     edm::EDGetTokenT<string>   t_evttype         ;
     edm::EDGetTokenT<double>   t_evtwtGen        ;
@@ -239,7 +240,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   metmaker(evt, goodMet) ;
 
   vlq::CandidateCollection dimuons, dielectrons, dileptons;   
-  vlq::CandidateCollection zll; //generic collection
+  vlq::CandidateCollection zlluncorr; //generic collection
 
   // dilepton properties: M > 50, lead pt > 45, second pt > 25
   DileptonCandsProducer dileptonsprod(DilepCandParams_) ; 
@@ -273,7 +274,10 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
 
   //Z mass candidate filter: 75 < M < 105, lead pt > 45, 2nd pt > 25, Z pt > 0
   CandidateFilter zllfilter(ZCandParams_) ; 
-  zllfilter(dileptons, zll);
+  zllfilter(dileptons, zlluncorr);
+
+  // Do Z pt correction
+  vlq::CandidateCollection zll = ZptCorr(zlluncorr, .604988, .0000728925) ;
 
   // jets
   vlq::JetCollection goodAK4Jets;
@@ -357,7 +361,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   }
 
   // Z pt
-  for (auto izll : zll) h1_["pt_z"+lep+lep+"_pre"] -> Fill(izll.getPt(), evtwt) ;
+  for (auto izll : zll) h1_["pt_z"+lep+lep+"_pre"] -> Fill(izll.getPt(), evtwt) ; 
 
   
 
@@ -386,13 +390,13 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   if (zdecayMode_ == "zmumu") {cleanjets(goodBTaggedAK4Jets, goodMuons); }
   else if (zdecayMode_ == "zelel") {cleanjets(goodBTaggedAK4Jets, goodElectrons); }  
 
-<<<<<<< HEAD
   //fill control plots                                                                                                                                                                                             
   if ( goodBTaggedAK4Jets.size() == 0 && ST < 700) {
     for (auto izll : zll) {
       h1_["nob_pt_z"+lep+lep+"_cnt"] -> Fill(izll.getPt(), evtwt) ;
     }
-=======
+  }
+
   double btagsf(1) ;
   double btagsf_bcUp(1) ; 
   double btagsf_bcDown(1) ; 
@@ -413,8 +417,10 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
 
      btagsfutils_->getBTagSFs (csvs, pts, etas, flhads, jetAK4maker.idxjetCSVDiscMin_, btagsf, btagsf_bcUp, btagsf_bcDown, btagsf_lUp, btagsf_lDown) ; 
 
->>>>>>> 4f15f398e451437b11dbd45e974231ddfc6d224e
   }
+
+  // apply b tag scale factors
+  evtwt *= btagsf;
 
   //fill control plots
   if ( goodBTaggedAK4Jets.size() > 0 && ST < 700) {
@@ -481,7 +487,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   if ( ST > STMin_ ) h1_["cutflow"] -> Fill(8, evtwt) ;  
   else return false ; 
 
-  // get AK8, top, b, Z, and W jets
+// get AK8, top, b, Z, and W jets
   vlq::JetCollection goodAK8Jets, goodHTaggedJets, goodWTaggedJets, goodTopTaggedJets;
   jetAK8maker(evt, goodAK8Jets); 
   cleanjets(goodAK8Jets, goodMuons); 
@@ -624,7 +630,6 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
 
   if (optimizeReco_ && *h_evttype.product() != "EvtType_Data"){
 
-<<<<<<< HEAD
      GenParticleCollection genPartsInfo;
      genPartsInfo = genpart(evt) ;
      // Declare TLorentzVectors to fill with genParticles
@@ -675,51 +680,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      h1_["lepBJetMass"] ->Fill(lepBJet, evtwt);
 
      }
-=======
-    GenParticleCollection genPartsInfo;
-    genPartsInfo = genpart(evt) ;
-    // Declare TLorentzVectors to fill with genParticles
-    TLorentzVector bGen, bbarGen, q1, q2;// Z1, Z2;
-    TLorentzVector qJet, qbarJet, bJet, bbarJet;
-    TLorentzVector had_bjet, lep_bjet, had_bGen, lep_bGen;
-    bGen = reco.getGen(genPartsInfo, 5, 8000002);
-    bbarGen = reco.getGen(genPartsInfo, -5, 8000002);
-    q1 = reco.getGen(genPartsInfo, 1, 5, 8000002);
-    q2 = reco.getGen(genPartsInfo, -5, -1, 8000002);
 
-    qJet = reco.getMatchedJet(q1, goodAK4Jets, 0.3);
-    qbarJet = reco.getMatchedJet(q2, goodAK4Jets, 0.3);
-    bJet = reco.getMatchedJet(bGen, goodAK4Jets, 0.3);
-    bbarJet = reco.getMatchedJet(bbarGen, goodAK4Jets, 0.3);
-
-    //Choose charge of b (Change based on B' mass)
-    double bcheck = abs((bGen + q1 + q2).M() - vlqMass_);
-    double bbarcheck = abs((bbarGen + q1 + q2).M() - vlqMass_);
-    if (bcheck < bbarcheck){
-      had_bGen = bGen;
-      lep_bGen = bbarGen;
-      had_bjet = bJet;
-      lep_bjet = bbarJet;
-    }
-    else {
-      had_bGen = bbarGen;
-      lep_bGen = bGen;
-      had_bjet = bbarJet;
-      lep_bjet = bJet;
-    }
-    double genZ = reco.findInvMass(q1, q2);
-    double genB = reco.findInvMass(q1, q2, had_bGen);
-    double ZJet = reco.findInvMass(qJet, qbarJet);
-    double hadBJet = reco.findInvMass(qJet, qbarJet, had_bjet);
-    double lepBJet = reco.findInvMass(lep1, lep2, lep_bjet);
-
-    h1_["genZ"]->Fill(genZ, evtwt);
-    h1_["genBMass"] -> Fill(genB, evtwt);
-    h1_["ZJetMass"]->Fill(ZJet,evtwt);
-    h1_["hadBJetMass"] ->Fill(hadBJet, evtwt);
-    h1_["lepBJetMass"] ->Fill(lepBJet, evtwt);
-  }
->>>>>>> 4f15f398e451437b11dbd45e974231ddfc6d224e
   pair<double, double> chi2_result;
   if (goodAK4Jets.size() > 4)
      chi2_result = reco.doReco(goodAK4Jets, bosonMass_, Leptons);
@@ -902,6 +863,23 @@ double OS2LAna::GetDYNLOCorr(const double dileppt) {
   double EWKNLOkfact = fun_DYNLOCorr->Eval(dileppt);
   return EWKNLOkfact; 
 
+}
+
+vlq::CandidateCollection OS2LAna::ZptCorr(vlq::CandidateCollection collection, double p0, double p1){
+  vlq::CandidateCollection toReturn;
+  for (auto cand : collection){
+    toReturn.clear();
+    TLorentzVector p4 = cand.getP4();
+    double Ptscale = p1 * p4.Pt() + p0;
+    double Pt = p4.Pt() * Ptscale;
+    double Eta = p4.Eta();
+    double Phi = p4.Phi();
+    double Mass= p4.M();
+    p4.SetPtEtaPhiM(Pt, Eta, Phi, Mass);
+    cand.setP4(p4);
+    toReturn.push_back(cand);
+  }
+  return(toReturn);
 }
 
 void OS2LAna::endJob() {

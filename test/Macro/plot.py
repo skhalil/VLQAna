@@ -143,10 +143,10 @@ dy       = [
 #tZbW_1200 = [[f_TpTp_tZbW_1200, TpTp1200_xs,         TpTp1200_num,       lumi]]
 #tZtH_1200 = [[f_TpTp_tZtH_1200, TpTp1200_xs,         TpTp1200_num,       lumi]]
 
-bZbZ_800 = [[f_BpBp_bZbZ_800, BpBp800_xs,         BpBp800_num,       lumi]]
+#bZbZ_800 = [[f_BpBp_bZbZ_800, BpBp800_xs,         BpBp800_num,       lumi]]
 #bZtW_800 = [[f_BpBp_bZtW_800, BpBp800_xs,         BpBp800_num,       lumi]]
 #bZbH_800 = [[f_BpBp_bZbH_800, BpBp800_xs,         BpBp800_num,       lumi]]
-#bZbZ_1000 = [[f_BpBp_bZbZ_1000, BpBp1000_xs,         BpBp1000_num,       lumi]]                                                                                               
+bZbZ_1000 = [[f_BpBp_bZbZ_1000, BpBp1000_xs,         BpBp1000_num,       lumi]]                                                                                               
 #tZbW_1000 = [[f_TpTp_tZbW_1000, TpTp1000_xs,         TpTp1000_num,       lumi]]                                                                                               
 #tZtH_1000 = [[f_TpTp_tZtH_1000, TpTp1000_xs,         TpTp1000_num,       lumi]]                                                                                               
 #bZbZ_1200 = [[f_BpBp_bZbZ_1200, BpBp1200_xs,         BpBp1200_num,       lumi]]
@@ -170,7 +170,7 @@ h_dy       = getHisto(dyLabel,         dyLeg,          pDir, var,  dy,       90,
 #h_tZbW_1200 = getHisto('TT_tZbW_M1200_', 'TT_tZbW_M1200', pDir, var,  tZbW_1200, kBlue+3,  verbose)
 #h_tZtH_1200 = getHisto('TT_tZtH_M1200_', 'TT_tZtH_M1200', pDir, var,  tZtH_1200, kBlue+2, verbose)
 
-h_bZbZ_800 = getHisto('BB_bZbZ_M800_', 'BB_bZbZ_M800', pDir, var,  bZbZ_800, kRed,    verbose)
+#h_bZbZ_800 = getHisto('BB_bZbZ_M800_', 'BB_bZbZ_M800', pDir, var,  bZbZ_800, kRed,    verbose)
 #h_bZtW_800 = getHisto('BB_bZtW_M800_', 'BB_bZtW_M800', pDir, var,  bZtW_800, kRed+3,  verbose)
 #h_bZbH_800 = getHisto('BB_bZbH_M800_', 'BB_bZbH_M800', pDir, var,  bZbH_800, kRed+2, verbose)
 #h_bZbZ_1000 = getHisto('BB_bZbZ_M1000_', 'BB_bZbZ_M1000', pDir, var,  bZbZ_1000, kCyan,    verbose)
@@ -196,7 +196,7 @@ templates.append(h_top)
 #templates.append(h_tZtZ_1200)
 #templates.append(h_tZbW_1200)
 #templates.append(h_tZtH_1200)
-templates.append(h_bZbZ_800)
+#templates.append(h_bZbZ_800)
 #templates.append(h_bZtW_800)
 #templates.append(h_bZbH_800)
 #templates.append(h_bZbZ_1000)
@@ -320,14 +320,14 @@ scale = (1.0 - 0.3)/0.35
 
 # prepare top pad for original plot
 pad = c1.cd(1)
-pad.SetPad(0, 0.7, 1, 1)
+pad.SetPad(0, 0.3, 1, 1)
 pad.SetTopMargin(0.1)
 pad.SetBottomMargin(0.005)
 t = pad.GetTopMargin()
 
 # prepare the 2nd pad
 pad = c1.cd(2)
-pad.SetPad(0, 0.0, 1, 0.7)
+pad.SetPad(0, 0.0, 1, 0.3)
 pad.SetTopMargin(0.06)
 pad.SetBottomMargin(0.4)
 pad.SetTickx(1)

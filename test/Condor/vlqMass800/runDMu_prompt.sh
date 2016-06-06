@@ -11,17 +11,16 @@ cp /uscms_data/d3/tmitchel/76X_test/CMSSW_7_6_5/src/Analysis/VLQAna/test/Condor/
 cp /uscms_data/d3/tmitchel/76X_test/CMSSW_7_6_5/src/Analysis/VLQAna/test/*.txt .
 cp /uscms_data/d3/tmitchel/76X_test/CMSSW_7_6_5/src/Analysis/VLQAna/test/*.root .
 cp /uscms_data/d3/tmitchel/76X_test/CMSSW_7_6_5/src/Analysis/VLQAna/test/inputFiles_cfi.py .
+cp /uscms_data/d3/tmitchel/76X_test/CMSSW_7_6_5/src/Analysis/VLQAna/test/*.csv .
 cmsRun DoubleMuon_prompt_${sample}.py
 rm btag-eff-subjet.root
 rm PU*
+rm *.csv
 rm Run*
 rm dataset*
+rm scale*
 rm os2lana*
-<<<<<<< HEAD
-xrdcp *.root root://cmseos.fnal.gov//store/user/tmitchel/condor/vlqMass800/electron/Dmu_Prompt
-=======
 xrdcp *.root root://cmseos.fnal.gov//store/user/tmitchel/condor/vlqMass800/Dmu_Prompt
->>>>>>> 8fd4213f95dc5b8ddd9aeb7cda3e34a544431f85
 rm DoubleMuon_prompt_${sample}.py
 rm *.root
 ls
