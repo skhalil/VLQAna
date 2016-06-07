@@ -8,7 +8,7 @@ options.register('isData', False,
     VarParsing.varType.bool,
     "Is data?"
     )
-options.register('zdecaymode', 'zmumu',
+options.register('zdecaymode', 'zelel',
     VarParsing.multiplicity.singleton,
     VarParsing.varType.string,
     "Z->mumu or Z->elel? Choose: 'zmumu' or 'zelel'"
@@ -58,7 +58,7 @@ options.register('FileNames', 'FileNames_QCD_HT1000to1500',
     VarParsing.varType.string,
     "Name of list of input files"
     )
-options.register('optimizeReco', True,
+options.register('optimizeReco', False,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Optimize mass reconstruction"
@@ -103,7 +103,7 @@ process.source = cms.Source(
     "PoolSource",
     fileNames = cms.untracked.vstring(
       #FileNames[options.FileNames]
-'root://eoscms.cern.ch//store/group/phys_b2g/B2GAnaFW_76X_V1p2/BprimeBprime_M-800_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160411_160543/0000/B2GEDMNtuple_1.root',
+'path_to_sample',
 
     ) 
     )
@@ -145,7 +145,7 @@ process.ana.doEWKcorr = cms.bool(EWK)
 
 process.TFileService = cms.Service("TFileService",
        fileName = cms.string(
-         options.outFileName
+         'output'
          )
        )
 

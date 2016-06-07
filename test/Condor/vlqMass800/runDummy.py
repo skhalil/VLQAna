@@ -7,19 +7,21 @@ eval `scram runtime -sh`
 cd ${_CONDOR_SCRATCH_DIR}
 echo ${_CONDOR_SCRATCH_DIR}
 let "sample=${1}+1"
-cp /uscms_data/d3/tmitchel/76X_test/CMSSW_7_6_5/src/Analysis/VLQAna/test/Condor/bZbH1200/ttbar/ttbar_${sample}.py .
-cp /uscms_data/d3/tmitchel/76X_test/CMSSW_7_6_5/src/Analysis/VLQAna/test/*.txt .
-cp /uscms_data/d3/tmitchel/76X_test/CMSSW_7_6_5/src/Analysis/VLQAna/test/*.root .
-cp /uscms_data/d3/tmitchel/76X_test/CMSSW_7_6_5/src/Analysis/VLQAna/test/inputFiles_cfi.py .
-cmsRun ttbar_${sample}.py
+cp PYTHON/SAMPLE/SAMPLE_${sample}.py .
+cp TEST/*.txt .
+cp TEST/*.root .
+cp TEST/inputFiles_cfi.py .
+cp TEST/*.csv .
+cmsRun SAMPLE_${sample}.py
 rm btag-eff-subjet.root
 rm PU*
 rm Run*
+rm *.csv
 rm dataset*
-rm scale*
 rm os2lana*
-xrdcp *.root root://cmseos.fnal.gov//store/user/tmitchel/condor/bZbH1200/ttbar
-rm ttbar_${sample}.py
+rm scale*
+xrdcp *.root root://cmseos.fnal.gov/OUTPUT/SAMPLE
+rm SAMPLE_${sample}.py
 rm *.root
 ls
 echo "DONE!"

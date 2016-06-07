@@ -15,6 +15,7 @@ cmsRun DoubleMuon_prompt_${sample}.py
 rm btag-eff-subjet.root
 rm PU*
 rm Run*
+rm scale*
 rm dataset*
 rm os2lana*
 xrdcp *.root root://cmseos.fnal.gov//store/user/tmitchel/condor/vlqMass1200/Dmu_Prompt

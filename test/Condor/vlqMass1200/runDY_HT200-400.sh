@@ -14,6 +14,7 @@ cp /uscms_data/d3/tmitchel/76X_test/CMSSW_7_6_5/src/Analysis/VLQAna/test/inputFi
 cmsRun dy_HT200-400_${sample}.py
 rm btag-eff-subjet.root
 rm PU*
+rm scale*
 rm Run*
 rm dataset*
 rm os2lana*

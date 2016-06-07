@@ -8,7 +8,7 @@ options.register('isData', False,
     VarParsing.varType.bool,
     "Is data?"
     )
-options.register('zdecaymode', 'zelel',
+options.register('zdecaymode', 'zmumu',
     VarParsing.multiplicity.singleton,
     VarParsing.varType.string,
     "Z->mumu or Z->elel? Choose: 'zmumu' or 'zelel'"
@@ -28,11 +28,6 @@ options.register('doPUReweightingOfficial', True,
     VarParsing.varType.bool,
     "Do pileup reweighting using official recipe"
     )
-options.register('doPUReweightingNPV', False,
-    VarParsing.multiplicity.singleton,
-    VarParsing.varType.bool,
-    "Do pileup reweighting based on NPV"
-    )
 options.register('filterSignal', False,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
@@ -48,39 +43,57 @@ options.register('applyLeptonSFs', True,
     VarParsing.varType.bool,
     "Apply lepton SFs to the MC"
     )
+options.register('applyBTagSFs', True,
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.bool,
+    "Apply b-tagging SFs to the MC"
+    )
+options.register('applyDYNLOCorr', False, ### Set to true only for DY process ### Only EWK NLO k-factor is applied
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.bool,
+    "Apply DY EWK k-factor to DY MC"
+    )
+options.register('FileNames', 'FileNames_QCD_HT1000to1500',
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.string,
+    "Name of list of input files"
+    )
 options.register('optimizeReco', True,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
-    "Do mass reconstruction on MC"
+    "Optimize mass reconstruction"
     )
+
 options.setDefault('maxEvents', -1)
 options.parseArguments()
 print options
-EWK = True
+
 hltpaths = []
+if options.zdecaymode == "zmumu":
+  hltpaths = [
+      "HLT_DoubleIsoMu17_eta2p1_v", 
+      "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",
+      #"HLT_DoubleMu8_Mass8_PFHT300_v",
+      ]
+elif options.zdecaymode == "zelel":
+  hltpaths = [
+      "HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v",
+      "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
+      #"HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v"
+      ]
+else:
+  sys.exit("!!!Error: Wrong Z decay mode option chosen. Choose either 'zmumu' or 'zelel'!!!") 
+
+EWK = True
 if options.isData:
   options.filterSignal = False 
   options.signalType = "" 
   options.optimizeReco = False
-  options.applyLeptonSFs = False 
+  options.applyLeptonSFs = False
   EWK = False
-  if options.zdecaymode == "zmumu":
-    hltpaths = [
-        "HLT_DoubleIsoMu17_eta2p1_v", 
-        "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",
-        #"HLT_DoubleMu8_Mass8_PFHT300_v",
-        ]
-  elif options.zdecaymode == "zelel":
-    hltpaths = [
-        "HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v",
-        "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
-        #"HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v"
-        ]
-  else:
-    sys.exit("!!!Error: Wrong Z decay mode option chosen. Choose either 'zmumu' or 'zelel'!!!") 
 
 if options.filterSignal == True and len(options.signalType) == 0:
-  sys.exit("!!!Error: Cannot keep signalType empty when filterSignal switched on!!!") 
+  sys.exit("!!!Error: Cannot keep signalType empty when filterSignal switched on!!!")  
 
 process = cms.Process("OS2LAna")
 
@@ -88,9 +101,11 @@ from inputFiles_cfi import *
 
 process.source = cms.Source(
     "PoolSource",
-    fileNames = cms.untracked.vstring( 
-        'path_to_sample'
-        )
+    fileNames = cms.untracked.vstring(
+      #FileNames[options.FileNames]
+'path_to_sample',
+
+    ) 
     )
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
@@ -100,7 +115,6 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxE
 process.load("Analysis.VLQAna.EventCleaner_cff") 
 process.evtcleaner.isData = options.isData 
 process.evtcleaner.hltPaths = cms.vstring (hltpaths)  
-#process.evtcleaner.DoPUReweightingNPV = cms.bool(options.doPUReweightingNPV)  
 process.evtcleaner.DoPUReweightingOfficial = cms.bool(options.doPUReweightingOfficial)  
 #process.evtcleaner.storeLHEWts = options.storeLHEWts
 
@@ -112,6 +126,8 @@ process.ana = ana.clone(
     signalType = cms.string(options.signalType),
     zdecayMode = cms.string(options.zdecaymode),
     applyLeptonSFs = cms.bool(options.applyLeptonSFs),
+    applyBTagSFs = cms.bool(options.applyBTagSFs),
+    applyDYNLOCorr = cms.bool(options.applyDYNLOCorr),
     optimizeReco = cms.bool(options.optimizeReco),
     )
 process.ana.elselParams.elidtype = cms.string(options.lepID)
@@ -119,12 +135,12 @@ process.ana.muselParams.muidtype = cms.string(options.lepID)
 process.ana.muselParams.muIsoMax = cms.double(0.15)
 process.ana.lepsfsParams.lepidtype = cms.string(options.lepID)
 process.ana.lepsfsParams.zdecayMode = cms.string(options.zdecaymode)
-process.ana.BoostedZCandParams.ptMin = cms.double(150.)#not used in analysis
+process.ana.BoostedZCandParams.ptMin = cms.double(80.)
 process.ana.jetAK8selParams.jetPtMin = cms.double(200) 
 process.ana.jetAK4BTaggedselParams.jetPtMin = cms.double(50) 
 process.ana.STMin = cms.double(1000.)
-process.ana.vlqMass = cms.double(800.)
-process.ana.bosonMass = cms.double(91.2)
+process.ana.vlqMass = cms.double(1000.) #M=1000
+process.ana.bosonMass = cms.double(91.2) #Z
 process.ana.doEWKcorr = cms.bool(EWK)
 
 process.TFileService = cms.Service("TFileService",
@@ -148,3 +164,7 @@ process.p = cms.Path(
     *cms.ignore(process.ana)
     * process.finalEvents
     )
+
+#process.schedule = cms.Schedule(process.p)
+
+#open('dump.py','w').write(process.dumpPython())

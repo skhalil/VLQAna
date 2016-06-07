@@ -31,10 +31,20 @@ for i in range(1, nParameters):
         print "User has supplied an invalid parameter " , opt
         sys.exit(0)
 
-
+print SAMPLE
 
 for n_file in range (1, int(NFILE)+1):
-    inputfile = open('dummy_os2lana_MC.py')
+    if SAMPLE == 'ttbar':
+        inputfile = open('dummy_os2lana_ttbar.py')
+    if SAMPLE == 'DoubleMuon_prompt':
+        inputfile = open('dummy_os2lana_Muon.py')
+    if SAMPLE == 'DoubleEG_prompt':
+        inputfile = open('dummy_os2lana_Electron.py')
+    if 'dy' in SAMPLE:
+        inputfile = open('dummy_os2lana_dy.py')
+    if 'tprime' in SAMPLE or 'bprime' in SAMPLE:
+        inputfile = open('dummy_os2lana_sig.py')
+
     outputfile = open(str(SAMPLE)+'/'+str(SAMPLE)+'_'+str(n_file)+'.py', 'w')
     for line in inputfile:
 	line = line.replace('nsample' , str(ENTRY) )

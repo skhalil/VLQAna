@@ -3,20 +3,21 @@
 # =====================================================
 #  INPUTS		
 # =====================================================
-path = '/uscms_data/d3/tmitchel/76X_test/CMSSW_7_6_5/src/Analysis/VLQAna/test/Macro/Histograms/vlqMass800/'
+path = '/uscms_data/d3/tmitchel/76X_test/CMSSW_7_6_5/src/Analysis/VLQAna/test/Macro/Histograms/reweightZ/Muons/'
 pathS = '/uscms_data/d2/skhalil/MyVLQAna2/CMSSW_7_4_15_patch1/src/Analysis/VLQAna/test/CRAB_On_Skim/Histo/'
 pathR = '/uscms_data/d3/dmendis/Rachitha2/CMSSW_7_4_16_patch2/src/Analysis/VLQAna/test/CRAB_0n_Skim/Histo/'
 
 ch = 'CR_Zmumu'
 
 #f_Data_Oct2015 = TFile(path+'')
+#f_Data_PromptReco = TFile(path+'DoubleMuon_prompt.root')
 f_Data_PromptReco = TFile(path+'DoubleMuon_prompt.root')
 
 f_DY100to200 = TFile(path+'dy_HT100-200.root')
 f_DY200to400 = TFile(path+'dy_HT200-400.root')
 f_DY400to600 = TFile(path+'dy_HT400-600.root')
 f_DY600toInf = TFile(path+'dy_HT600-Inf.root')
-f_DYmcnlo    = TFile(path+'dy_inclusive.root')
+#f_DYmcnlo    = TFile(path+'dy_inclusive.root')
 
 # # f_WJ100to200 = TFile(path+'WJetsToLNu_HT-100To200_os2lana_v1_'+ch+'.root')
 # # f_WJ200to400 = TFile(path+'WJetsToLNu_HT-200To400_os2lana_v1_'+ch+'.root')
@@ -48,11 +49,13 @@ f_ttbar         = TFile(path+'ttbar.root')
 #f_TpTp_tZbW_1200 = TFile(path+'TpTp_tZbW_M-1200.root')
 #f_TpTp_tZtH_1200 = TFile(path+'TpTp_tZtH_M-1200.root')
 
-f_BpBp_bZbZ_800 = TFile(path+'bprime800.root')
+#f_BpBp_bZbZ_800 = TFile(path+'bprime800.root')
 #f_BpBp_bZtW_800 = TFile(path+'BpBp_bZtW_M-800.root')
 #f_BpBp_bZbH_800 = TFile(path+'BpBp_bZbH_M-800.root')
 
-#f_BpBp_bZbZ_1000 = TFile(path+'bprime1000.root')
+f_BpBp_bZbZ_1000 = TFile(path+'bprime1000.root')
+f_BpBp_bZbH_1000 = TFile(path+'bZbH1000.root')
+
 
 #f_BpBp_bZbZ_1200 = TFile(path+'bprime1200.root')
 #f_BpBp_bZtW_1200 = TFile(path+'BpBp_bZtW_M-1200.root')
@@ -156,15 +159,15 @@ def prepareRatio(h_ratio, h_ratiobkg, scale, xTitle):
     h_ratio.GetYaxis().SetTitle("Data / Bkg")
     h_ratio.GetXaxis().SetTitle(xTitle)   
     h_ratio.SetMarkerStyle(8) 
-    h_ratio.SetMaximum(2)#3
-    h_ratio.SetMinimum(0)#-1
-    h_ratio.GetYaxis().SetLabelSize(0.02*scale)#0.06
+    h_ratio.SetMaximum(3)#3
+    h_ratio.SetMinimum(-1)#-1
+    h_ratio.GetYaxis().SetLabelSize(0.06*scale)#0.06
     h_ratio.GetYaxis().SetTitleOffset(1.00/scale*0.5)
-    h_ratio.GetYaxis().SetTitleSize(0.02*scale)#0.08
+    h_ratio.GetYaxis().SetTitleSize(0.08*scale)#0.08
     h_ratio.GetYaxis().SetTitleFont(42)
-    h_ratio.GetXaxis().SetLabelSize(0.02*scale)#0.06
+    h_ratio.GetXaxis().SetLabelSize(0.06*scale)#0.06
     h_ratio.GetXaxis().SetTitleOffset(0.45*scale)
-    h_ratio.GetXaxis().SetTitleSize(0.02*scale)#0.09
+    h_ratio.GetXaxis().SetTitleSize(0.09*scale)#0.09
     h_ratio.GetYaxis().SetNdivisions(505)
     h_ratio.GetXaxis().SetNdivisions(510)
     h_ratio.SetTickLength(0.06,"X")
