@@ -277,8 +277,9 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   zllfilter(dileptons, zlluncorr);
 
   // Do Z pt correction
-  vlq::CandidateCollection zll = ZptCorr(zlluncorr, .604988, .0000728925) ;
-
+   vlq::CandidateCollection zll = ZptCorr(zlluncorr, 1.58414, -0.00120209) ;
+  //vlq::CandidateCollection zll = ZptCorr(zlluncorr, 0, 1) ;
+  
   // jets
   vlq::JetCollection goodAK4Jets;
   jetAK4maker(evt, goodAK4Jets) ;
@@ -391,7 +392,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   else if (zdecayMode_ == "zelel") {cleanjets(goodBTaggedAK4Jets, goodElectrons); }  
 
   //fill control plots                                                                                                                                                                                             
-  if ( goodBTaggedAK4Jets.size() == 0 && ST < 700) {
+  if ( goodBTaggedAK4Jets.size() == 0) {
     for (auto izll : zll) {
       h1_["nob_pt_z"+lep+lep+"_cnt"] -> Fill(izll.getPt(), evtwt) ;
     }
