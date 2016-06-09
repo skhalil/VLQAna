@@ -54,7 +54,7 @@ options.register('optimizeReco', True,
     "Optimize mass reconstruction"
     )
 
-options.setDefault('maxEvents', 2)
+options.setDefault('maxEvents', -1)
 options.parseArguments()
 print options
 
