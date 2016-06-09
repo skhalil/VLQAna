@@ -73,7 +73,7 @@ for job in jobList:
      outname = job[1] + '_' + options.outLabel
      a0 = instring.replace( 'DUMMY_WORKDIR', "'"+options.outLabel+"'")
      a1 = a0.replace( 'DUMMY_DATASET', "'"+job[0]+"'" )
-     a2 = a1.replace( 'DATA', "'"+isData+"'") 
+     a2 = a1.replace( 'DATa', "'"+isData+"'") 
      a3 = a2.replace( 'MODE', "'"+mode+"'")
      a4 = a3.replace( 'LEPSF', "'"+applySF+"'")
      a5 = a4.replace( 'PUOFF', "'"+puOfficial+"'") 
@@ -86,7 +86,7 @@ for job in jobList:
          a8 = a7.replace( ', SIGNALTYPE', '')      
      a9 = a8.replace( 'DUMMY_NAME', "'"+outname+"'" )
      a10 = a9.replace( 'DUMMY_SITE',"'"+'T3_US_FNALLPC'+"'")
-     a11 = a10.replace( 'DUMMY_OUTPUT_PATH', "'"+'/store/user/tmitchel/OS2LAna_B2G/April25/'+options.channelType+"'") 
+     a11 = a10.replace( 'DUMMY_OUTPUT_PATH', "'"+'/store/user/tmitchel/76X/'+options.channelType+"'") 
      if options.isData:
          a12 = a11.replace('DUMMY_BASE', "'LumiBased'")
      else: 
