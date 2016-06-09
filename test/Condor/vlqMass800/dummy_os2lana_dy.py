@@ -8,7 +8,7 @@ options.register('isData', False,
     VarParsing.varType.bool,
     "Is data?"
     )
-options.register('zdecaymode', 'zelel',
+options.register('zdecaymode', 'zmumu',
     VarParsing.multiplicity.singleton,
     VarParsing.varType.string,
     "Z->mumu or Z->elel? Choose: 'zmumu' or 'zelel'"
@@ -63,6 +63,11 @@ options.register('optimizeReco', False,
     VarParsing.varType.bool,
     "Optimize mass reconstruction"
     )
+options.register('applyZptCorr', True,
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.bool,
+    "Optimize mass reconstruction"
+    )
 
 options.setDefault('maxEvents', -1)
 options.parseArguments()
@@ -91,6 +96,7 @@ if options.isData:
   options.optimizeReco = False
   options.applyLeptonSFs = False
   EWK = False
+  applyZptCorr = False
 
 if options.filterSignal == True and len(options.signalType) == 0:
   sys.exit("!!!Error: Cannot keep signalType empty when filterSignal switched on!!!")  
@@ -129,6 +135,7 @@ process.ana = ana.clone(
     applyBTagSFs = cms.bool(options.applyBTagSFs),
     applyDYNLOCorr = cms.bool(options.applyDYNLOCorr),
     optimizeReco = cms.bool(options.optimizeReco),
+    applyZptCorr = cms.bool(options.applyZptCorr),
     )
 process.ana.elselParams.elidtype = cms.string(options.lepID)
 process.ana.muselParams.muidtype = cms.string(options.lepID)
@@ -139,7 +146,7 @@ process.ana.BoostedZCandParams.ptMin = cms.double(80.)
 process.ana.jetAK8selParams.jetPtMin = cms.double(200) 
 process.ana.jetAK4BTaggedselParams.jetPtMin = cms.double(50) 
 process.ana.STMin = cms.double(1000.)
-process.ana.vlqMass = cms.double(1000.) #M=1000
+process.ana.vlqMass = cms.double(800.) #M=1000
 process.ana.bosonMass = cms.double(91.2) #Z
 process.ana.doEWKcorr = cms.bool(EWK)
 

@@ -63,6 +63,11 @@ options.register('optimizeReco', True,
     VarParsing.varType.bool,
     "Optimize mass reconstruction"
     )
+options.register('applyZptCorr', False,
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.bool,
+    "Optimize mass reconstruction"
+    )
 
 options.setDefault('maxEvents', -1)
 options.parseArguments()
@@ -91,6 +96,7 @@ if options.isData:
   options.optimizeReco = False
   options.applyLeptonSFs = False
   EWK = False
+  applyZptCorr = False
 
 if options.filterSignal == True and len(options.signalType) == 0:
   sys.exit("!!!Error: Cannot keep signalType empty when filterSignal switched on!!!")  
@@ -103,7 +109,7 @@ process.source = cms.Source(
     "PoolSource",
     fileNames = cms.untracked.vstring(
       #FileNames[options.FileNames]
-'root://eoscms.cern.ch//store/group/phys_b2g/B2GAnaFW_76X_V1p2/BprimeBprime_M-800_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160411_160543/0000/B2GEDMNtuple_1.root',
+'root://cms-xrd-global.cern.ch//store/user/jkarancs/SusyAnalysis/B2GEdmNtuple/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/160401_102503/0000/B2GEDMNtuple_4.root',
 
     ) 
     )
@@ -129,6 +135,7 @@ process.ana = ana.clone(
     applyBTagSFs = cms.bool(options.applyBTagSFs),
     applyDYNLOCorr = cms.bool(options.applyDYNLOCorr),
     optimizeReco = cms.bool(options.optimizeReco),
+    applyZptCorr = cms.bool(options.applyZptCorr),
     )
 process.ana.elselParams.elidtype = cms.string(options.lepID)
 process.ana.muselParams.muidtype = cms.string(options.lepID)

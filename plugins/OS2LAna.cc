@@ -76,6 +76,7 @@ class OS2LAna : public edm::EDFilter {
     void fillAdditionalPlots( vlq::ElectronCollection goodElectrons,double evtwt);
     double GetDYNLOCorr(const double dileppt); 
     vlq::CandidateCollection ZptCorr(vlq::CandidateCollection, double, double);
+    void STCorr(double& st, double p0, double p1);
     // ----------member data ---------------------------
     edm::EDGetTokenT<string>   t_evttype         ;
     edm::EDGetTokenT<double>   t_evtwtGen        ;
@@ -99,6 +100,7 @@ class OS2LAna : public edm::EDFilter {
     const double bosonMass_                      ;
     const bool applyLeptonSFs_                   ;
     const bool applyBTagSFs_                     ;
+    const bool applyZptCorr_                     ;
     const bool applyDYNLOCorr_                   ;
     const std::string fname_DYNLOCorr_           ; 
     const std::string funname_DYNLOCorr_         ; 
@@ -172,6 +174,7 @@ OS2LAna::OS2LAna(const edm::ParameterSet& iConfig) :
   bosonMass_              (iConfig.getParameter<double>            ("bosonMass")),
   applyLeptonSFs_         (iConfig.getParameter<bool>              ("applyLeptonSFs")), 
   applyBTagSFs_           (iConfig.getParameter<bool>              ("applyBTagSFs")), 
+  applyZptCorr_           (iConfig.getParameter<bool>              ("applyZptCorr")),
   applyDYNLOCorr_         (iConfig.getParameter<bool>              ("applyDYNLOCorr")), 
   fname_DYNLOCorr_        (iConfig.getParameter<std::string>       ("File_DYNLOCorr")),
   funname_DYNLOCorr_      (iConfig.getParameter<std::string>       ("Fun_DYNLOCorr")),
@@ -240,7 +243,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   metmaker(evt, goodMet) ;
 
   vlq::CandidateCollection dimuons, dielectrons, dileptons;   
-  vlq::CandidateCollection zlluncorr; //generic collection
+  vlq::CandidateCollection zlluncorr, zll; //generic collection
 
   // dilepton properties: M > 50, lead pt > 45, second pt > 25
   DileptonCandsProducer dileptonsprod(DilepCandParams_) ; 
@@ -276,9 +279,12 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   CandidateFilter zllfilter(ZCandParams_) ; 
   zllfilter(dileptons, zlluncorr);
 
+  zll = zlluncorr;
+
   // Do Z pt correction
-   vlq::CandidateCollection zll = ZptCorr(zlluncorr, 1.58414, -0.00120209) ;
-  //vlq::CandidateCollection zll = ZptCorr(zlluncorr, 0, 1) ;
+  if ( applyZptCorr_ ) {
+    zll = ZptCorr(zlluncorr, 1.26117, -0.000903805) ;
+  }
   
   // jets
   vlq::JetCollection goodAK4Jets;
@@ -394,7 +400,15 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   //fill control plots                                                                                                                                                                                             
   if ( goodBTaggedAK4Jets.size() == 0) {
     for (auto izll : zll) {
-      h1_["nob_pt_z"+lep+lep+"_cnt"] -> Fill(izll.getPt(), evtwt) ;
+      h1_["nob_pt_z"+lep+lep] -> Fill(izll.getPt(), evtwt) ;
+      h1_["nob_st"] ->Fill(ST, evtwt);
+    }
+  }
+
+  if (goodBTaggedAK4Jets.size() > 0){
+    for (auto izll : zll) {
+      h1_["b_pt_z"+lep+lep] -> Fill(izll.getPt(), evtwt) ;
+      h1_["b_st"] ->Fill(ST, evtwt);
     }
   }
 
@@ -419,7 +433,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      btagsfutils_->getBTagSFs (csvs, pts, etas, flhads, jetAK4maker.idxjetCSVDiscMin_, btagsf, btagsf_bcUp, btagsf_bcDown, btagsf_lUp, btagsf_lDown) ; 
 
   }
-
+  cout << "btag SF: " << btagsf << endl;
   // apply b tag scale factors
   evtwt *= btagsf;
 
@@ -740,7 +754,10 @@ void OS2LAna::beginJob() {
   std::vector<string> suffix = {"_pre", "_cnt", ""};
 
   //btag == 0 control region
-  h1_["nob_pt_z"+lep+lep+"_cnt"] = fs->make<TH1D>(("nob_pt_z"+lep+lep+"_cnt").c_str(), "p_{T} (Z#rightarrow  l^{+}l^{-}) [GeV]", 50, 0., 1000.) ;
+  h1_["nob_pt_z"+lep+lep] = fs->make<TH1D>(("nob_pt_z"+lep+lep+"_cnt").c_str(), "p_{T} (Z#rightarrow  l^{+}l^{-}) [GeV]", 50, 0., 1000.) ;
+  h1_["b_pt_z"+lep+lep] = fs->make<TH1D>(("b_pt_z"+lep+lep+"_cnt").c_str(), "p_{T} (Z#rightarrow  l^{+}l^{-}) [GeV]", 50, 0., 1000.) ;
+  h1_["nob_st"] = fs->make<TH1D>("nob_st", "ST [GeV]", 50, 0., 1000.) ;
+  h1_["b_st"] = fs->make<TH1D>("b_st", "ST [GeV]", 50, 0., 1000.) ;
   h1_["pt_zlight_pre"] = fs->make<TH1D>("pt_zlight_pre", "p_{T} (Z + q_{light}) [GeV]", 100, 0., 2000.) ;
   h1_["pt_zb_pre"] = fs->make<TH1D>("pt_zb_pre", "p_{T} (Z + b) [GeV]", 100, 0., 2000.) ;
   h1_["pt_zc_pre"] = fs->make<TH1D>("pt_zc_pre", "p_{T} (Z + c) [GeV]", 100, 0., 2000.) ;
@@ -866,12 +883,17 @@ double OS2LAna::GetDYNLOCorr(const double dileppt) {
 
 }
 
+void OS2LAna::STCorr(double& st, double p0, double p1){
+  double scale = p0 + st*p1;
+  st *= scale;
+}
+
 vlq::CandidateCollection OS2LAna::ZptCorr(vlq::CandidateCollection collection, double p0, double p1){
   vlq::CandidateCollection toReturn;
   for (auto cand : collection){
     toReturn.clear();
     TLorentzVector p4 = cand.getP4();
-    double Ptscale = p1 * p4.Pt() + p0;
+    double Ptscale = p1*p4.Pt() + p0;
     double Pt = p4.Pt() * Ptscale;
     double Eta = p4.Eta();
     double Phi = p4.Phi();
