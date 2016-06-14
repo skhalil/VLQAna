@@ -15,7 +15,7 @@ typedef std::vector<vlq::GenParticle> GenParticleCollection;
 
 class MassReco {
 public: 
-	MassReco() ;
+        MassReco() ;
 	~MassReco() ;
 	TLorentzVector getGen(GenParticleCollection, int, int) ;
 	TLorentzVector getGen(GenParticleCollection, int, int, int) ;

@@ -221,8 +221,8 @@ class BTagSFUtils {
 
         }
         else {
-          btagsf *= eff < 1 ? (1 - std::min(1.,eff*sf))/(1 - eff) : 0 ; 
 
+          btagsf *= eff < 1 ? (1 - std::min(1.,eff*sf))/(1 - eff) : 0 ; 
           //// Get uncertainties 
           if ( fl == 0 || fl == 1) {
             btagsf_bcUp *= eff < 1 ? (1 - std::min(1.,eff*sfUpabs))/(1 - eff) : 0 ;

@@ -433,7 +433,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      btagsfutils_->getBTagSFs (csvs, pts, etas, flhads, jetAK4maker.idxjetCSVDiscMin_, btagsf, btagsf_bcUp, btagsf_bcDown, btagsf_lUp, btagsf_lDown) ; 
 
   }
-  cout << "btag SF: " << btagsf << endl;
+  //cout << "btag SF in OS2LAna: " << btagsf << endl;
   // apply b tag scale factors
   evtwt *= btagsf;
 

@@ -15,7 +15,7 @@ print PATH
 toMake = ['ttbar', 'dy_ht100-200', 'dy_ht200-400', 'dy_ht400-600', 'dy_ht600-Inf', 'bprime', 'tprime', 'muons', 'electrons']
 for n in toMake:
     inputFile = open('batchDummy.py')
-    outputFile = open(str(n)+'.jdl', 'w')
+    outputFile = open('batch_'+str(n)+'.jdl', 'w')
     if n == 'ttbar':
         QUEUE = '4653'
         EXE = 'run_'+n+'.sh'
@@ -46,7 +46,7 @@ for n in toMake:
 
     for line in inputFile:
         line = line.replace('queue', QUEUE)
-        line = line.replace('path', PATH)
+        line = line.replace('path', PATH+'/'+n)
         line = line.replace('exe', EXE)
         outputFile.writelines(line)
     inputFile.close()
