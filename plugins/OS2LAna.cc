@@ -430,7 +430,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
        flhads.push_back(jet.getHadronFlavour()) ; 
      }
 
-     btagsfutils_->getBTagSFs (csvs, pts, etas, flhads, jetAK4maker.idxjetCSVDiscMin_, btagsf, btagsf_bcUp, btagsf_bcDown, btagsf_lUp, btagsf_lDown) ; 
+     btagsfutils_->getBTagSFs (csvs, pts, etas, flhads, jetAK4BTaggedmaker.idxjetCSVDiscMin_, btagsf, btagsf_bcUp, btagsf_bcDown, btagsf_lUp, btagsf_lDown) ; 
 
   }
   //cout << "btag SF in OS2LAna: " << btagsf << endl;
