@@ -280,9 +280,9 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   zllfilter(dileptons, zll);
 
   // Do Z pt correction
-  if ( applyZptCorr_ ) {
+  if ( applyZptCorr_  && zll.size() > 0) {
     evtwt *= ZptCorr(zll.at(0), 1.26117, -0.000903805) ;
-  }
+     }
   
   // jets
   vlq::JetCollection goodAK4Jets;
