@@ -58,18 +58,18 @@ options.register('FileNames', 'FileNames_QCD_HT1000to1500',
     VarParsing.varType.string,
     "Name of list of input files"
     )
-options.register('optimizeReco', True,
+options.register('optimizeReco', False,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Optimize mass reconstruction"
     )
-options.register('applyZptCorr', False,
+options.register('applyZptCorr', True,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Optimize mass reconstruction"
     )
 
-options.setDefault('maxEvents', -1)
+options.setDefault('maxEvents', 100000)
 options.parseArguments()
 print options
 
@@ -89,7 +89,7 @@ elif options.zdecaymode == "zelel":
 else:
   sys.exit("!!!Error: Wrong Z decay mode option chosen. Choose either 'zmumu' or 'zelel'!!!") 
 
-EWK = True
+EWK = False
 if options.isData:
   options.filterSignal = False 
   options.signalType = "" 
@@ -100,7 +100,7 @@ if options.isData:
 
 if options.filterSignal == True and len(options.signalType) == 0:
   sys.exit("!!!Error: Cannot keep signalType empty when filterSignal switched on!!!")  
-
+print EWK
 process = cms.Process("OS2LAna")
 
 from inputFiles_cfi import * 
@@ -109,8 +109,9 @@ process.source = cms.Source(
     "PoolSource",
     fileNames = cms.untracked.vstring(
       #FileNames[options.FileNames]
-'root://cms-xrd-global.cern.ch//store/user/jkarancs/SusyAnalysis/B2GEdmNtuple/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/160401_102503/0000/B2GEDMNtuple_4.root',
-
+'root://eoscms.cern.ch//store/group/phys_b2g/B2GAnaFW_76X_V1p2/BprimeBprime_M-800_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160411_160543/0000/B2GEDMNtuple_12.root',
+#'root://eoscms.cern.ch//store/group/phys_b2g/B2GAnaFW_76X_V1p2/TT_TuneCUETP8M1_13TeV-powheg-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160408_145006/0000/B2GEDMNtuple_10.root',
+#'root://cms-xrd-global.cern.ch//store/user/jkarancs/SusyAnalysis/B2GEdmNtuple/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/160401_102503/0000/B2GEDMNtuple_1.root',
     ) 
     )
 
