@@ -44,6 +44,8 @@ for n_file in range (1, int(NFILE)+1):
         inputfile = open('dummy_os2lana_dy.py')
     if 'tprime' in SAMPLE or 'bprime' in SAMPLE:
         inputfile = open('dummy_os2lana_sig.py')
+    if 'WW' in SAMPLE  or 'WZ' in SAMPLE or 'ZZ' in SAMPLE:
+        inputfile = open('dummy_os2lana_other.py')
 
     outputfile = open(str(SAMPLE)+'/'+str(SAMPLE)+'_'+str(n_file)+'.py', 'w')
     for line in inputfile:
@@ -67,7 +69,7 @@ for n_file in range (1, int(NFILE)+1):
             if n_file < 7000 and n_file >= 6000:
                 line = line.replace('path_to_sample','root://eoscms.cern.ch/'+str(PATH)+'6/B2GEDMNtuple_'+str(n_file)+'.root')
 #	line = line.replace('path_to_sample','root://eoscms.cern.ch/'+str(PATH)+'/B2GEDMNtuple_'+str(n_file)+'.root')
-        elif SAMPLE == "muons" or SAMPLE == "electrons":
+        elif SAMPLE == "muons" :
             if n_file < 1000:
                 line = line.replace('path_to_sample','root://cms-xrd-global.cern.ch/'+str(PATH)+'0/B2GEDMNtuple_'+str(n_file)+'.root')
             if n_file < 2000 and n_file >= 1000:    
