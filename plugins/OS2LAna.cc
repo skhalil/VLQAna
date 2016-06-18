@@ -294,9 +294,12 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   else if (zdecayMode_ == "zelel") {cleanjets(goodAK4Jets, goodElectrons);} 
 
   HT htak4(goodAK4Jets) ; 
-  //double ht = htak4.getHT();
-  //if (applyZptCorr_)
-  //evtwt *= htCorr(ht, 0, 1);
+  double ht = htak4.getHT();
+  cout << "ht: " << ht << endl;
+  cout << evtwt << endl;
+  if (applyZptCorr_)
+    evtwt *= htCorr(ht, 1.19587, -0.000547296);
+  cout << "ht corr: " << htCorr(ht,  1.19587, -0.000547296) << " evtwt: " << evtwt;
 
  ////////////////////////////////////////////////////////// 
   //Fill N-1 selected plots for dilepton mass, Ht, ad Njets
