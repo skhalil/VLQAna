@@ -23,7 +23,7 @@ pyInput = options.pyInput
 output = options.output
 test = options.test
 
-toMake = ['ttbar', 'dy_ht100-200', 'dy_ht200-400', 'dy_ht400-600', 'dy_ht600-Inf', 'bprime', 'tprime', 'muons', 'electrons']
+toMake = ['ttbar', 'dy_ht100-200', 'dy_ht200-400', 'dy_ht400-600', 'dy_ht600-Inf', 'bprime', 'tprime', 'muons', 'electrons','WW', 'WZto2', 'WZto3', 'ZZto2', 'ZZto4']
 
 for n in toMake:
     inputFile = open('runDummy.py')

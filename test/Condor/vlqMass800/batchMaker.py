@@ -12,10 +12,10 @@ options.parseArguments()
 PATH = options.Path
 print PATH
 
-toMake = ['ttbar', 'dy_ht100-200', 'dy_ht200-400', 'dy_ht400-600', 'dy_ht600-Inf', 'bprime', 'tprime', 'muons', 'electrons']
+toMake = ['ttbar', 'dy_ht100-200', 'dy_ht200-400', 'dy_ht400-600', 'dy_ht600-Inf', 'bprime', 'tprime', 'muons', 'electrons', 'WW', 'WZto2', 'WZto3', 'ZZto2', 'ZZto4']
 for n in toMake:
     inputFile = open('batchDummy.py')
-    outputFile = open(str(n)+'.jdl', 'w')
+    outputFile = open('batch_'+str(n)+'.jdl', 'w')
     if n == 'ttbar':
         QUEUE = '4653'
         EXE = 'run_'+n+'.sh'
@@ -43,10 +43,26 @@ for n in toMake:
     if n == 'electrons':
         QUEUE = '6639'
         EXE = 'run_'+n+'.sh'
+    if n == 'WW':
+        QUEUE='51'
+        EXE='run_'+n+'.sh'
+    if n == 'ZZto4':
+        QUEUE='264'
+        EXE='run_'+n+'.sh'
+    if n == 'ZZto2':
+        QUEUE='226'
+        EXE='run_'+n+'.sh'
+    if n == 'WZto2':
+        QUEUE='700'
+        EXE='run_'+n+'.sh'
+    if n == 'WZto3':
+        QUEUE='46'
+        EXE='run_'+n+'.sh'
+
 
     for line in inputFile:
         line = line.replace('queue', QUEUE)
-        line = line.replace('path', PATH)
+        line = line.replace('path', PATH+'/'+n)
         line = line.replace('exe', EXE)
         outputFile.writelines(line)
     inputFile.close()

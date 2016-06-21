@@ -17,6 +17,7 @@ rm btag-eff-subjet.root
 rm PU*
 rm Run*
 rm *.csv
+rm *.txt
 rm dataset*
 rm os2lana*
 rm scale*

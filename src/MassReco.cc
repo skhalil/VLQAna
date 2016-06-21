@@ -67,15 +67,14 @@ pair<double, double> MassReco::doReco(vlq::JetCollection ak4Jets, TLorentzVector
       vector<TLorentzVector> passToChi2;
       if (!passToChi2.empty())
 	passToChi2.clear();
-      if (ak4Jets.size() > 4){
-	ak4[0] = ak4Jets.at(i0).getP4();
-        ak4[1] = ak4Jets.at(i1).getP4();
-        ak4[2] = ak4Jets.at(i2).getP4();
-        ak4[3] = ak4Jets.at(i3).getP4();
-        ak4[4] = ak4Jets.at(i4).getP4();
-      }
+      ak4[0] = ak4Jets.at(i0).getP4();
+      ak4[1] = ak4Jets.at(i1).getP4();
+      ak4[2] = ak4Jets.at(i2).getP4();
+      ak4[3] = ak4Jets.at(i3).getP4();
+      if (ak4Jets.size() > 4)
+	  ak4[4] = ak4Jets.at(i4).getP4();
       else
-        continue;
+	ak4[4].SetPtEtaPhiM(0.,0.,0.,0.);
       // Need to know recommended size for ak4
       passToChi2.push_back(ak4[0]);
       passToChi2.push_back(ak4[1]);
@@ -100,11 +99,13 @@ pair<double, double> MassReco::doReco(vlq::JetCollection ak4Jets, TLorentzVector
 		
       
 pair<double, double> MassReco::doReco(vlq::JetCollection collection, double bosMass, TLorentzVector Leptons){
-   int next = 0;
-    for(int i=0; i<5; i++){
-        if (collection.at(i).getPt() > 0)
-            ++next;
-    }
+   // int next = 0;
+   //  for(int i=0; i<5; i++){
+   //      if (collection.at(i).getPt() > 0)
+   //          ++next;
+   //  }
+
+  
 
     pair<double, double> chi2_result;
     double loop = 100000;
@@ -117,12 +118,13 @@ pair<double, double> MassReco::doReco(vlq::JetCollection collection, double bosM
     TLorentzVector Jets[5];
 
     int index_array[] = {0, 1, 2, 3, 4};
+    int index_array1[] = {0, 1, 2, 3};
 
     for (int mass = 0; mass <= 2000; mass+=5){
 
             double loop_check = 10000;
-
-            do{
+	    if (collection.size() > 4){
+	      do{
                 int i0 = index_array[0];
                 int i1 = index_array[1];
                 int i2 = index_array[2];
@@ -131,16 +133,11 @@ pair<double, double> MassReco::doReco(vlq::JetCollection collection, double bosM
                 vector<TLorentzVector> passToChi2;
                 if (!passToChi2.empty())
                 	passToChi2.clear();
-                if (collection.size() > 4){
-                	Jets[0] = collection.at(i0).getP4();
-                	Jets[1] = collection.at(i1).getP4();
-                	Jets[2] = collection.at(i2).getP4();
-                	Jets[3] = collection.at(i3).getP4();
-                	Jets[4] = collection.at(i4).getP4();
-                }
-                else
-                	continue;
-
+         	Jets[0] = collection.at(i0).getP4();
+               	Jets[1] = collection.at(i1).getP4();
+               	Jets[2] = collection.at(i2).getP4();
+               	Jets[3] = collection.at(i3).getP4();
+		Jets[4] = collection.at(i4).getP4();
                 passToChi2.push_back(Jets[0]);
                 passToChi2.push_back(Jets[1]);
                 passToChi2.push_back(Jets[2]);
@@ -153,8 +150,39 @@ pair<double, double> MassReco::doReco(vlq::JetCollection collection, double bosM
     				chi2_result.first = loop_check;
     				chi2_result.second = mass;
     			}
-            }
-            while(std::next_permutation(index_array, index_array + 5));
+	      }
+	      while(std::next_permutation(index_array, index_array + 5));
+	      
+	    }
+	    else if (collection.size() == 4){
+	      do{
+                int i0 = index_array1[0];
+                int i1 = index_array1[1];
+                int i2 = index_array1[2];
+                int i3 = index_array1[3];
+                vector<TLorentzVector> passToChi2;
+                if (!passToChi2.empty())
+                	passToChi2.clear();
+         	Jets[0] = collection.at(i0).getP4();
+               	Jets[1] = collection.at(i1).getP4();
+               	Jets[2] = collection.at(i2).getP4();
+               	Jets[3] = collection.at(i3).getP4();
+                passToChi2.push_back(Jets[0]);
+                passToChi2.push_back(Jets[1]);
+                passToChi2.push_back(Jets[2]);
+                passToChi2.push_back(Jets[3]);
+
+                loop = chi2(passToChi2, Leptons, bosMass,  mass);
+
+    			if (loop < loop_check){
+    				loop_check = loop;
+    				chi2_result.first = loop_check;
+    				chi2_result.second = mass;
+    			}
+	      }            
+	      while(std::next_permutation(index_array, index_array + 5));
+
+	    }
 
             chi2s.push_back(chi2_result);
     }
@@ -167,15 +195,15 @@ double MassReco::chi2(vector<TLorentzVector> jets, TLorentzVector Leptons, doubl
 
 	double Zup = abs((jets[2] + jets[3]).M() - bosMass);
 	double Zup2 = Zup * Zup;
-	double term1 = Zup2 / (13.2*13.2);
+	double term1 = Zup2 / (12.9*12.9);
 
 	double BHup = abs((jets[1] + jets[2] + jets[3]).M() - mass);
 	double BHup2 = BHup * BHup;
-	double term2 = BHup2 / (92.4*92.4);
+	double term2 = BHup2 / (94.*94.);
 
 	double BLup = abs((jets[0] + Leptons).M() - mass);
 	double BLup2 = BLup * BLup;
-	double term3 = BLup2 / (44.2*44.2);
+	double term3 = BLup2 / (45.4*45.4);
 
 	double result = term1 + term2 + term3;
 

@@ -174,67 +174,68 @@ class BTagSFUtils {
       //// Get scale factors and efficiencies 
       std::vector<double> sfs, sfsUp, sfsDown, dsfsUp, dsfsDown, effs ;
       for ( auto idx : index(jetpts) ) {
-         BTagEntry::JetFlavor fl = jetfls.at(idx.first) ; 
-         int flhad = jetflhads.at(idx.first) ; 
-         double pt = jetpts.at(idx.first) ; 
-         double eta = jetetas.at(idx.first) ; 
-         double sf = reader_->eval(fl,eta,pt) ; 
-         double sfUp = readerUp_->eval(fl,eta,pt) ; 
-         double sfDown = readerDown_->eval(fl,eta,pt) ; 
-         double dsfUp = sfUp - sf ; 
-         double dsfDown = sfDown - sf ;
-         double eff = 1.0;
-         if ( op_ == BTagEntry::OP_LOOSE) BTagSFUtils::getBTagEff_CSVv2L(pt,flhad) ; 
-         else if ( op_ == BTagEntry::OP_MEDIUM) BTagSFUtils::getBTagEff_CSVv2M(pt,flhad) ; 
-         double uncscale = uncscales.at(idx.first) ; 
-         sfs.push_back(sf) ; 
-         sfsUp.push_back(sfUp) ; 
-         sfsDown.push_back(sfDown) ; 
-         dsfsUp.push_back(dsfUp) ; 
-         dsfsDown.push_back(dsfDown) ; 
-         effs.push_back(eff) ; 
 
-         double sfUpabs = sf != 0. ? sf  + (uncscale*dsfUp/sf) : 0. ; 
-         double sfDownabs = sf != 0. ? sf  + (uncscale*dsfDown/sf) : 0. ; 
-         if ( sfUpabs < 0 ) sfUpabs = 0 ;  
-         if ( sfDownabs < 0 ) sfDownabs = 0 ;  
-         
-         if ( boost::math::isnan(sf) || boost::math::isnan(sfUp) || boost::math::isnan(sfUpabs))
-            std::cout << " sf = " << sf << " is nan = " << boost::math::isnan(sf) << std::endl << 
-               std::cout << " sfUp = " << sfUp << " is nan = " << boost::math::isnan(sfUp) << std::endl << 
-               std::cout << " dsfUp = " << dsfUp << " is nan = " << boost::math::isnan(dsfUp) << std::endl << 
-               std::cout << " sfUpabs = " << sfUpabs << " is nan = " << boost::math::isnan(sfUpabs) << std::endl ; 
-         
-         double jetcsv = jetcsvs.at(idx.first) ;
-     
-         if ( jetcsv >= csvMin ) { 
-            btagsf *= sf ; 
-            //// Get uncertainties 
-            if ( fl == 0 || fl == 1) {
-               btagsf_bcUp *= sfUpabs ; 
-               btagsf_bcDown *= sfDownabs ; 
-            }
-            else {
-               btagsf_lUp *= sfUpabs ; 
-               btagsf_lDown *= sfDownabs ; 
-            }
-            
-         }
-         else {
-            btagsf *= eff < 1 ? (1 - std::min(1.,eff*sf))/(1 - eff) : 0 ; 
-            
-            //// Get uncertainties 
-            if ( fl == 0 || fl == 1) {
-               btagsf_bcUp *= eff < 1 ? (1 - std::min(1.,eff*sfUpabs))/(1 - eff) : 0 ;
-               btagsf_bcDown *= eff < 1 ? (1 - std::min(1.,eff*sfDownabs))/(1 - eff) : 0 ;
-            }
-            else {
-               btagsf_lUp *= eff < 1 ? (1 - std::min(1.,eff*sfUpabs))/(1 - eff) : 0 ;
-               btagsf_lDown *= eff < 1 ? (1 - std::min(1.,eff*sfDownabs))/(1 - eff) : 0 ;
-            }
-            
-         }
-         
+        BTagEntry::JetFlavor fl = jetfls.at(idx.first) ; 
+        int flhad = jetflhads.at(idx.first) ; 
+        double pt = jetpts.at(idx.first) ; 
+        double eta = jetetas.at(idx.first) ; 
+        double sf = reader_->eval(fl,eta,pt) ; 
+        double sfUp = readerUp_->eval(fl,eta,pt) ; 
+        double sfDown = readerDown_->eval(fl,eta,pt) ; 
+        double dsfUp = sfUp - sf ; 
+        double dsfDown = sfDown - sf ;
+        double eff = 1.0;
+        if ( op_ == BTagEntry::OP_LOOSE) eff = BTagSFUtils::getBTagEff_CSVv2L(pt,flhad) ; 
+        else if ( op_ == BTagEntry::OP_MEDIUM) eff = BTagSFUtils::getBTagEff_CSVv2M(pt,flhad) ; 
+        double uncscale = uncscales.at(idx.first) ; 
+        sfs.push_back(sf) ; 
+        sfsUp.push_back(sfUp) ; 
+        sfsDown.push_back(sfDown) ; 
+        dsfsUp.push_back(dsfUp) ; 
+        dsfsDown.push_back(dsfDown) ; 
+        effs.push_back(eff) ; 
+
+        double sfUpabs = sf != 0. ? sf  + (uncscale*dsfUp/sf) : 0. ; 
+        double sfDownabs = sf != 0. ? sf  + (uncscale*dsfDown/sf) : 0. ; 
+        if ( sfUpabs < 0 ) sfUpabs = 0 ;  
+        if ( sfDownabs < 0 ) sfDownabs = 0 ;  
+
+        if ( boost::math::isnan(sf) || boost::math::isnan(sfUp) || boost::math::isnan(sfUpabs))
+          std::cout << " sf = " << sf << " is nan = " << boost::math::isnan(sf) << std::endl << 
+            std::cout << " sfUp = " << sfUp << " is nan = " << boost::math::isnan(sfUp) << std::endl << 
+            std::cout << " dsfUp = " << dsfUp << " is nan = " << boost::math::isnan(dsfUp) << std::endl << 
+            std::cout << " sfUpabs = " << sfUpabs << " is nan = " << boost::math::isnan(sfUpabs) << std::endl ; 
+
+        double jetcsv = jetcsvs.at(idx.first) ; 
+        if ( jetcsv >= csvMin ) { 
+          btagsf *= sf ; 
+
+          //// Get uncertainties 
+          if ( fl == 0 || fl == 1) {
+            btagsf_bcUp *= sfUpabs ; 
+            btagsf_bcDown *= sfDownabs ; 
+          }
+          else {
+            btagsf_lUp *= sfUpabs ; 
+            btagsf_lDown *= sfDownabs ; 
+          }
+
+        }
+        else {
+
+          btagsf *= eff < 1 ? (1 - std::min(1.,eff*sf))/(1 - eff) : 0 ; 
+          //// Get uncertainties 
+          if ( fl == 0 || fl == 1) {
+            btagsf_bcUp *= eff < 1 ? (1 - std::min(1.,eff*sfUpabs))/(1 - eff) : 0 ;
+            btagsf_bcDown *= eff < 1 ? (1 - std::min(1.,eff*sfDownabs))/(1 - eff) : 0 ;
+          }
+          else {
+            btagsf_lUp *= eff < 1 ? (1 - std::min(1.,eff*sfUpabs))/(1 - eff) : 0 ;
+            btagsf_lDown *= eff < 1 ? (1 - std::min(1.,eff*sfDownabs))/(1 - eff) : 0 ;
+          }
+
+        }
+
       }
       
       return ; 

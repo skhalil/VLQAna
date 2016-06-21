@@ -48,7 +48,7 @@ options.register('applyBTagSFs', True,
     VarParsing.varType.bool,
     "Apply b-tagging SFs to the MC"
     )
-options.register('applyDYNLOCorr', True, ### Set to true only for DY process ### Only EWK NLO k-factor is applied
+options.register('applyDYNLOCorr', False, ### Set to true only for DY process ### Only EWK NLO k-factor is applied
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Apply DY EWK k-factor to DY MC"
@@ -63,13 +63,13 @@ options.register('optimizeReco', False,
     VarParsing.varType.bool,
     "Optimize mass reconstruction"
     )
-options.register('applyZptCorr', True,
+options.register('applyZptCorr', False,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Optimize mass reconstruction"
     )
 
-options.setDefault('maxEvents', 100000)
+options.setDefault('maxEvents', -1)
 options.parseArguments()
 print options
 
@@ -100,7 +100,7 @@ if options.isData:
 
 if options.filterSignal == True and len(options.signalType) == 0:
   sys.exit("!!!Error: Cannot keep signalType empty when filterSignal switched on!!!")  
-print EWK
+
 process = cms.Process("OS2LAna")
 
 from inputFiles_cfi import * 
@@ -109,9 +109,8 @@ process.source = cms.Source(
     "PoolSource",
     fileNames = cms.untracked.vstring(
       #FileNames[options.FileNames]
-'root://eoscms.cern.ch//store/group/phys_b2g/B2GAnaFW_76X_V1p2/BprimeBprime_M-800_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160411_160543/0000/B2GEDMNtuple_12.root',
-#'root://eoscms.cern.ch//store/group/phys_b2g/B2GAnaFW_76X_V1p2/TT_TuneCUETP8M1_13TeV-powheg-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160408_145006/0000/B2GEDMNtuple_10.root',
-#'root://cms-xrd-global.cern.ch//store/user/jkarancs/SusyAnalysis/B2GEdmNtuple/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/160401_102503/0000/B2GEDMNtuple_1.root',
+'path_to_sample',
+
     ) 
     )
 
@@ -143,17 +142,17 @@ process.ana.muselParams.muidtype = cms.string(options.lepID)
 process.ana.muselParams.muIsoMax = cms.double(0.15)
 process.ana.lepsfsParams.lepidtype = cms.string(options.lepID)
 process.ana.lepsfsParams.zdecayMode = cms.string(options.zdecaymode)
-process.ana.BoostedZCandParams.ptMin = cms.double(150.)#not used in analysis
+process.ana.BoostedZCandParams.ptMin = cms.double(80.)
 process.ana.jetAK8selParams.jetPtMin = cms.double(200) 
 process.ana.jetAK4BTaggedselParams.jetPtMin = cms.double(50) 
 process.ana.STMin = cms.double(1000.)
-process.ana.vlqMass = cms.double(1000.) #M=1000
+process.ana.vlqMass = cms.double(800.) #M=1000
 process.ana.bosonMass = cms.double(91.2) #Z
 process.ana.doEWKcorr = cms.bool(EWK)
 
 process.TFileService = cms.Service("TFileService",
        fileName = cms.string(
-         options.outFileName
+         'output'
          )
        )
 
