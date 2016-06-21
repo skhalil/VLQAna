@@ -66,7 +66,7 @@ Implementation:
 
 class OS2LAna : public edm::EDFilter {
   public:
-    explicit OS2LAna(const edm::ParameterSet&);
+   explicit OS2LAna(const edm::ParameterSet&);
     ~OS2LAna();
 
   private:
@@ -86,7 +86,7 @@ class OS2LAna : public edm::EDFilter {
     edm::ParameterSet DilepCandParams_           ; 
     edm::ParameterSet ZCandParams_               ; 
     edm::ParameterSet BoostedZCandParams_        ; 
-   //edm::ParameterSet GenHSelParams_             ;
+    edm::ParameterSet GenHSelParams_             ;
     edm::ParameterSet genParams_                 ;
     const double HTMin_                          ;
     const double STMin_                          ; 
@@ -117,9 +117,9 @@ class OS2LAna : public edm::EDFilter {
     edm::Service<TFileService> fs                ; 
     std::map<std::string, TH1D*> h1_             ; 
     std::map<std::string, TH2D*> h2_             ; 
-    std::string lep; 
+    std::string lep                              ; 
     PickGenPart genpart                          ;
-    const std::string file_EWK_                            ;
+    const std::string file_EWK_                  ;
     const std::string fnamebtagSF_               ;
     std::unique_ptr<BTagSFUtils> btagsfutils_    ; 
 };
@@ -160,7 +160,7 @@ OS2LAna::OS2LAna(const edm::ParameterSet& iConfig) :
   DilepCandParams_        (iConfig.getParameter<edm::ParameterSet> ("DilepCandParams")),
   ZCandParams_            (iConfig.getParameter<edm::ParameterSet> ("ZCandParams")),
   BoostedZCandParams_     (iConfig.getParameter<edm::ParameterSet> ("BoostedZCandParams")),
-  //GenHSelParams_          (iConfig.getParameter<edm::ParameterSet> ("GenHSelParams")),
+  GenHSelParams_          (iConfig.getParameter<edm::ParameterSet> ("GenHSelParams")),
   genParams_              (iConfig.getParameter<edm::ParameterSet> ("genParams")),
   HTMin_                  (iConfig.getParameter<double>            ("HTMin")),
   STMin_                  (iConfig.getParameter<double>            ("STMin")), 
@@ -250,16 +250,16 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   dileptonsprod.operator()<vlq::MuonCollection>(dimuons, goodMuons); 
   dileptonsprod.operator()<vlq::ElectronCollection>(dielectrons, goodElectrons) ; 
 
-  //================================================================
-  //First pre-selection: 1) 2 OS dileptons from boosted Z, >=3 jets
-  //================================================================
+  //========================================================================
+  //First pre-selection: 1) 2 OS dileptons from Z, >=3 jets, HT > 300 GeV
+  //========================================================================
 
   //dilepton candidate
   if (zdecayMode_ == "zmumu") {dileptons = dimuons; }
   else if (zdecayMode_ == "zelel") {dileptons = dielectrons;}
   if (dileptons.size()  < 1) return false;
-
-  //// Get Dy EWK correction
+  
+  //// Get Dy EWK correction SF
   if ( applyDYNLOCorr_ ) {
     double EWKNLOkfact(GetDYNLOCorr(dileptons.at(0).getPt())) ; 
     evtwt *= EWKNLOkfact ;
@@ -279,13 +279,16 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   CandidateFilter zllfilter(ZCandParams_) ; 
   zllfilter(dileptons, zlluncorr);
 
-  zll = zlluncorr;
+  //zll = zlluncorr;
 
   // Do Z pt correction
   if ( applyZptCorr_ ) {
     zll = ZptCorr(zlluncorr, 1.26117, -0.000903805) ;
   }
-  
+  else {
+     zll = zlluncorr;
+  }
+
   // jets
   vlq::JetCollection goodAK4Jets;
   jetAK4maker(evt, goodAK4Jets) ;
@@ -296,7 +299,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
 
   HT htak4(goodAK4Jets) ; 
 
- ////////////////////////////////////////////////////////// 
+  ////////////////////////////////////////////////////////// 
   //Fill N-1 selected plots for dilepton mass, Ht, ad Njets
   //////////////////////////////////////////////////////////
 
@@ -318,7 +321,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   //Fill HT: >=3 jets, && Z mass
   h1_["ht_pre"] -> Fill(htak4.getHT(), evtwt) ; 
    
-  // at least HT > 150 in event
+  // at least HT > 200 in event
   if ( htak4.getHT() > HTMin_ ) h1_["cutflow"] -> Fill(4, evtwt) ;  
   else return false ; 
 
@@ -433,7 +436,12 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      btagsfutils_->getBTagSFs (csvs, pts, etas, flhads, jetAK4maker.idxjetCSVDiscMin_, btagsf, btagsf_bcUp, btagsf_bcDown, btagsf_lUp, btagsf_lDown) ; 
 
   }
-  cout << "btag SF: " << btagsf << endl;
+  if (btagsf == 0){
+     for (vlq::Jet jet : goodAK4Jets) { 
+        cout << "pt = " << jet.getPt() <<", CVS = " << jet.getCSV() << ", eta = " << jet.getEta() <<", flavor = " << jet.getHadronFlavour() << endl;
+     }
+     cout << "btag SF --->: " << btagsf << endl;
+  }
   // apply b tag scale factors
   evtwt *= btagsf;
 
@@ -735,7 +743,7 @@ void OS2LAna::beginJob() {
 
   h1_["checkPU"] = fs->make<TH1D>("checkPU", "Initial NPV", 51, -0.5, 50.5);
 
- if (filterSignal_){h1_["signalEvts"] = fs->make<TH1D>("signalEvts", "signalEvts", 2, 0.5, 2.5) ;}
+  if (filterSignal_){h1_["signalEvts"] = fs->make<TH1D>("signalEvts", "signalEvts", 2, 0.5, 2.5) ;}
   h1_["cutflow"] = fs->make<TH1D>("cutflow", "cut flow", 8, 0.5, 8.5) ;  
   h1_["cutflow"] -> GetXaxis() -> SetBinLabel(1, "Trig.+l^{+}l^{-}") ;
   h1_["cutflow"] -> GetXaxis() -> SetBinLabel(2, "75 #lt M(l^{+}l^{-}) #lt 105") ; 
