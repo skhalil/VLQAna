@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 from FWCore.ParameterSet.VarParsing import VarParsing
 
 options = VarParsing('analysis')
-options.register('isData', False,
+options.register('isData', True,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Is data?"
@@ -63,7 +63,7 @@ options.register('applyDYNLOCorr', False, ### Set to true only for DY process ##
     VarParsing.varType.bool,
     "Apply DY EWK k-factor to DY MC"
     )
-options.register('FileNames', 'FileNames_DY_pt_650ToInf',
+options.register('FileNames', 'FileNames_SingleMu_ReReco',
     VarParsing.multiplicity.singleton,
     VarParsing.varType.string,
     "Name of list of input files"
@@ -160,6 +160,8 @@ process.ana.lepsfsParams.lepidtype = cms.string(options.lepID)
 process.ana.lepsfsParams.zdecayMode = cms.string(options.zdecaymode)
 process.ana.ZCandParams.ptMin = cms.double(100.)
 process.ana.jetAK8selParams.jetPtMin = cms.double(200) 
+#if options.isData:
+#  process.ana.jetAK8selParams.JetSubstrParams.jettau1Label = cms.InputTag("jetsAK8CHS", "jetAK8CHStau1CHS"),
 process.ana.jetAK4BTaggedselParams.jetPtMin = cms.double(50) 
 process.ana.STMin = cms.double(1000.)
 process.ana.NAK4Min = cms.uint32(3)

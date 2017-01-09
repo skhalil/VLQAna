@@ -25,7 +25,7 @@ parser.add_option('--channel', metavar='S', type='string', action='store',
 #                  help='check signal MC or not')
 
 parser.add_option('--isData', metavar='I', type='int', action='store',
-                  default=0,
+                  default=1,
                   dest='isData',
                   help='run on data or MC')
 
@@ -35,7 +35,7 @@ parser.add_option('--inputCfg', metavar='C', type='string', action='store',
                   help='input config tag to be used')
 
 parser.add_option('--outLabel', metavar='L', type='string', action='store',
-                  default='v1',
+                  default='v2',
                   dest='outLabel',
                   help='output tag to be used')
 
@@ -81,8 +81,10 @@ for job in jobList:
     a1 = a0.replace( 'DUMMY_DATASET', "'"+job[0]+"'" )
     a2 = a1.replace( 'DUMMY_NUMBER',  job[2])
     a3 = a2.replace( 'DUMMY_NAME', "'"+outname+"'" )
-    a4 = a3.replace( 'DUMMY_SITE',"'"+'T2_CH_CERN'+"'")
-    a5 = a4.replace( 'DUMMY_OUTPUT_PATH', "'"+'/store/group/phys_b2g/'+user+'/'+options.channel+"/'")
+    #a4 = a3.replace( 'DUMMY_SITE',"'"+'T2_CH_CERN'+"'")
+    a4 = a3.replace( 'DUMMY_SITE',"'"+'T3_US_FNALLPC'+"'")
+    #a5 = a4.replace( 'DUMMY_OUTPUT_PATH', "'"+'/store/group/phys_b2g/'+user+'/'+options.channel+"/'")
+    a5 = a4.replace( 'DUMMY_OUTPUT_PATH', "'"+'/store/group/lpcbprime/noreplica/'+user+'/'+options.channel+"/'")
     a6 = a5.replace( 'DATA', "'"+isData+"'")
     a7 = a6.replace( 'MODE', "'"+mode+"'")
    
@@ -113,4 +115,4 @@ for job in jobList:
     print exe
     print '--------------->'
     
-    #subprocess.call( [exe], shell=True )
+    subprocess.call( [exe], shell=True )
