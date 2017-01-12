@@ -2,22 +2,22 @@
 
 def list_Zelel_data():
     jobList = [
-        ['/DoubleEG/skhi-RunIISpring16MiniAODv2_B2GAnaFW_80x_V2p0-642b48c1c707cb5cfa93fc168fde448b/USER', 'DoubleEG-Run2016', '20'],
+        ['/DoubleEG/skhi-RunIISpring16MiniAODv2_B2GAnaFW_80x_V2p0-642b48c1c707cb5cfa93fc168fde448b/USER', 'DoubleEG-Run2016', '5'],
         ]
     return jobList
 
 def list_Zmumu_data():
     jobList = [
-        ['/SingleMuon/vorobiev-Run2016B-23Sep2016-v1_B2GAnaFW_80X_v2p4-6f92d8e9b2717da1daa65a0e07f84d5f/USER', 'SingleMuon-Run2016B-v1', '2'],#56
-        #['/SingleMuon/vorobiev-Run2016B-23Sep2016-v3_B2GAnaFW_80X_v2p4-6f92d8e9b2717da1daa65a0e07f84d5f/USER', 'SingleMuon-Run2016B-v3', '10'],
-        #['/SingleMuon/vorobiev-Run2016C-23Sep2016-v1_B2GAnaFW_80X_v2p4-6f92d8e9b2717da1daa65a0e07f84d5f/USER', 'SingleMuon-Run2016C-v3', '6'],
-        #['/SingleMuon/vorobiev-Run2016D-23Sep2016-v1_B2GAnaFW_80X_v2p4-6f92d8e9b2717da1daa65a0e07f84d5f/USER', 'SingleMuon-Run2016D-v1', '8'],
-        #['/SingleMuon/vorobiev-Run2016E-23Sep2016-v1_B2GAnaFW_80X_v2p4-961c7d882d8721e72fac616aaa90ecc1/USER', 'SingleMuon-Run2016E-v1', '6'],
-        #['/SingleMuon/vorobiev-Run2016F-23Sep2016-v1_B2GAnaFW_80X_v2p4-e26b2444814d18badce3899570108664/USER', 'SingleMuon-Run2016F-v1', '6'], 
-        #['/SingleMuon/vorobiev-Run2016G-23Sep2016-v1_B2GAnaFW_80X_v2p4-b45603bfa955d854b3dcb9af322c0b037/USER', 'SingleMuon-Run2016G-v1', '10'],
-        #['/SingleMuon/vorobiev-Run2016H-PromptReco-v1_B2GAnaFW_80X_v2p4-376a23645e94877b22a7f32873431514/USER','SingleMuon-Run2016H-v1', '2'],
-        #['/SingleMuon/vorobiev-Run2016H-PromptReco-v2_B2GAnaFW_80X_v2p4-376a23645e94877b22a7f32873431514/USER', 'SingleMuon-Run2016H-v2', '20'],
-        #['/SingleMuon/vorobiev-Run2016H-PromptReco-v3_B2GAnaFW_80X_v2p4-376a23645e94877b22a7f32873431514/USER', 'SingleMuon-Run2016H-v3', '2'],
+        ['/SingleMuon/vorobiev-Run2016B-23Sep2016-v1_B2GAnaFW_80X_v2p4-6f92d8e9b2717da1daa65a0e07f84d5f/USER', 'SingleMuon-Run2016B-v1', '5'],#56
+        ['/SingleMuon/vorobiev-Run2016B-23Sep2016-v3_B2GAnaFW_80X_v2p4-6f92d8e9b2717da1daa65a0e07f84d5f/USER', 'SingleMuon-Run2016B-v3', '120'],
+        ['/SingleMuon/vorobiev-Run2016C-23Sep2016-v1_B2GAnaFW_80X_v2p4-6f92d8e9b2717da1daa65a0e07f84d5f/USER', 'SingleMuon-Run2016C-v3', '70'],
+        ['/SingleMuon/vorobiev-Run2016D-23Sep2016-v1_B2GAnaFW_80X_v2p4-6f92d8e9b2717da1daa65a0e07f84d5f/USER', 'SingleMuon-Run2016D-v1', '100'],
+        ['/SingleMuon/vorobiev-Run2016E-23Sep2016-v1_B2GAnaFW_80X_v2p4-961c7d882d8721e72fac616aaa90ecc1/USER', 'SingleMuon-Run2016E-v1', '80'],
+        ['/SingleMuon/vorobiev-Run2016F-23Sep2016-v1_B2GAnaFW_80X_v2p4-e26b2444814d18badce3899570108664/USER', 'SingleMuon-Run2016F-v1', '80'], 
+        ['/SingleMuon/vorobiev-Run2016G-23Sep2016-v1_B2GAnaFW_80X_v2p4-b45603bfa955d854b3dcb9af322c0b037/USER', 'SingleMuon-Run2016G-v1', '140'],
+        ['/SingleMuon/vorobiev-Run2016H-PromptReco-v1_B2GAnaFW_80X_v2p4-376a23645e94877b22a7f32873431514/USER','SingleMuon-Run2016H-v1', '2'],
+        ['/SingleMuon/vorobiev-Run2016H-PromptReco-v2_B2GAnaFW_80X_v2p4-376a23645e94877b22a7f32873431514/USER', 'SingleMuon-Run2016H-v2', '200'],
+        ['/SingleMuon/vorobiev-Run2016H-PromptReco-v3_B2GAnaFW_80X_v2p4-376a23645e94877b22a7f32873431514/USER', 'SingleMuon-Run2016H-v3', '2'],
         ]
     return jobList
 
