@@ -1,10 +1,10 @@
-#ifndef ANALYSIS_VLQANA_APPLYLEPTONSFS_HH
-#define ANALYSIS_VLQANA_APPLYLEPTONSFS_HH
+#ifndef ANALYSIS_VLQANA_APPLYLEPTONIDSFS_HH
+#define ANALYSIS_VLQANA_APPLYLEPTONIDSFS_HH
 
-class ApplyLeptonSFs {
+class ApplyLeptonIDSFs {
   public:
     enum LEPTONIDTYPES_t {LOOSE, TIGHT} ; 
-    ApplyLeptonSFs (edm::ParameterSet const& pars) : 
+    ApplyLeptonIDSFs (edm::ParameterSet const& pars) : 
       sf_(1),
       zdecayMode_(pars.getParameter<std::string>("zdecayMode")) 
   {
@@ -13,7 +13,7 @@ class ApplyLeptonSFs {
     else if ( lepidtypestr == "TIGHT" ) type_ = TIGHT ; 
     else edm::LogError("ApplyLeptonSF") << " >>>> WrongElectronIdType: " << type_<< " Check lepton id type !!!" ; 
   }
-    ~ApplyLeptonSFs () {} 
+    ~ApplyLeptonIDSFs () {} 
     double operator () (double pt, double eta){
       if (type_ == TIGHT && zdecayMode_ == "zelel"){
         if(pt > 200.) pt = 200.; 

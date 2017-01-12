@@ -91,6 +91,7 @@ class VLQAna : public edm::EDFilter {
     JetMaker jetAntiHTaggedmaker                  ; 
 
     double leadingJetPtMin_                       ; 
+    double leadingJetPrunedMassMin_               ; 
     double HTMin_                                 ; 
     bool   storePreselEvts_                       ; 
     bool   doPreselOnly_                          ; 
@@ -133,6 +134,7 @@ VLQAna::VLQAna(const edm::ParameterSet& iConfig) :
   jetTopTaggedmaker       (iConfig.getParameter<edm::ParameterSet>("jetTopTaggedselParams"), consumesCollector()),  
   jetAntiHTaggedmaker     (iConfig.getParameter<edm::ParameterSet>("jetAntiHTaggedselParams"), consumesCollector()), 
   leadingJetPtMin_        (iConfig.getParameter<double>           ("leadingJetPtMin")), 
+  leadingJetPrunedMassMin_(iConfig.getParameter<double>           ("leadingJetPrunedMassMin")), 
   HTMin_                  (iConfig.getParameter<double>           ("HTMin")), 
   storePreselEvts_        (iConfig.getParameter<bool>             ("storePreselEvts")),
   doPreselOnly_           (iConfig.getParameter<bool>             ("doPreselOnly")), 
@@ -193,11 +195,12 @@ bool VLQAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   jetAK8maker(evt, goodAK8Jets); 
 
   //// Event pre-selection
-  if (goodAK8Jets.size() < 1) return false ; 
+  if (goodAK8Jets.size() < 2) return false ; 
   h1_["cutflow"] -> Fill(5, evtwt) ; 
 
   //// Event pre-selection
-  if (goodAK8Jets.at(0).getPt() < leadingJetPtMin_) return false ; 
+  if (goodAK8Jets.at(0).getPt() < leadingJetPtMin_ 
+      && goodAK8Jets.at(0).getPrunedMass() < leadingJetPrunedMassMin_) return false ; 
   h1_["cutflow"] -> Fill(6, evtwt) ; 
 
   h1_["npv_noreweight"] -> Fill(*h_npv.product(), *h_evtwtGen.product()); 
@@ -674,6 +677,17 @@ bool VLQAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
 
   tree_->Fill();
 
+  //// Lepton veto 
+  vlq::ElectronCollection goodElectrons; 
+  electronmaker(evt, goodElectrons) ;
+
+  h1_["nel"]->Fill(goodElectrons.size(),evtwt*toptagsf*evtwtHTDown*btagsf) ;
+
+  vlq::MuonCollection goodMuons; 
+  muonmaker(evt, goodMuons) ; 
+
+  h1_["nmu"]->Fill(goodMuons.size(),evtwt*toptagsf*evtwtHTDown*btagsf) ;
+
   return true;
 
 
@@ -804,6 +818,9 @@ void VLQAna::beginJob() {
   h1_["RegB_mtprime_corr_toptagsfDown"] = fs->make<TH1D>("RegB_mtprime_corr_toptagsfDown", "M(T) - M(H-jet) - M(top-jet) + M(H) + M(top);M(T) [GeV];;",80,500,2500) ; 
   h1_["RegB_mtprime_corr_htwtUp"] = fs->make<TH1D>("RegB_mtprime_corr_htwtUp", "M(T) - M(H-jet) - M(top-jet) + M(H) + M(top);M(T) [GeV];;",80,500,2500) ; 
   h1_["RegB_mtprime_corr_htwtDown"] = fs->make<TH1D>("RegB_mtprime_corr_htwtDown", "M(T) - M(H-jet) - M(top-jet) + M(H) + M(top);M(T) [GeV];;",80,500,2500) ; 
+
+  h1_["nel"] = fs->make<TH1D>("nel", ";N(electrons);Events;;",5,-0.5,4.5) ;
+  h1_["nmu"] = fs->make<TH1D>("nmu", ";N(muons);Events;;",5,-0.5,4.5) ;
 
 }
 

@@ -73,7 +73,7 @@ options.register('FileNames', 'FileNames_SingleMu_ReReco',
 #    VarParsing.varType.bool,
 #    "Optimize mass reconstruction"
 #    )
-options.register('sys', False,
+options.register('syst', False,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Do systematics"
@@ -95,7 +95,8 @@ if options.isData:
   if options.zdecaymode == "zmumu":
     hltpaths = [
         #"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v"
-        "HLT_IsoMu24_v" 
+        "HLT_IsoMu24_v",
+        "HLT_IsoTkMu24_v"
         ]
   elif options.zdecaymode == "zelel":
     hltpaths = [
@@ -130,9 +131,9 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxE
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 process.load("Analysis.VLQAna.EventCleaner_cff")
-process.evtcleaner.File_PUDistData= cms.string('2016_25ns_Spring_PUXsec69200nb50.root')
-process.evtcleaner.File_PUDistDataLow =  cms.string('2016_25ns_Spring_PUXsec65740nb50.root')
-process.evtcleaner.File_PUDistDataHigh = cms.string('2016_25ns_Spring_PUXsec72660nb50.root')
+process.evtcleaner.File_PUDistData= cms.string('RunII2016_PUXsec69000nb.root')
+process.evtcleaner.File_PUDistDataLow =  cms.string('RunII2016_PUXsec65550nb.root')
+process.evtcleaner.File_PUDistDataHigh = cms.string('RunII2016_PUXsec72450nb.root')
 process.evtcleaner.File_PUDistMC = cms.string('PUDistMC_2016_25ns_SpringMC_PUScenarioV1_PoissonOOTPU.root')
 process.evtcleaner.isData = options.isData 
 process.evtcleaner.hltPaths = cms.vstring (hltpaths)  
@@ -152,12 +153,14 @@ process.ana = ana.clone(
     applyDYNLOCorr = cms.bool(options.applyDYNLOCorr),
     #optimizeReco = cms.bool(options.optimizeReco),
     skim = cms.bool(options.skim),
+    fnamebtagSF = cms.string('CSVv2_ichep.csv'),
+    File_DYNLOCorr = cms.string('scalefactors_v4.root'),
     )
 process.ana.elselParams.elidtype = cms.string(options.lepID)
 process.ana.muselParams.muidtype = cms.string(options.lepID)
 process.ana.muselParams.muIsoMax = cms.double(0.15)
-process.ana.lepsfsParams.lepidtype = cms.string(options.lepID)
-process.ana.lepsfsParams.zdecayMode = cms.string(options.zdecaymode)
+process.ana.lepIdSFsParams.lepidtype = cms.string(options.lepID)
+process.ana.lepIdSFsParams.zdecayMode = cms.string(options.zdecaymode)
 process.ana.ZCandParams.ptMin = cms.double(100.)
 process.ana.jetAK8selParams.jetPtMin = cms.double(200) 
 #if options.isData:
@@ -172,7 +175,7 @@ process.ana.HTMin = cms.double(200.)
 if options.skim: 
   process.ana.STMin = cms.double(0.)
 
-if options.sys and not options.skim:
+if options.syst and not options.skim:
 
   process.anabcUp = process.ana.clone(
     btagsf_bcUp = cms.bool(True),
@@ -207,20 +210,20 @@ if options.sys and not options.skim:
   process.anaJecDown.jetTopTaggedselParams.jecShift = cms.double(-1.)
 
   process.anaJerUp = process.ana.clone()
-  process.anaJerUp.jetAK4selParams.jerShift = cms.int32(2.)
-  process.anaJecUp.jetAK4BTaggedselParams.jerShift = cms.int32(2.)
-  process.anaJerUp.jetAK8selParams.jerShift = cms.int32(2.)
-  process.anaJecUp.jetHTaggedselParams.jerShift = cms.int32(2.)
-  process.anaJecUp.jetWTaggedselParams.jerShift = cms.double(2.)
-  process.anaJecUp.jetTopTaggedselParams.jerShift = cms.double(2.)
+  process.anaJerUp.jetAK4selParams.jerShift = cms.int32(2)
+  process.anaJecUp.jetAK4BTaggedselParams.jerShift = cms.int32(2)
+  process.anaJerUp.jetAK8selParams.jerShift = cms.int32(2)
+  process.anaJecUp.jetHTaggedselParams.jerShift = cms.int32(2)
+  process.anaJecUp.jetWTaggedselParams.jerShift = cms.int32(2)
+  process.anaJecUp.jetTopTaggedselParams.jerShift = cms.int32(2)
 
   process.anaJerDown = process.ana.clone()
-  process.anaJerDown.jetAK4selParams.jerShift = cms.int32(0.)
-  process.anaJerDown.jetAK4BTaggedselParams.jerShift = cms.int32(0.)
-  process.anaJerDown.jetAK8selParams.jerShift = cms.int32(0.)
-  process.anaJecDown.jetHTaggedselParams.jerShift = cms.int32(0.)
-  process.anaJecDown.jetWTaggedselParams.jerShift = cms.double(0.)
-  process.anaJecDown.jetTopTaggedselParams.jerShift = cms.double(0.)
+  process.anaJerDown.jetAK4selParams.jerShift = cms.int32(0)
+  process.anaJerDown.jetAK4BTaggedselParams.jerShift = cms.int32(0)
+  process.anaJerDown.jetAK8selParams.jerShift = cms.int32(0)
+  process.anaJecDown.jetHTaggedselParams.jerShift = cms.int32(0)
+  process.anaJecDown.jetWTaggedselParams.jerShift = cms.int32(0)
+  process.anaJecDown.jetTopTaggedselParams.jerShift = cms.int32(0)
 
   process.anaPileupUp = process.ana.clone(
     PileupUp = cms.bool(True),
@@ -244,11 +247,15 @@ process.finalEvents = eventCounter.clone(isData=options.isData)
 
 process.load("Analysis.VLQAna.VLQCandProducer_cff")
 
-if options.sys:
+if options.syst and not options.skim:
   process.p = cms.Path(
     process.allEvents
     *process.evtcleaner
-    *cms.ignore(process.ana)
+    *process.cleanedEvents
+    *cms.ignore(
+      process.ana
+      *process.finalEvents
+      )
     *cms.ignore(process.anabcUp)
     *cms.ignore(process.anabcDown)
     *cms.ignore(process.analightUp)
@@ -264,9 +271,9 @@ else:
   process.p = cms.Path(
     process.allEvents
     *process.evtcleaner
-    #*process.cleanedEvents
+    *process.cleanedEvents
     *process.ana
-    #* process.finalEvents
+    *process.finalEvents
     )
 
 if options.skim: 
@@ -275,7 +282,7 @@ if options.skim:
       SelectEvents = cms.untracked.PSet(
         SelectEvents = cms.vstring('p')
         ),
-      fileName = cms.untracked.string('skim.root'),
+      fileName = cms.untracked.string('os2lana_skim.root'),
       outputCommands = cms.untracked.vstring(outCommand )
       )
    
