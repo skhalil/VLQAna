@@ -63,7 +63,7 @@ options.register('applyDYNLOCorr', False, ### Set to true only for DY process ##
     VarParsing.varType.bool,
     "Apply DY EWK k-factor to DY MC"
     )
-options.register('FileNames', 'FileNames_SingleMu_ReReco',
+options.register('FileNames', 'FileNames_SingleMuon_v2p4',
     VarParsing.multiplicity.singleton,
     VarParsing.varType.string,
     "Name of list of input files"
@@ -133,7 +133,7 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 process.load("Analysis.VLQAna.EventCleaner_cff")
 process.evtcleaner.File_PUDistData= cms.string('RunII2016_PUXsec69000nb.root')
 process.evtcleaner.File_PUDistDataLow =  cms.string('RunII2016_PUXsec65550nb.root')
-process.evtcleaner.File_PUDistDataHigh = cms.string('RunII2016_PUXsec72450nb.root')
+process.evtcleaner.File_PUDistDataHigh = cms.string('RunII2015_25ns_PUXsec72450nb.root')
 process.evtcleaner.File_PUDistMC = cms.string('PUDistMC_2016_25ns_SpringMC_PUScenarioV1_PoissonOOTPU.root')
 process.evtcleaner.isData = options.isData 
 process.evtcleaner.hltPaths = cms.vstring (hltpaths)  
@@ -141,6 +141,16 @@ process.evtcleaner.DoPUReweightingOfficial = cms.bool(options.doPUReweightingOff
 #process.evtcleaner.storeLHEWts = options.storeLHEWts
 
 from Analysis.VLQAna.OS2LAna_cfi import * 
+
+if options.isData == False: ### Careful, to be reset when B2GAnaFW_v80X_v2.4 MC are used
+  for par in ['jetAK8selParams', 'jetHTaggedselParams', 'jetWTaggedselParams', 'jetTopTaggedselParams']:
+    setattr(getattr(getattr(ana, par), 'JetSubstrParams'), 'jettau1Label'         ,cms.InputTag("jetsAK8CHS", "jetAK8CHStau1"))
+    setattr(getattr(getattr(ana, par), 'JetSubstrParams'), 'jettau2Label'         ,cms.InputTag("jetsAK8CHS", "jetAK8CHStau2"))
+    setattr(getattr(getattr(ana, par), 'JetSubstrParams'), 'jettau3Label'         ,cms.InputTag("jetsAK8CHS", "jetAK8CHStau3"))
+    setattr(getattr(getattr(ana, par), 'JetSubstrParams'), 'jetPrunedMassLabel'   ,cms.InputTag("jetsAK8CHS", "jetAK8CHSprunedMass"))
+    setattr(getattr(getattr(ana, par), 'JetSubstrParams'), 'jetTrimmedMassLabel'  ,cms.InputTag("jetsAK8CHS", "jetAK8CHStrimmedMass"))
+    setattr(getattr(getattr(ana, par), 'JetSubstrParams'), 'jetFilteredMassLabel' ,cms.InputTag("jetsAK8CHS", "jetAK8CHSfilteredMass"))
+    setattr(getattr(getattr(ana, par), 'JetSubstrParams'), 'jetSoftDropMassLabel' ,cms.InputTag("jetsAK8CHS", "jetAK8CHSsoftDropMass"))
 
 ### Z candidate and jet selections 
 process.ana = ana.clone(
@@ -163,8 +173,6 @@ process.ana.lepIdSFsParams.lepidtype = cms.string(options.lepID)
 process.ana.lepIdSFsParams.zdecayMode = cms.string(options.zdecaymode)
 process.ana.ZCandParams.ptMin = cms.double(100.)
 process.ana.jetAK8selParams.jetPtMin = cms.double(200) 
-#if options.isData:
-#  process.ana.jetAK8selParams.JetSubstrParams.jettau1Label = cms.InputTag("jetsAK8CHS", "jetAK8CHStau1CHS"),
 process.ana.jetAK4BTaggedselParams.jetPtMin = cms.double(50) 
 process.ana.STMin = cms.double(1000.)
 process.ana.NAK4Min = cms.uint32(3)
